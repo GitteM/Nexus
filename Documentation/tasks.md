@@ -32,9 +32,9 @@
 
 ### Day 2 — Domain entities I (M1)
 
-- [ ] `Card`, `CardType`, `CardStatus` (active/frozen/expired/lost), `CardOffer` — `Codable, Sendable, Equatable` structs with public memberwise inits and `static let mock…` values (architecture.md §4.1).
-- [ ] Tests: codable round-trip, equality, mock values valid.
-- **Verify:** `NexusDomain` builds with no dependencies (pure Swift + Foundation); tests pass.
+- [x] `Card`, `CardType`, `CardStatus` (active/frozen/expired/lost), `CardOffer` — `Codable, Sendable, Equatable` structs with public memberwise inits and `static let mock…` values (architecture.md §4.1).
+- [x] Tests: codable round-trip, equality, mock values valid.
+- **Verify:** `NexusDomain` builds with no dependencies (pure Swift + Foundation); tests pass. — done: full workspace TestPlan green (27 Domain tests in 4 suites), zero build warnings, mock data uses EUR.
 
 ### Day 3 — Domain entities II + AppError (M1)
 
