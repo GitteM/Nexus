@@ -11,6 +11,7 @@ jobs:
   format:
     name: SwiftFormat lint
     runs-on: macos-26
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,6 +29,7 @@ jobs:
   packages:
     name: Package builds (Swift 6.3)
     runs-on: macos-26
+    timeout-minutes: 10
     env:
       DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
     steps:
