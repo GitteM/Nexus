@@ -1,0 +1,3 @@
+// Debug configuration — demo-first (no backend yet, architecture.md §7.1)
+API_ENVIRONMENT = demo
+API_BASE_URL =

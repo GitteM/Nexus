@@ -1,0 +1,3 @@
+// Release configuration — demo-first until a backend exists (architecture.md §7.1)
+API_ENVIRONMENT = demo
+API_BASE_URL =
