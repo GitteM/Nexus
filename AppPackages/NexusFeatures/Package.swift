@@ -29,7 +29,7 @@ let package = Package(
                 .product(name: "Entities", package: "NexusDomain"),
                 .product(name: "Mocks", package: "NexusData"),
                 .product(name: "RepositoryProtocols", package: "NexusDomain"),
-            ]
+            ],
         ),
         .target(
             name: "CardDetail",
@@ -39,11 +39,11 @@ let package = Package(
                 .product(name: "Entities", package: "NexusDomain"),
                 .product(name: "Mocks", package: "NexusData"),
                 .product(name: "RepositoryProtocols", package: "NexusDomain"),
-            ]
+            ],
         ),
         .testTarget(
             name: "NexusFeaturesTests",
-            dependencies: ["CardDetail", "Dashboard", "Navigation", "SharedUI"]
+            dependencies: ["CardDetail", "Dashboard", "Navigation", "SharedUI"],
         ),
-    ]
+    ],
 )

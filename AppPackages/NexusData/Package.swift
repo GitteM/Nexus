@@ -25,14 +25,14 @@ let package = Package(
             dependencies: [
                 .product(name: "Entities", package: "NexusDomain"),
                 .product(name: "ServiceProtocols", package: "NexusDomain"),
-            ]
+            ],
         ),
         .target(
             name: "DataSources",
             dependencies: [
                 .product(name: "Entities", package: "NexusDomain"),
                 .product(name: "ServiceProtocols", package: "NexusDomain"),
-            ]
+            ],
         ),
         .target(
             name: "Repositories",
@@ -41,20 +41,20 @@ let package = Package(
                 "Persistence",
                 .product(name: "Entities", package: "NexusDomain"),
                 .product(name: "RepositoryProtocols", package: "NexusDomain"),
-            ]
+            ],
         ),
         .target(
             name: "Persistence",
             dependencies: [
                 .product(name: "Entities", package: "NexusDomain"),
                 .product(name: "RepositoryProtocols", package: "NexusDomain"),
-            ]
+            ],
         ),
         .target(
             name: "Logging",
             dependencies: [
                 .product(name: "ServiceProtocols", package: "NexusDomain"),
-            ]
+            ],
         ),
         .target(
             name: "Mocks",
@@ -67,7 +67,7 @@ let package = Package(
                 .product(name: "Entities", package: "NexusDomain"),
                 .product(name: "RepositoryProtocols", package: "NexusDomain"),
                 .product(name: "ServiceProtocols", package: "NexusDomain"),
-            ]
+            ],
         ),
         .testTarget(
             name: "NexusDataTests",
@@ -78,7 +78,7 @@ let package = Package(
                 "Persistence",
                 "Repositories",
                 "Session",
-            ]
+            ],
         ),
-    ]
+    ],
 )

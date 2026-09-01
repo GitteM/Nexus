@@ -19,7 +19,7 @@ let package = Package(
         .target(name: "ServiceProtocols", dependencies: ["Entities"]),
         .testTarget(
             name: "NexusDomainTests",
-            dependencies: ["Entities", "RepositoryProtocols", "ServiceProtocols"]
+            dependencies: ["Entities", "RepositoryProtocols", "ServiceProtocols"],
         ),
-    ]
+    ],
 )

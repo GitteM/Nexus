@@ -6,7 +6,7 @@ import Testing
 /// Replaced by integration suites from M7 (tasks.md Day 14).
 @Suite("NexusTests smoke")
 struct NexusHostedSmokeTests {
-    @Test func appBundleIsInjected() {
+    @Test func `app bundle is injected`() {
         #expect(Bundle.main.bundleIdentifier == "com.nexusbank.app")
     }
 }

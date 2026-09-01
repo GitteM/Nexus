@@ -4,7 +4,7 @@ import Testing
 /// Replaced by real suite coverage from M1 (tasks.md Day 2).
 @Suite("NexusDomain smoke")
 struct NexusDomainSmokeTests {
-    @Test func targetRuns() {
+    @Test func `target runs`() {
         #expect(true)
     }
 }
