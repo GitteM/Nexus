@@ -1,6 +1,6 @@
 # Nexus Roadmap
 
-> **Status:** Living document — drafted 2026-09-01 from [architecture.md](architecture.md) (the "how") and [features.md](features.md) (the "what"). The daily breakdown lives in [tasks.md](tasks.md). The app does not exist yet: this roadmap takes Nexus from an empty workspace to a releasable v1.2.
+> **Status:** Living document — drafted 2026-09-01 from [architecture.md](architecture.md) (the "how") and [features.md](features.md) (the "what"). The daily breakdown lives in [tasks.md](tasks.md). **Day 1 (M0) scaffolded 2026-09-01**: workspace, three package skeletons, thin `Nexus` app target, TestPlan and CI files in place; workspace builds with zero warnings and the full TestPlan is green.
 >
 > **Source of truth:** `architecture.md` wins on patterns and structure; `features.md` wins on product scope. Where they conflict, this document follows `architecture.md` (see [Known tensions](#5-known-tensions--decisions)).
 
