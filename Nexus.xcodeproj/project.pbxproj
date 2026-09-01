@@ -35,6 +35,23 @@
 		EC893E0530470C7E001AAE0F /* CardDetail in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000032 /* CardDetail */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		000000000000000000000036 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 000000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 000000000000000000000008;
+			remoteInfo = Nexus;
+		};
+		000000000000000000000038 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 000000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 000000000000000000000008;
+			remoteInfo = Nexus;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		000000000000000000000005 /* Nexus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nexus.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		000000000000000000000006 /* NexusTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NexusTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -193,6 +210,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				000000000000000000000037 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				000000000000000000000034 /* NexusTests */,
@@ -228,6 +246,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				000000000000000000000039 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				000000000000000000000035 /* NexusUITests */,
@@ -329,6 +348,19 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		000000000000000000000037 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 000000000000000000000008 /* Nexus */;
+			targetProxy = 000000000000000000000036 /* PBXContainerItemProxy */;
+		};
+		000000000000000000000039 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 000000000000000000000008 /* Nexus */;
+			targetProxy = 000000000000000000000038 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		00000000000000000000000C /* Debug */ = {
