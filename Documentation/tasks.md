@@ -23,12 +23,12 @@
 
 ### Day 1 — Repo & workspace bootstrap (M0)
 
-- [ ] Initialize the git repo and commit a `.gitignore` (Xcode/Swift ignores: `.xcuserdata/`, `DerivedData/`, `*.xccheckout`, etc.).
-- [ ] Create `Nexus.xcworkspace`; under `AppPackages/` create the three package skeletons — `NexusDomain` (targets `Entities`, `RepositoryProtocols`, `ServiceProtocols`), `NexusData` (targets `Session`, `DataSources`, `Repositories`, `Persistence`, `Logging`, `Mocks`), `NexusFeatures` (targets `SharedUI`, `Navigation`, `Dashboard`, `CardDetail`) — each `swift-tools-version: 6.3`, `.iOS(.v17)` floor, Swift 6 language mode, no umbrella modules (architecture.md §3).
-- [ ] Create the thin `Nexus` app target (composition root) with a placeholder `NexusApp`; wire package dependencies in dependency order (Features → Data → Domain).
-- [ ] Add `Debug.xcconfig` / `Release.xcconfig` (`API_ENVIRONMENT = demo`, `API_BASE_URL` empty), Info.plist keys, and `Bundle+Extensions.swift` (architecture.md §7.1).
-- [ ] Add `TestPlan.xctestplan` skeleton and CI workflow files (`.github/workflows/ci.yml`, `pr-checks.yml`) — wired, exercised from Day 2 on.
-- **Verify:** workspace opens; every package and the app target builds; no warnings.
+- [x] Initialize the git repo and commit a `.gitignore` (Xcode/Swift ignores: `.xcuserdata/`, `DerivedData/`, `*.xccheckout`, etc.).
+- [x] Create `Nexus.xcworkspace`; under `AppPackages/` create the three package skeletons — `NexusDomain` (targets `Entities`, `RepositoryProtocols`, `ServiceProtocols`), `NexusData` (targets `Session`, `DataSources`, `Repositories`, `Persistence`, `Logging`, `Mocks`), `NexusFeatures` (targets `SharedUI`, `Navigation`, `Dashboard`, `CardDetail`) — each `swift-tools-version: 6.3`, `.iOS(.v17)` floor, Swift 6 language mode, no umbrella modules (architecture.md §3).
+- [x] Create the thin `Nexus` app target (composition root) with a placeholder `NexusApp`; wire package dependencies in dependency order (Features → Data → Domain).
+- [x] Add `Debug.xcconfig` / `Release.xcconfig` (`API_ENVIRONMENT = demo`, `API_BASE_URL` empty), Info.plist keys, and `Bundle+Extensions.swift` (architecture.md §7.1).
+- [x] Add `TestPlan.xctestplan` skeleton and CI workflow files (`.github/workflows/ci.yml`, `pr-checks.yml`) — wired, exercised from Day 2 on.
+- **Verify:** workspace opens; every package and the app target builds; no warnings. — done: `xcodebuild build-for-testing` + full TestPlan green (5 test targets, 5 smoke tests), zero build warnings.
 
 ### Day 2 — Domain entities I (M1)
 

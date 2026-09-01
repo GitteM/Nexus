@@ -1,0 +1,5 @@
+// Release configuration — sandbox until a backend exists (architecture.md §7.1).
+// Demo mode is Debug-only: a Release build must never select the #if DEBUG
+// mock graph, so API_ENVIRONMENT stays sandbox, not demo.
+API_ENVIRONMENT = sandbox
+API_BASE_URL =
