@@ -15,8 +15,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install swiftformat
-        run: brew install swiftformat
+      - name: Install swiftformat 0.63.0
+        run: |
+          curl -sL https://github.com/nicklockwood/SwiftFormat/releases/download/0.63.0/swiftformat.zip -o /tmp/swiftformat.zip
+          unzip -q /tmp/swiftformat.zip -d /tmp/swiftformat
+          sudo cp /tmp/swiftformat/swiftformat /usr/local/bin/swiftformat
+          swiftformat --version
 
       - name: Lint
         run: swiftformat --lint .

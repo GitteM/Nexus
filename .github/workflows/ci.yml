@@ -28,7 +28,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: DerivedData
-          key: deriveddata-${{ runner.os }}-${{ hashFiles('Nexus.xcworkspace/contents.xcworkspacedata', 'AppPackages/**/Package.swift') }}
+          key: deriveddata-${{ runner.os }}-${{ hashFiles('Nexus.xcodeproj/project.pbxproj', 'Nexus.xcodeproj/xcshareddata/xcschemes/Nexus.xcscheme', 'Nexus.xcworkspace/contents.xcworkspacedata', 'TestPlan.xctestplan', 'Configs/*.xcconfig', 'AppPackages/**/Package.swift') }}
           restore-keys: |
             deriveddata-${{ runner.os }}-
 
