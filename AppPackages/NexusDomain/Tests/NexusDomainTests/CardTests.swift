@@ -1,4 +1,4 @@
-@testable import Entities
+import Entities
 import Foundation
 import Testing
 
@@ -64,7 +64,7 @@ struct CardTests {
             cardholderName: "Avery Jordan",
             lastFourDigits: "1234",
             type: .debit,
-            status: .active,
+            status: .frozen,
             currency: "EUR",
             spendingLimit: 500,
         )
@@ -82,12 +82,12 @@ struct CardTests {
             type: .prepaid,
             status: .frozen,
             currency: "EUR",
-            spendingLimit: 1250.50,
+            spendingLimit: Decimal(string: "1250.50"),
         )
         let data = try JSONEncoder().encode(card)
         let decoded = try JSONDecoder().decode(Card.self, from: data)
         #expect(decoded == card)
-        #expect(decoded.spendingLimit == 1250.50)
+        #expect(decoded.spendingLimit == Decimal(string: "1250.50"))
     }
 
     @Test func `codable round trip with nil spending limit`() throws {
@@ -136,14 +136,15 @@ struct CardTests {
     @Test func `mock last four digits are four digits`() {
         for card in Card.mockDefaults {
             #expect(card.lastFourDigits.count == 4)
-            // Key-path form (allSatisfy(\.isNumber)) breaks Swift Testing's #expect
-            // macro expansion on this toolchain, so keep the closure.
-            // swiftformat:disable:next preferKeyPath
-            #expect(card.lastFourDigits.allSatisfy { $0.isNumber })
+            // Strictly ASCII digits: Character.isNumber alone would accept
+            // non-ASCII numerals such as fullwidth ４８２１.
+            #expect(card.lastFourDigits.allSatisfy { $0.isASCII && $0.isNumber })
         }
     }
 
     @Test func `mock cardholder name is consistent`() {
+        // Intentional demo curation: all mock cards belong to one cardholder,
+        // matching the dashboard's "my cards" framing.
         let names = Set(Card.mockDefaults.map(\.cardholderName))
         #expect(names.count == 1)
     }

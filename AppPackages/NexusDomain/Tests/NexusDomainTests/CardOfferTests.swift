@@ -1,4 +1,4 @@
-@testable import Entities
+import Entities
 import Foundation
 import Testing
 
@@ -52,7 +52,7 @@ struct CardOfferTests {
             subtitle: "2% back",
             type: .credit,
             currency: "EUR",
-            annualFee: nil,
+            annualFee: 99,
             benefits: ["2% cashback"],
         )
         #expect(a == same)
@@ -90,6 +90,17 @@ struct CardOfferTests {
         let data = try JSONEncoder().encode(offer)
         let decoded = try JSONDecoder().decode(CardOffer.self, from: data)
         #expect(decoded == offer)
+        #expect(decoded.annualFee == nil)
+    }
+
+    @Test func `decoding missing optional annual fee succeeds`() throws {
+        let json = Data(
+            #"""
+            {"id":"o1","title":"Cashback Card","subtitle":"2% back",
+             "type":"credit","currency":"EUR","benefits":["2% cashback"]}
+            """#.utf8,
+        )
+        let decoded = try JSONDecoder().decode(CardOffer.self, from: json)
         #expect(decoded.annualFee == nil)
     }
 

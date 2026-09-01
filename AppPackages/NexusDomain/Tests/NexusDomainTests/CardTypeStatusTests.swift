@@ -1,4 +1,4 @@
-@testable import Entities
+import Entities
 import Foundation
 import Testing
 
@@ -11,7 +11,6 @@ struct CardTypeStatusTests {
             let data = try JSONEncoder().encode(type)
             let decoded = try JSONDecoder().decode(CardType.self, from: data)
             #expect(decoded == type)
-            #expect(type.rawValue == type.rawValue.lowercased())
         }
     }
 
@@ -20,7 +19,6 @@ struct CardTypeStatusTests {
             let data = try JSONEncoder().encode(status)
             let decoded = try JSONDecoder().decode(CardStatus.self, from: data)
             #expect(decoded == status)
-            #expect(status.rawValue == status.rawValue.lowercased())
         }
     }
 
@@ -34,15 +32,31 @@ struct CardTypeStatusTests {
         #expect(decoded == .frozen)
     }
 
+    @Test func `card type raw values match wire contract`() {
+        #expect(CardType.allCases.map(\.rawValue) == ["credit", "debit", "prepaid"])
+    }
+
+    @Test func `card status raw values match wire contract`() {
+        #expect(CardStatus.allCases.map(\.rawValue) == ["active", "frozen", "expired", "lost"])
+    }
+
+    @Test func `unknown card type raw value throws`() {
+        #expect(throws: DecodingError.self) {
+            _ = try JSONDecoder().decode(CardType.self, from: Data(#""gold""#.utf8))
+        }
+    }
+
+    @Test func `unknown card status raw value throws`() {
+        #expect(throws: DecodingError.self) {
+            _ = try JSONDecoder().decode(CardStatus.self, from: Data(#""blocked""#.utf8))
+        }
+    }
+
     // MARK: - Conveniences
 
-    @Test func `display name is non empty for all cases`() {
-        for type in CardType.allCases {
-            #expect(!type.displayName.isEmpty)
-        }
-        for status in CardStatus.allCases {
-            #expect(!status.displayName.isEmpty)
-        }
+    @Test func `display name matches wire contract`() {
+        #expect(CardType.allCases.map(\.displayName) == ["Credit", "Debit", "Prepaid"])
+        #expect(CardStatus.allCases.map(\.displayName) == ["Active", "Frozen", "Expired", "Lost"])
     }
 
     @Test func `icon is non empty for all cases`() {
