@@ -58,6 +58,29 @@ struct AppErrorTests {
         #expect(AppErrorTestFactory.unknown(underlying: nil) == .unknown(underlying: nil))
     }
 
+    @Test func `factory returns the right case`() {
+        // Pins factory→case mapping: a wiring bug that swaps two
+        // same-category factories would otherwise pass the construction,
+        // category, and policy suites undetected.
+        #expect(AppErrorTestFactory.apiConnectionFailed() == .apiConnectionFailed(details: "Connection reset by peer"))
+        #expect(AppErrorTestFactory.requestTimedOut() == .requestTimedOut)
+        #expect(AppErrorTestFactory.cardNotFound() == .cardNotFound(cardId: "card-test-001"))
+        #expect(AppErrorTestFactory.cardAlreadyExists() == .cardAlreadyExists(cardId: "card-test-001"))
+        #expect(AppErrorTestFactory.cardActionFailed() == .cardActionFailed(action: "freeze", details: "Command rejected"))
+        #expect(AppErrorTestFactory.insufficientFunds() == .insufficientFunds(amount: 1250.75))
+        #expect(AppErrorTestFactory.persistenceError() == .persistenceError(operation: "save_card", details: "Write failed"))
+        #expect(AppErrorTestFactory.serializationError() == .serializationError(type: "Card", details: "Invalid key"))
+        #expect(AppErrorTestFactory.deserializationError() == .deserializationError(type: "CardState", details: "Type mismatch at 'status'"))
+        #expect(AppErrorTestFactory.validationError() == .validationError(field: "amount", reason: "must be positive"))
+        #expect(AppErrorTestFactory.systemUnavailable() == .systemUnavailable(details: "Biometrics unavailable"))
+        #expect(AppErrorTestFactory.initializationFailed() == .initializationFailed(details: "Container setup failed"))
+        // Equatable compares `.unknown` by underlying presence only, so pin
+        // the default explicitly.
+        if case let .unknown(underlying) = AppErrorTestFactory.unknown() {
+            #expect(underlying == nil)
+        }
+    }
+
     // MARK: - Category grouping
 
     @Test func `category groups cases by feature area`() {
