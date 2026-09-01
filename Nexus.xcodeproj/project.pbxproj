@@ -6,6 +6,35 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		EC893DEC30470C7E001AAE0F /* Entities in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000026 /* Entities */; };
+		EC893DED30470C7E001AAE0F /* RepositoryProtocols in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000027 /* RepositoryProtocols */; };
+		EC893DEE30470C7E001AAE0F /* ServiceProtocols in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000028 /* ServiceProtocols */; };
+		EC893DEF30470C7E001AAE0F /* Session in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000029 /* Session */; };
+		EC893DF030470C7E001AAE0F /* DataSources in Frameworks */ = {isa = PBXBuildFile; productRef = 00000000000000000000002A /* DataSources */; };
+		EC893DF130470C7E001AAE0F /* Repositories in Frameworks */ = {isa = PBXBuildFile; productRef = 00000000000000000000002B /* Repositories */; };
+		EC893DF230470C7E001AAE0F /* Persistence in Frameworks */ = {isa = PBXBuildFile; productRef = 00000000000000000000002C /* Persistence */; };
+		EC893DF330470C7E001AAE0F /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = 00000000000000000000002D /* Logging */; };
+		EC893DF430470C7E001AAE0F /* Mocks in Frameworks */ = {isa = PBXBuildFile; productRef = 00000000000000000000002E /* Mocks */; };
+		EC893DF530470C7E001AAE0F /* SharedUI in Frameworks */ = {isa = PBXBuildFile; productRef = 00000000000000000000002F /* SharedUI */; };
+		EC893DF630470C7E001AAE0F /* Navigation in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000030 /* Navigation */; };
+		EC893DF730470C7E001AAE0F /* Dashboard in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000031 /* Dashboard */; };
+		EC893DF830470C7E001AAE0F /* CardDetail in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000032 /* CardDetail */; };
+		EC893DF930470C7E001AAE0F /* Entities in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000026 /* Entities */; };
+		EC893DFA30470C7E001AAE0F /* RepositoryProtocols in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000027 /* RepositoryProtocols */; };
+		EC893DFB30470C7E001AAE0F /* ServiceProtocols in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000028 /* ServiceProtocols */; };
+		EC893DFC30470C7E001AAE0F /* Session in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000029 /* Session */; };
+		EC893DFD30470C7E001AAE0F /* DataSources in Frameworks */ = {isa = PBXBuildFile; productRef = 00000000000000000000002A /* DataSources */; };
+		EC893DFE30470C7E001AAE0F /* Repositories in Frameworks */ = {isa = PBXBuildFile; productRef = 00000000000000000000002B /* Repositories */; };
+		EC893DFF30470C7E001AAE0F /* Persistence in Frameworks */ = {isa = PBXBuildFile; productRef = 00000000000000000000002C /* Persistence */; };
+		EC893E0030470C7E001AAE0F /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = 00000000000000000000002D /* Logging */; };
+		EC893E0130470C7E001AAE0F /* Mocks in Frameworks */ = {isa = PBXBuildFile; productRef = 00000000000000000000002E /* Mocks */; };
+		EC893E0230470C7E001AAE0F /* SharedUI in Frameworks */ = {isa = PBXBuildFile; productRef = 00000000000000000000002F /* SharedUI */; };
+		EC893E0330470C7E001AAE0F /* Navigation in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000030 /* Navigation */; };
+		EC893E0430470C7E001AAE0F /* Dashboard in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000031 /* Dashboard */; };
+		EC893E0530470C7E001AAE0F /* CardDetail in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000032 /* CardDetail */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		000000000000000000000005 /* Nexus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nexus.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		000000000000000000000006 /* NexusTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NexusTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -38,6 +67,19 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EC893DF830470C7E001AAE0F /* CardDetail in Frameworks */,
+				EC893DF730470C7E001AAE0F /* Dashboard in Frameworks */,
+				EC893DF630470C7E001AAE0F /* Navigation in Frameworks */,
+				EC893DF530470C7E001AAE0F /* SharedUI in Frameworks */,
+				EC893DF430470C7E001AAE0F /* Mocks in Frameworks */,
+				EC893DF330470C7E001AAE0F /* Logging in Frameworks */,
+				EC893DF230470C7E001AAE0F /* Persistence in Frameworks */,
+				EC893DF130470C7E001AAE0F /* Repositories in Frameworks */,
+				EC893DF030470C7E001AAE0F /* DataSources in Frameworks */,
+				EC893DEF30470C7E001AAE0F /* Session in Frameworks */,
+				EC893DEE30470C7E001AAE0F /* ServiceProtocols in Frameworks */,
+				EC893DED30470C7E001AAE0F /* RepositoryProtocols in Frameworks */,
+				EC893DEC30470C7E001AAE0F /* Entities in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -45,6 +87,19 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EC893DFE30470C7E001AAE0F /* Repositories in Frameworks */,
+				EC893E0230470C7E001AAE0F /* SharedUI in Frameworks */,
+				EC893DFA30470C7E001AAE0F /* RepositoryProtocols in Frameworks */,
+				EC893DFF30470C7E001AAE0F /* Persistence in Frameworks */,
+				EC893DFD30470C7E001AAE0F /* DataSources in Frameworks */,
+				EC893E0430470C7E001AAE0F /* Dashboard in Frameworks */,
+				EC893E0530470C7E001AAE0F /* CardDetail in Frameworks */,
+				EC893DF930470C7E001AAE0F /* Entities in Frameworks */,
+				EC893E0330470C7E001AAE0F /* Navigation in Frameworks */,
+				EC893DFB30470C7E001AAE0F /* ServiceProtocols in Frameworks */,
+				EC893E0130470C7E001AAE0F /* Mocks in Frameworks */,
+				EC893E0030470C7E001AAE0F /* Logging in Frameworks */,
+				EC893DFC30470C7E001AAE0F /* Session in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -211,10 +266,11 @@
 			);
 			mainGroup = 000000000000000000000002;
 			packageReferences = (
-				000000000000000000000023 /* NexusDomain */,
-				000000000000000000000024 /* NexusData */,
-				000000000000000000000025 /* NexusFeatures */,
+				000000000000000000000023 /* XCLocalSwiftPackageReference "AppPackages/NexusDomain" */,
+				000000000000000000000024 /* XCLocalSwiftPackageReference "AppPackages/NexusData" */,
+				000000000000000000000025 /* XCLocalSwiftPackageReference "AppPackages/NexusFeatures" */,
 			);
+			preferredProjectObjectVersion = 77;
 			productRefGroup = 000000000000000000000003 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -402,6 +458,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8CS3UJM3LZ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Configs/Info.plist;
@@ -423,6 +480,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8CS3UJM3LZ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Configs/Info.plist;
@@ -547,15 +605,15 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		000000000000000000000023 /* NexusDomain */ = {
+		000000000000000000000023 /* XCLocalSwiftPackageReference "AppPackages/NexusDomain" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = AppPackages/NexusDomain;
 		};
-		000000000000000000000024 /* NexusData */ = {
+		000000000000000000000024 /* XCLocalSwiftPackageReference "AppPackages/NexusData" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = AppPackages/NexusData;
 		};
-		000000000000000000000025 /* NexusFeatures */ = {
+		000000000000000000000025 /* XCLocalSwiftPackageReference "AppPackages/NexusFeatures" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = AppPackages/NexusFeatures;
 		};
@@ -564,68 +622,68 @@
 /* Begin XCSwiftPackageProductDependency section */
 		000000000000000000000026 /* Entities */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 000000000000000000000023 /* XCLocalSwiftPackageReference "AppPackages/NexusDomain" */;
 			productName = Entities;
-			package = 000000000000000000000023 /* NexusDomain */;
 		};
 		000000000000000000000027 /* RepositoryProtocols */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 000000000000000000000023 /* XCLocalSwiftPackageReference "AppPackages/NexusDomain" */;
 			productName = RepositoryProtocols;
-			package = 000000000000000000000023 /* NexusDomain */;
 		};
 		000000000000000000000028 /* ServiceProtocols */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 000000000000000000000023 /* XCLocalSwiftPackageReference "AppPackages/NexusDomain" */;
 			productName = ServiceProtocols;
-			package = 000000000000000000000023 /* NexusDomain */;
 		};
 		000000000000000000000029 /* Session */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 000000000000000000000024 /* XCLocalSwiftPackageReference "AppPackages/NexusData" */;
 			productName = Session;
-			package = 000000000000000000000024 /* NexusData */;
 		};
 		00000000000000000000002A /* DataSources */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 000000000000000000000024 /* XCLocalSwiftPackageReference "AppPackages/NexusData" */;
 			productName = DataSources;
-			package = 000000000000000000000024 /* NexusData */;
 		};
 		00000000000000000000002B /* Repositories */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 000000000000000000000024 /* XCLocalSwiftPackageReference "AppPackages/NexusData" */;
 			productName = Repositories;
-			package = 000000000000000000000024 /* NexusData */;
 		};
 		00000000000000000000002C /* Persistence */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 000000000000000000000024 /* XCLocalSwiftPackageReference "AppPackages/NexusData" */;
 			productName = Persistence;
-			package = 000000000000000000000024 /* NexusData */;
 		};
 		00000000000000000000002D /* Logging */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 000000000000000000000024 /* XCLocalSwiftPackageReference "AppPackages/NexusData" */;
 			productName = Logging;
-			package = 000000000000000000000024 /* NexusData */;
 		};
 		00000000000000000000002E /* Mocks */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 000000000000000000000024 /* XCLocalSwiftPackageReference "AppPackages/NexusData" */;
 			productName = Mocks;
-			package = 000000000000000000000024 /* NexusData */;
 		};
 		00000000000000000000002F /* SharedUI */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 000000000000000000000025 /* XCLocalSwiftPackageReference "AppPackages/NexusFeatures" */;
 			productName = SharedUI;
-			package = 000000000000000000000025 /* NexusFeatures */;
 		};
 		000000000000000000000030 /* Navigation */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 000000000000000000000025 /* XCLocalSwiftPackageReference "AppPackages/NexusFeatures" */;
 			productName = Navigation;
-			package = 000000000000000000000025 /* NexusFeatures */;
 		};
 		000000000000000000000031 /* Dashboard */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 000000000000000000000025 /* XCLocalSwiftPackageReference "AppPackages/NexusFeatures" */;
 			productName = Dashboard;
-			package = 000000000000000000000025 /* NexusFeatures */;
 		};
 		000000000000000000000032 /* CardDetail */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 000000000000000000000025 /* XCLocalSwiftPackageReference "AppPackages/NexusFeatures" */;
 			productName = CardDetail;
-			package = 000000000000000000000025 /* NexusFeatures */;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
