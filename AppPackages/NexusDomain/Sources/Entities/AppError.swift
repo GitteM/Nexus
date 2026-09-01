@@ -92,12 +92,12 @@ public extension AppError {
         case .cardActionFailed: "Try the action again."
         case .insufficientFunds: "Add funds or use a different card."
         case .persistenceError: "Try saving again."
-        case .serializationError: "Try the request again."
-        case .deserializationError: "Refresh and try again."
+        case .serializationError: "This is a technical issue — contact support if it keeps happening."
+        case .deserializationError: "The data we received couldn't be read — contact support if it keeps happening."
         case .validationError: "Review the highlighted fields and try again."
-        case .systemUnavailable: "Restart the app and try again."
+        case .systemUnavailable: "A system service is unavailable — contact support if it keeps happening."
         case .initializationFailed: "Restart the app to try again."
-        case .unknown: "Try again. If it keeps happening, contact support."
+        case .unknown: "Contact support if it keeps happening."
         }
     }
 
