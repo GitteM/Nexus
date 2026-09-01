@@ -1,0 +1,52 @@
+{
+  "configurations" : [
+    {
+      "id" : "e4c04298-fea0-4abb-926c-de728967b89d",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:AppPackages/NexusDomain",
+        "identifier" : "NexusDomainTests",
+        "name" : "NexusDomainTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:AppPackages/NexusData",
+        "identifier" : "NexusDataTests",
+        "name" : "NexusDataTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:AppPackages/NexusFeatures",
+        "identifier" : "NexusFeaturesTests",
+        "name" : "NexusFeaturesTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Nexus.xcodeproj",
+        "identifier" : "000000000000000000000009",
+        "name" : "NexusTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Nexus.xcodeproj",
+        "identifier" : "00000000000000000000000A",
+        "name" : "NexusUITests"
+      }
+    }
+  ],
+  "version" : 1
+}
