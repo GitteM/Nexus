@@ -12,7 +12,7 @@ concurrency:
 jobs:
   build-and-test:
     name: Build & Test (Xcode 26.6, iPhone 17)
-    runs-on: macos-15
+    runs-on: macos-26
     env:
       DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
     steps:
