@@ -62,6 +62,13 @@ private struct ReceiveTaskHandle: Sendable {
 /// a client is mapped in `connect()` as a defensive fallback. `deinit` is
 /// nonisolated and reaches the receive loop only through a Sendable task
 /// handle, keeping the code free of `@unchecked Sendable`.
+///
+/// Conformance note: `SessionManagerProtocol` inherits `Sendable`, and a
+/// main-actor-isolated conformance cannot carry `Sendable`, so the
+/// conformance is marked `@preconcurrency` (Swift 6.2 conformance-isolation
+/// diagnostics; the §12.3 #8 pattern used by the Day 4 test doubles). The
+/// runtime check is satisfied because every caller of these methods is on the
+/// main actor.
 @MainActor
 @Observable
 public final class APISessionManager: @preconcurrency SessionManagerProtocol {
@@ -109,7 +116,12 @@ public final class APISessionManager: @preconcurrency SessionManagerProtocol {
         let generation = connectionGeneration
         do {
             try await client.connect()
-            guard generation == connectionGeneration else {
+            // Belt and braces: everything from here to `startReceivingEvents()`
+            // is synchronous main-actor code, so `disconnect()` cannot
+            // interleave — if the generation still matches, no teardown ran
+            // and the status is still `.connecting`. Both guards together make
+            // that invariant locally evident and refactor-proof.
+            guard generation == connectionGeneration, sessionStatus == .connecting else {
                 return // disconnect() ran during the handshake; it already tore the session down
             }
             sessionStatus = .connected
