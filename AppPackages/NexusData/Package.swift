@@ -30,6 +30,7 @@ let package = Package(
         .target(
             name: "DataSources",
             dependencies: [
+                "Session",
                 .product(name: "Entities", package: "NexusDomain"),
                 .product(name: "ServiceProtocols", package: "NexusDomain"),
             ],
