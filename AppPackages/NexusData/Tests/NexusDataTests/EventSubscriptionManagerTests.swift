@@ -6,9 +6,8 @@ import Testing
 @Suite("EventSubscriptionManager")
 @MainActor
 struct EventSubscriptionManagerTests {
-    private func frame(_ event: BankingEvent) -> String {
-        let data = try! JSONEncoder().encode(event)
-        return String(data: data, encoding: .utf8)!
+    private func frame(_ event: BankingEvent) throws -> String {
+        try String(decoding: JSONEncoder().encode(event), as: UTF8.self)
     }
 
     private func nextEvent(_ stream: AsyncStream<BankingEvent>) async -> BankingEvent? {
@@ -37,7 +36,7 @@ struct EventSubscriptionManagerTests {
         try await facade.connect()
 
         let stream = facade.events(for: "card.status")
-        client.inject(frame(BankingEvent.mockCardStatusEvent))
+        try client.inject(frame(BankingEvent.mockCardStatusEvent))
         #expect(await nextEvent(stream) == .mockCardStatusEvent)
 
         try await facade.send(to: "card.command", payload: #"{"type":"freeze"}"#)
