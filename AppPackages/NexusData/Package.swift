@@ -78,6 +78,12 @@ let package = Package(
                 "Persistence",
                 "Repositories",
                 "Session",
+                // Declared explicitly for the Xcode workspace build: the
+                // dependency scan of the test target follows `Session`'s own
+                // imports (Entities/ServiceProtocols) and warns when those
+                // edges are missing from the generated project.
+                .product(name: "Entities", package: "NexusDomain"),
+                .product(name: "ServiceProtocols", package: "NexusDomain"),
             ],
         ),
     ],

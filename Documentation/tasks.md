@@ -53,10 +53,10 @@
 
 ### Day 5 — Session manager (M2)
 
-- [ ] `APISessionManager` — `@MainActor @Observable final class`, `sessionStatus`, `connect()` via `withCheckedThrowingContinuation`, `disconnect()`, `events(for:)` over `URLSessionWebSocketTask` with `onTermination` cleanup, pending-subscription queue on reconnect (architecture.md §6.2).
-- [ ] `EventSubscriptionManager` thin facade over the session (connect/disconnect/events/send) (architecture.md §6.2).
-- [ ] Tests with a fake SDK client: connect/disconnect, event bridging, reconnect behavior.
-- **Verify:** Session tests green; no `DispatchQueue` barriers or `@unchecked Sendable`.
+- [x] `APISessionManager` — `@MainActor @Observable final class`, `sessionStatus`, `connect()` via `withCheckedThrowingContinuation`, `disconnect()`, `events(for:)` over `URLSessionWebSocketTask` with `onTermination` cleanup, pending-subscription queue on reconnect (architecture.md §6.2).
+- [x] `EventSubscriptionManager` thin facade over the session (connect/disconnect/events/send) (architecture.md §6.2).
+- [x] Tests with a fake SDK client: connect/disconnect, event bridging, reconnect behavior.
+- **Verify:** Session tests green; no `DispatchQueue` barriers or `@unchecked Sendable`. — done: full workspace TestPlan green (184 tests: 159 Domain + 22 new Session/facade tests), zero build warnings; transport seam (`WebSocketClientProtocol`) + `URLSessionWebSocketClient` behind `APISessionManager`; main-actor confinement is the synchronization — no `@unchecked`, no barriers.
 
 ### Day 6 — Data sources (M2)
 
