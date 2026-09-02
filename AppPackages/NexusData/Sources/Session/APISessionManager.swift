@@ -11,6 +11,22 @@ private struct Subscription {
     let continuation: AsyncStream<BankingEvent>.Continuation
 }
 
+/// Holds the receive-loop `Task` so `deinit` — which is nonisolated and
+/// cannot touch `@MainActor` state — can still cancel a live loop. Actors
+/// are this codebase's synchronization primitive (architecture.md §12.1);
+/// `Task.cancel()` is idempotent and safe from any isolation domain.
+private actor ReceiveTaskHandle {
+    private var task: Task<Void, Never>?
+
+    func set(_ task: Task<Void, Never>?) {
+        self.task = task
+    }
+
+    func cancel() {
+        task?.cancel()
+    }
+}
+
 /// URLSession-backed implementation of `SessionManagerProtocol`
 /// (architecture.md §6.2, tasks.md Day 5).
 ///
@@ -33,6 +49,14 @@ private struct Subscription {
 ///   created after that point queue until the next successful `connect()`;
 ///   models re-subscribe on reload (architecture.md §9.1), so streams are
 ///   never silently revived across a teardown.
+///
+/// Threading notes: every method here runs on the main actor, but consumer
+/// stream termination (`onTermination`) can fire on any executor — the
+/// cleanup closure hops back to the main actor before touching the registry.
+/// The transport seam always surfaces `AppError`; a non-`AppError` thrown by
+/// a client is mapped in `connect()` as a defensive fallback. `deinit` is
+/// nonisolated and reaches the receive loop only through a Sendable task
+/// handle, keeping the code free of `@unchecked Sendable`.
 @MainActor
 @Observable
 public final class APISessionManager: @preconcurrency SessionManagerProtocol {
@@ -40,7 +64,10 @@ public final class APISessionManager: @preconcurrency SessionManagerProtocol {
 
     private let client: any WebSocketClientProtocol
     private let decoder = JSONDecoder()
-    private var receiveTask: Task<Void, Never>?
+    /// `nonisolated` (Sendable actor) so `deinit` can cancel a live receive
+    /// loop without touching main-actor state; only main-actor code writes
+    /// the handle.
+    private nonisolated let receiveTaskHandle = ReceiveTaskHandle()
     private var subscriptions: [String: [Subscription]] = [:]
     /// Bumped on teardown so an in-flight `connect()` can detect that
     /// `disconnect()` cancelled it.
@@ -56,6 +83,16 @@ public final class APISessionManager: @preconcurrency SessionManagerProtocol {
     /// `WebSocketClientProtocol` (the fake SDK client in tests).
     init(client: any WebSocketClientProtocol) {
         self.client = client
+    }
+
+    deinit {
+        // Once the manager's last external reference is gone, the running
+        // receive loop is the only thing that could outlive it; cancel so a
+        // parked `receive()` ends and the transport is released. The handle
+        // is a nonisolated `let`, so it is readable here without touching
+        // main-actor state.
+        let handle = receiveTaskHandle
+        Task { await handle.cancel() }
     }
 
     // MARK: - SessionManagerProtocol
@@ -89,8 +126,7 @@ public final class APISessionManager: @preconcurrency SessionManagerProtocol {
             return
         }
         connectionGeneration += 1
-        receiveTask?.cancel()
-        receiveTask = nil
+        Task { await receiveTaskHandle.cancel() }
         client.disconnect()
         sessionStatus = .disconnected
         finishAllSubscriptions()
@@ -165,12 +201,19 @@ public final class APISessionManager: @preconcurrency SessionManagerProtocol {
     // MARK: - Receive loop
 
     private func startReceivingEvents() {
-        receiveTask = Task { [weak self] in
-            while let self, let text = try? await client.receive() {
-                route(text)
+        // The loop owns the transport for its lifetime; `self` stays weak so a
+        // receive parked on an idle socket cannot keep the manager alive
+        // (self -> task handle -> Task -> closure -> self would be a cycle).
+        // `deinit`/`disconnect()` cancel the task through the handle, which
+        // unparks `receive()` and ends the loop.
+        let client = client
+        let task = Task { [weak self] in
+            while let text = try? await client.receive() {
+                self?.route(text)
             }
             self?.handleTransportClosed()
         }
+        Task { await receiveTaskHandle.set(task) }
     }
 
     private func route(_ text: String) {
@@ -203,7 +246,6 @@ public final class APISessionManager: @preconcurrency SessionManagerProtocol {
         // Clean close or transport failure: the connection is gone. Active
         // streams finish; subscriptions registered after this point queue in
         // `subscriptions` until the next successful `connect()`.
-        receiveTask = nil
         sessionStatus = .disconnected
         finishAllSubscriptions()
     }

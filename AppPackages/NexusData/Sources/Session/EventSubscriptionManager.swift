@@ -5,6 +5,11 @@ import ServiceProtocols
 /// connect/disconnect/events/send, with no SDK types and no session-status
 /// plumbing. `EventSubscriptionManager` is the production backing; the demo
 /// mocks conform to the same protocol (tasks.md Day 8).
+///
+/// The protocol is `Sendable` so actor-based data sources can store it;
+/// conformers are `@MainActor` classes and mark the conformance
+/// `@preconcurrency` (the §12.3 #8 pattern — an isolated conformance cannot
+/// carry `Sendable`). Callers therefore hop to the main actor.
 public protocol EventSubscriptionManagerProtocol: Sendable {
     func connect() async throws
     func disconnect()
