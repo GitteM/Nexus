@@ -106,7 +106,7 @@ public final class APISessionManager: @preconcurrency SessionManagerProtocol {
         do {
             try await client.connect()
             guard generation == connectionGeneration else {
-                return // disconnect() raced this attempt; teardown already ran
+                return // disconnect() ran during the handshake; it already tore the session down
             }
             sessionStatus = .connected
             startReceivingEvents()
@@ -132,6 +132,16 @@ public final class APISessionManager: @preconcurrency SessionManagerProtocol {
         finishAllSubscriptions()
     }
 
+    /// Returns a stream of events on `channel`.
+    ///
+    /// Channel names follow the app/backend contract (architecture.md §11.4:
+    /// `card.events.{cardId}`, `card.offers`, ...). The manager does not
+    /// validate names client-side — an unknown or empty channel simply
+    /// receives nothing until the backend pushes on it. Subscriptions are
+    /// registered regardless of connection state and start receiving once
+    /// the next `connect()` reopens the socket (the pending-subscription
+    /// queue). Each call returns an independent stream; ending it (consumer
+    /// cancellation or deinit) unregisters exactly that subscriber.
     public func events(for channel: String) -> AsyncStream<BankingEvent> {
         let (stream, continuation) = AsyncStream<BankingEvent>.makeStream()
         register(continuation, for: channel)
@@ -142,6 +152,12 @@ public final class APISessionManager: @preconcurrency SessionManagerProtocol {
         guard sessionStatus == .connected else {
             throw AppError.apiConnectionFailed(
                 details: "Cannot send while \(sessionStatus.displayName).",
+            )
+        }
+        guard !channel.isEmpty else {
+            throw AppError.validationError(
+                field: "channel",
+                reason: "Channel must not be empty.",
             )
         }
         let event = BankingEvent(channel: channel, payload: payload)
@@ -160,7 +176,15 @@ public final class APISessionManager: @preconcurrency SessionManagerProtocol {
                 details: "Encoded payload is not valid UTF-8.",
             )
         }
-        try await client.send(text)
+        do {
+            try await client.send(text)
+        } catch {
+            // Same defensive mapping as connect(): the seam documents
+            // `AppError`, but a client that misbehaves must not leak a raw
+            // error across the boundary.
+            throw (error as? AppError)
+                ?? AppError.apiConnectionFailed(details: error.localizedDescription)
+        }
     }
 
     // MARK: - Subscription registry (the pending-subscription queue)
