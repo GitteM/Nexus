@@ -45,11 +45,11 @@
 
 ### Day 4 — Domain repository & service protocols (M1)
 
-- [ ] `CardRepositoryProtocol`, `CardOffersRepositoryProtocol`, `CardStatusRepositoryProtocol`, `CardActionRepositoryProtocol` — one-shot `async throws -> T`; subscriptions `async throws -> AsyncStream<T>` (architecture.md §4.2).
-- [ ] `LoggerProtocol` + `LogLevel`; `SessionManagerProtocol` (`sessionStatus`, `connect()`, `disconnect()`, `events(for:) -> AsyncStream<BankingEvent>`, `send(to:payload:)`) (architecture.md §4.3).
-- [ ] Apply the use-case rule (§4.4): zero use-case/service types; every operation is a model method over one repository.
-- [ ] Tests: protocol shapes compile and mock cleanly.
-- **Verify:** Domain complete and green; no `Result` at repository boundaries.
+- [x] `CardRepositoryProtocol`, `CardOffersRepositoryProtocol`, `CardStatusRepositoryProtocol`, `CardActionRepositoryProtocol` — one-shot `async throws -> T`; subscriptions `async throws -> AsyncStream<T>` (architecture.md §4.2).
+- [x] `LoggerProtocol` + `LogLevel`; `SessionManagerProtocol` (`sessionStatus`, `connect()`, `disconnect()`, `events(for:) -> AsyncStream<BankingEvent>`, `send(to:payload:)`) (architecture.md §4.3).
+- [x] Apply the use-case rule (§4.4): zero use-case/service types; every operation is a model method over one repository.
+- [x] Tests: protocol shapes compile and mock cleanly.
+- **Verify:** Domain complete and green; no `Result` at repository boundaries. — done: full workspace TestPlan green (159 Domain tests in 20 suites), zero build warnings; `SessionStatus` added to Entities for the session protocol; shapes pinned by in-target doubles, no `Result` anywhere at the boundary.
 
 ### Day 5 — Session manager (M2)
 
