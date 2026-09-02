@@ -45,15 +45,32 @@ protocol WebSocketClientProtocol {
 /// nothing here needs `@unchecked Sendable`. URLSession offers no async
 /// "did open" event, so the open handshake is confirmed with a ping, bridged
 /// into `withCheckedThrowingContinuation` (the canonical callback → async
-/// bridge; architecture.md §6.2).
+/// bridge; architecture.md §6.2). The upgrade request carries a connection
+/// timeout, so a dead endpoint fails `connect()` instead of hanging on the
+/// ping forever.
+///
+/// The session is delegate-less, so nothing outside this type retains it and
+/// it is released with the client; the manager's teardown (deinit cancels the
+/// receive loop; URLSession async APIs observe Swift-task cancellation) ends
+/// any in-flight `receive()`.
 @MainActor
 final class URLSessionWebSocketClient: WebSocketClientProtocol {
+    /// Bound on the WebSocket upgrade so an unreachable endpoint fails the
+    /// connect handshake instead of parking the ping indefinitely.
+    private static let connectTimeout: TimeInterval = 15
+
     private let url: URL
+    private let headers: [String: String]
     private let urlSession: URLSession
     private var task: URLSessionWebSocketTask?
 
-    init(url: URL) {
+    /// - Parameters:
+    ///   - url: WebSocket endpoint (`ws`/`wss`).
+    ///   - headers: Extra headers for the upgrade request — the auth-token
+    ///     slot for the backend plug-in contract (architecture.md §11.4).
+    init(url: URL, headers: [String: String] = [:]) {
         self.url = url
+        self.headers = headers
         urlSession = URLSession(configuration: .default)
     }
 
@@ -61,7 +78,12 @@ final class URLSessionWebSocketClient: WebSocketClientProtocol {
         if let task, task.state == .running {
             return
         }
-        let newTask = urlSession.webSocketTask(with: url)
+        var request = URLRequest(url: url)
+        request.timeoutInterval = Self.connectTimeout
+        for (field, value) in headers {
+            request.setValue(value, forHTTPHeaderField: field)
+        }
+        let newTask = urlSession.webSocketTask(with: request)
         task = newTask
         newTask.resume()
         do {
