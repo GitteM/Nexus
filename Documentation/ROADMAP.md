@@ -1,6 +1,6 @@
 # Nexus Roadmap
 
-> **Status:** Living document — drafted 2026-09-01 from [architecture.md](architecture.md) (the "how") and [features.md](features.md) (the "what"). The daily breakdown lives in [tasks.md](tasks.md). **Day 1 (M0) scaffolded 2026-09-01**: workspace, three package skeletons, thin `Nexus` app target, TestPlan and CI files in place; workspace builds with zero warnings and the full TestPlan is green.
+> **Status:** Living document — drafted 2026-09-01 from [architecture.md](architecture.md) (the "how") and [features.md](features.md) (the "what"). The daily breakdown lives in [tasks.md](tasks.md). **M0 (Day 1) complete 2026-09-01** — workspace, three package skeletons, thin `Nexus` app target, TestPlan and CI files in place. **M1 (Days 2–4) complete 2026-09-02** — Domain entities, `AppError`, and the repository/service protocols merged to `main`; workspace builds with zero warnings and the full TestPlan is green (159 Domain tests in 20 suites).
 >
 > **Source of truth:** `architecture.md` wins on patterns and structure; `features.md` wins on product scope. Where they conflict, this document follows `architecture.md` (see [Known tensions](#5-known-tensions--decisions)).
 
@@ -23,7 +23,7 @@ Estimated effort: **28 working days (~6 weeks)**. Milestones map 1:1 to days in 
 | Milestone | Release | Days | Goal |
 |---|---|---|---|
 | **M0** Project setup | v1.0 | 1 | Git repo, workspace, package + app skeletons, config, TestPlan, CI |
-| **M1** Domain layer | v1.0 | 2–4 | Entities, `AppError`, repository/service protocols, mocks |
+| **M1** Domain layer | v1.0 | 2–4 | Entities, `AppError`, repository/service protocols |
 | **M2** Data layer | v1.0 | 5–8 | Session, data sources, repositories, persistence, logging, shared mocks |
 | **M3** SharedUI + Navigation | v1.0 | 9 | Design tokens, shared components, `Router`/`Route` |
 | **M4** Dashboard | v1.0 | 10–11 | Dashboard model/view, card carousel, offers |
