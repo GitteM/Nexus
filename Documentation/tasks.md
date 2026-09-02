@@ -38,10 +38,10 @@
 
 ### Day 3 — Domain entities II + AppError (M1)
 
-- [ ] `Balance`, `Transaction`, `SpendingLimit`, `CardState`, `BankingEvent`, `CardCommand`/`CardCommandType`, `Settings` (architecture.md §4.1).
-- [ ] `AppError` + `ErrorCategory` grouped by feature area, computed surfaces (`errorDescription`, `failureReason`, `recoverySuggestion`, `category`, `isRecoverable`, `shouldReport`), hand-written `Equatable`, and a `#if DEBUG` `TestFactory` (architecture.md §5).
-- [ ] Tests: every `AppError` case constructs; category grouping; helpers behave.
-- **Verify:** Domain tests pass; no SDK/OSLog/Combine imports in Domain.
+- [x] `Balance`, `Transaction`, `SpendingLimit`, `CardState`, `BankingEvent`, `CardCommand`/`CardCommandType`, `Settings` (architecture.md §4.1).
+- [x] `AppError` + `ErrorCategory` grouped by feature area, computed surfaces (`errorDescription`, `failureReason`, `recoverySuggestion`, `category`, `isRecoverable`, `shouldReport`), hand-written `Equatable`, and a `#if DEBUG` `TestFactory` (architecture.md §5).
+- [x] Tests: every `AppError` case constructs; category grouping; helpers behave.
+- **Verify:** Domain tests pass; no SDK/OSLog/Combine imports in Domain. — done: full workspace TestPlan green (120 Domain tests in 12 suites), zero build warnings, mock events decode through the same entity `JSONDecoder` path live data will use.
 
 ### Day 4 — Domain repository & service protocols (M1)
 
