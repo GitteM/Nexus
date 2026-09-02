@@ -1,6 +1,7 @@
 import Entities
 import Foundation
 import Observation
+import os
 import ServiceProtocols
 
 /// One live `events(for:)` subscription: a continuation plus a stable id so
@@ -11,19 +12,23 @@ private struct Subscription {
     let continuation: AsyncStream<BankingEvent>.Continuation
 }
 
-/// Holds the receive-loop `Task` so `deinit` — which is nonisolated and
-/// cannot touch `@MainActor` state — can still cancel a live loop. Actors
-/// are this codebase's synchronization primitive (architecture.md §12.1);
-/// `Task.cancel()` is idempotent and safe from any isolation domain.
-private actor ReceiveTaskHandle {
-    private var task: Task<Void, Never>?
+/// Synchronous, sendable holder for the receive-loop `Task`.
+///
+/// A lock rather than an actor so `set`/`cancel` are synchronous: the loop
+/// task is registered before `startReceivingEvents()` returns, which closes
+/// the window an async actor hop would leave open (a `deinit`/`disconnect()`
+/// cancelling an as-yet-unset handle and leaking a parked loop).
+/// `Task.cancel()` is idempotent and safe from any isolation domain, and the
+/// lock keeps this free of `@unchecked Sendable`.
+private struct ReceiveTaskHandle: Sendable {
+    private let storage = OSAllocatedUnfairLock(initialState: nil as Task<Void, Never>?)
 
     func set(_ task: Task<Void, Never>?) {
-        self.task = task
+        storage.withLock { $0 = task }
     }
 
     func cancel() {
-        task?.cancel()
+        storage.withLock { $0?.cancel() }
     }
 }
 
@@ -64,9 +69,9 @@ public final class APISessionManager: @preconcurrency SessionManagerProtocol {
 
     private let client: any WebSocketClientProtocol
     private let decoder = JSONDecoder()
-    /// `nonisolated` (Sendable actor) so `deinit` can cancel a live receive
-    /// loop without touching main-actor state; only main-actor code writes
-    /// the handle.
+    /// `nonisolated` (Sendable) so `deinit` can cancel a live receive loop
+    /// without touching main-actor state; only main-actor code writes the
+    /// handle, and its methods are synchronous.
     private nonisolated let receiveTaskHandle = ReceiveTaskHandle()
     private var subscriptions: [String: [Subscription]] = [:]
     /// Bumped on teardown so an in-flight `connect()` can detect that
@@ -89,10 +94,9 @@ public final class APISessionManager: @preconcurrency SessionManagerProtocol {
         // Once the manager's last external reference is gone, the running
         // receive loop is the only thing that could outlive it; cancel so a
         // parked `receive()` ends and the transport is released. The handle
-        // is a nonisolated `let`, so it is readable here without touching
-        // main-actor state.
-        let handle = receiveTaskHandle
-        Task { await handle.cancel() }
+        // is a nonisolated `let` with synchronous, Sendable methods, so no
+        // main-actor state is touched here.
+        receiveTaskHandle.cancel()
     }
 
     // MARK: - SessionManagerProtocol
@@ -126,7 +130,7 @@ public final class APISessionManager: @preconcurrency SessionManagerProtocol {
             return
         }
         connectionGeneration += 1
-        Task { await receiveTaskHandle.cancel() }
+        receiveTaskHandle.cancel()
         client.disconnect()
         sessionStatus = .disconnected
         finishAllSubscriptions()
@@ -143,6 +147,7 @@ public final class APISessionManager: @preconcurrency SessionManagerProtocol {
     /// queue). Each call returns an independent stream; ending it (consumer
     /// cancellation or deinit) unregisters exactly that subscriber.
     public func events(for channel: String) -> AsyncStream<BankingEvent> {
+        assert(!channel.isEmpty, "events(for:) requires a non-empty channel (architecture.md §11.4)")
         let (stream, continuation) = AsyncStream<BankingEvent>.makeStream()
         register(continuation, for: channel)
         return stream
@@ -237,7 +242,9 @@ public final class APISessionManager: @preconcurrency SessionManagerProtocol {
             }
             self?.handleTransportClosed()
         }
-        Task { await receiveTaskHandle.set(task) }
+        // Synchronous registration: `deinit`/`disconnect()` may cancel at any
+        // point after this returns, so the handle must already hold the task.
+        receiveTaskHandle.set(task)
     }
 
     private func route(_ text: String) {
