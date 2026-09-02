@@ -60,12 +60,12 @@
 
 ### Day 6 — Data sources (M2)
 
-- [ ] `CardStateDataSource` actor: per-id cache, `parseEvent` normalizes payloads → typed entities, `subscribeToCardStatus` throws on setup failure (architecture.md §6.1).
-- [ ] `CardActionDataSource` struct for stateless one-shot actions (architecture.md §6.1).
-- [ ] Offers data source with TTL cache expiry (§6.1).
-- [ ] Wire DTO structs; `JSONDecoder+Extensions.swift` (`decode(_:from:logger:context:)` → `AppError.deserializationError`) (architecture.md §6.4).
-- [ ] Tests: parse success/error paths, cache hit/miss/TTL.
-- **Verify:** Data source tests green; every decode error is an `AppError`.
+- [x] `CardStateDataSource` actor: per-id cache, `parseEvent` normalizes payloads → typed entities, `subscribeToCardStatus` throws on setup failure (architecture.md §6.1).
+- [x] `CardActionDataSource` struct for stateless one-shot actions (architecture.md §6.1).
+- [x] Offers data source with TTL cache expiry (§6.1).
+- [x] Wire DTO structs; `JSONDecoder+Extensions.swift` (`decode(_:from:logger:context:)` → `AppError.deserializationError`) (architecture.md §6.4).
+- [x] Tests: parse success/error paths, cache hit/miss/TTL.
+- **Verify:** Data source tests green; every decode error is an `AppError`. — done: full workspace TestPlan green (55 NexusData tests in 7 suites: Session/facade + JSONDecoder extension + data sources), zero build warnings; every wire decode logs context and surfaces as `AppError`; the per-id/offers caches are seeded synchronously on subscribe (delivery is the happens-before edge for cache reads), so resubscribes are deterministic and tests never hang.
 
 ### Day 7 — Repositories + persistence (M2)
 
