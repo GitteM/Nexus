@@ -63,6 +63,40 @@ struct APISessionManagerTests {
         #expect(manager.sessionStatus == .connected)
     }
 
+    @Test func `a second connect while one is in flight is a no-op`() async throws {
+        let client = FakeWebSocketClient()
+        client.holdsConnect = true
+        let manager = makeManager(client: client)
+
+        let first = Task { try await manager.connect() }
+        await client.waitUntilConnectStarted()
+        #expect(manager.sessionStatus == .connecting)
+
+        // Second caller while `.connecting`: returns without touching the
+        // client or disturbing the in-flight attempt.
+        try await manager.connect()
+        #expect(client.connectCallCount == 1)
+
+        client.allowConnect()
+        try await first.value
+        #expect(manager.sessionStatus == .connected)
+        #expect(client.connectCallCount == 1)
+    }
+
+    @Test func `manager deallocates while a receive loop is parked`() async throws {
+        let client = FakeWebSocketClient()
+        var manager: APISessionManager? = makeManager(client: client)
+        weak let weakManager = manager
+        try await manager?.connect() // the receive loop parks on the fake
+        #expect(manager?.sessionStatus == .connected)
+
+        // The parked loop must not keep the manager alive (no retain cycle
+        // through the receive task).
+        manager = nil
+        await flushMainActor()
+        #expect(weakManager == nil)
+    }
+
     @Test func `connect surfaces the AppError and marks the session errored`() async {
         let client = FakeWebSocketClient()
         client.connectError = AppError.apiConnectionFailed(details: "handshake rejected")
@@ -339,6 +373,33 @@ struct APISessionManagerTests {
 
         await #expect(throws: AppError.requestTimedOut) {
             try await manager.send(to: "card.command", payload: #"{"type":"freeze"}"#)
+        }
+        #expect(client.sentTexts.isEmpty)
+    }
+
+    @Test func `send wraps a raw transport error as apiConnectionFailed`() async throws {
+        let client = FakeWebSocketClient()
+        let rawError = URLError(.networkConnectionLost)
+        client.sendError = rawError
+        let manager = makeManager(client: client)
+        try await manager.connect()
+
+        do {
+            try await manager.send(to: "card.command", payload: #"{"type":"freeze"}"#)
+            Issue.record("Expected send to throw")
+        } catch {
+            #expect(error as? AppError == .apiConnectionFailed(details: rawError.localizedDescription))
+        }
+        #expect(client.sentTexts.isEmpty)
+    }
+
+    @Test func `send rejects an empty channel`() async throws {
+        let client = FakeWebSocketClient()
+        let manager = makeManager(client: client)
+        try await manager.connect()
+
+        await #expect(throws: AppError.validationError(field: "channel", reason: "Channel must not be empty.")) {
+            try await manager.send(to: "", payload: #"{"type":"freeze"}"#)
         }
         #expect(client.sentTexts.isEmpty)
     }
