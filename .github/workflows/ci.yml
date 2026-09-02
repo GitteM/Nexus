@@ -18,7 +18,7 @@ jobs:
       DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Select Xcode
         run: |
@@ -26,7 +26,7 @@ jobs:
           xcodebuild -version
 
       - name: Cache DerivedData
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: DerivedData
           key: deriveddata-${{ runner.os }}-${{ hashFiles('Nexus.xcodeproj/project.pbxproj', 'Nexus.xcodeproj/xcshareddata/xcschemes/Nexus.xcscheme', 'Nexus.xcworkspace/contents.xcworkspacedata', 'TestPlan.xctestplan', 'Configs/*.xcconfig', 'AppPackages/**/Package.swift') }}
