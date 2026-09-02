@@ -8,8 +8,14 @@ import Foundation
 /// Test hooks drive the manager from the outside: `inject(_:)` feeds inbound
 /// frames, `closeFromServer()` models a server-side socket drop, and
 /// `holdsConnect` lets a test park `connect()` mid-handshake so the
-/// `.connecting` transition is observable. All state is confined to the main
-/// actor (the tests and the manager both live there), so no
+/// `.connecting` transition is observable.
+///
+/// Threading model: the whole fake — including every continuation it parks
+/// and resumes — is confined to the main actor, mirroring the production
+/// transport and the manager (architecture.md §6.2 accepts main-actor hops at
+/// banking-feed rates). `inject`, `closeFromServer`, `allowConnect`, and
+/// `disconnect` are test hooks and must be called from a `@MainActor` test;
+/// continuations are only ever resumed on the main actor, so no
 /// `@unchecked Sendable` is needed.
 @MainActor
 final class FakeWebSocketClient: WebSocketClientProtocol {
