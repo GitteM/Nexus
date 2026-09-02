@@ -1,0 +1,60 @@
+# DeepSeek AI code review for pull requests.
+#
+# Uses hustcer/deepseek-review (MIT) — an official DeepSeek API client that
+# posts a formal review on every qualifying PR:
+#   https://github.com/hustcer/deepseek-review
+#
+# Setup (one-time):
+#   1. Add your DeepSeek API key as a repository secret named
+#      `DEEPSEEK_API_KEY` (Settings → Secrets and variables → Actions →
+#      New repository secret). The key is only used by this workflow.
+#   2. Merge this workflow. The next PR gets an automatic review.
+#
+# Cost control:
+#   - Every push to an open PR triggers a review. Add `skip review` (or
+#     `skip cr`) to a PR's title or body to opt a single PR out.
+#   - To review on demand instead, replace the `on:` block below with the
+#     `labeled` trigger + `if: contains(github.event.pull_request.labels.*.name,
+#     'ai review')` pattern documented in the action's README.
+#
+# Model: defaults to `deepseek-v4-flash` on https://api.deepseek.com.
+# Override via the `model` / `base-url` inputs (e.g. `deepseek-reasoner`
+# for R1-style reasoning) if the key's plan exposes different models.
+
+name: DeepSeek PR Review
+
+on:
+  pull_request:
+    types:
+      - opened # A new PR
+      - synchronize # A commit was pushed to the PR
+      - reopened
+
+permissions:
+  pull-requests: write # Post the review on the PR
+  contents: read
+
+jobs:
+  deepseek-review:
+    # Same-repo PRs only. We deliberately use `pull_request`, not
+    # `pull_request_target`: this workflow has access to the
+    # DEEPSEEK_API_KEY secret, and `pull_request` keeps that secret out of
+    # fork-PR contexts. Switch to `pull_request_target` only if fork PRs
+    # must be reviewed too.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    name: DeepSeek Code Review
+    env:
+      DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+    steps:
+      - name: Run DeepSeek code review
+        # Skip (rather than fail) until the secret exists — e.g. on the PR
+        # that introduces this workflow.
+        if: env.DEEPSEEK_API_KEY != ''
+        # Pinned to the commit behind the `v1` tag for supply-chain safety;
+        # bump by replacing the SHA with the newest one from
+        # https://github.com/hustcer/deepseek-review/tags
+        uses: hustcer/deepseek-review@eccde2e9781008d795e366b951e313e37af88dd5
+        with:
+          chat-token: ${{ secrets.DEEPSEEK_API_KEY }}
