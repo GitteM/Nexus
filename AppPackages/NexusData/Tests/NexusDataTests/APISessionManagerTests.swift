@@ -11,9 +11,8 @@ struct APISessionManagerTests {
     }
 
     /// Serializes an event into the raw frame the transport would receive.
-    private func frame(_ event: BankingEvent) -> String {
-        let data = try! JSONEncoder().encode(event)
-        return String(data: data, encoding: .utf8)!
+    private func frame(_ event: BankingEvent) throws -> String {
+        try String(decoding: JSONEncoder().encode(event), as: UTF8.self)
     }
 
     /// Awaits the next event on a stream (parks until one arrives or the
@@ -148,8 +147,8 @@ struct APISessionManagerTests {
         let statusEvents = manager.events(for: "card.status")
         let balanceEvents = manager.events(for: "card.balance")
 
-        client.inject(frame(BankingEvent.mockCardStatusEvent))
-        client.inject(frame(BankingEvent.mockBalanceEvent))
+        try client.inject(frame(BankingEvent.mockCardStatusEvent))
+        try client.inject(frame(BankingEvent.mockBalanceEvent))
 
         #expect(await nextEvent(statusEvents) == .mockCardStatusEvent)
         #expect(await nextEvent(balanceEvents) == .mockBalanceEvent)
@@ -164,7 +163,7 @@ struct APISessionManagerTests {
         let second = manager.events(for: "card.status")
         #expect(manager.subscriberCount == 2)
 
-        client.inject(frame(BankingEvent.mockCardStatusEvent))
+        try client.inject(frame(BankingEvent.mockCardStatusEvent))
 
         #expect(await nextEvent(first) == .mockCardStatusEvent)
         #expect(await nextEvent(second) == .mockCardStatusEvent)
@@ -177,7 +176,7 @@ struct APISessionManagerTests {
 
         let stream = manager.events(for: "card.status")
         client.inject("this is not json")
-        client.inject(frame(BankingEvent.mockCardStatusEvent))
+        try client.inject(frame(BankingEvent.mockCardStatusEvent))
 
         #expect(await nextEvent(stream) == .mockCardStatusEvent)
         #expect(manager.sessionStatus == .connected)
@@ -209,7 +208,7 @@ struct APISessionManagerTests {
             channel: "card.status",
             payload: #"{"cardId":"card-credit-001","status":"active"}"#,
         )
-        client.inject(frame(secondEvent))
+        try client.inject(frame(secondEvent))
         #expect(await nextEvent(second) == secondEvent)
     }
 
@@ -225,7 +224,7 @@ struct APISessionManagerTests {
         #expect(manager.sessionStatus == .disconnected)
 
         try await manager.connect()
-        client.inject(frame(BankingEvent.mockCardStatusEvent))
+        try client.inject(frame(BankingEvent.mockCardStatusEvent))
 
         #expect(await nextEvent(stream) == .mockCardStatusEvent)
     }
@@ -245,7 +244,7 @@ struct APISessionManagerTests {
 
         client.connectError = nil
         try await manager.connect()
-        client.inject(frame(BankingEvent.mockCardStatusEvent))
+        try client.inject(frame(BankingEvent.mockCardStatusEvent))
 
         #expect(await nextEvent(stream) == .mockCardStatusEvent)
     }
@@ -256,7 +255,7 @@ struct APISessionManagerTests {
         try await manager.connect()
 
         let first = manager.events(for: "card.status")
-        client.inject(frame(BankingEvent.mockCardStatusEvent))
+        try client.inject(frame(BankingEvent.mockCardStatusEvent))
         #expect(await nextEvent(first) == .mockCardStatusEvent)
 
         // Server drops the socket: the receive loop ends.
@@ -272,13 +271,18 @@ struct APISessionManagerTests {
         #expect(ended.isEmpty)
 
         // Reconnect: a fresh subscription made while disconnected is queued,
-        // then delivers once the socket is back.
+        // then delivers once the socket is back. The fake reopens on
+        // `connect()`, so the session stays connected (regression guard for
+        // per-connection state leaking across a reconnect).
         let second = manager.events(for: "card.status")
         try await manager.connect()
         #expect(client.connectCallCount == 2)
+        await flushMainActor()
+        #expect(manager.sessionStatus == .connected)
 
-        client.inject(frame(BankingEvent.mockCardStatusEvent))
+        try client.inject(frame(BankingEvent.mockCardStatusEvent))
         #expect(await nextEvent(second) == .mockCardStatusEvent)
+        #expect(manager.sessionStatus == .connected)
     }
 
     @Test func `transport error also marks disconnected and finishes streams`() async throws {

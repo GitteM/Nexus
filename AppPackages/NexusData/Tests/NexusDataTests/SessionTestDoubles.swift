@@ -35,6 +35,13 @@ final class FakeWebSocketClient: WebSocketClientProtocol {
         if let connectError {
             throw connectError
         }
+        // A reconnect opens a fresh socket: clear every per-connection state
+        // left behind by the previous close (a real client builds a new
+        // `URLSessionWebSocketTask` in `connect()`).
+        isClosed = false
+        queuedTexts = []
+        receiveError = nil
+        drainPendingReceives()
         if holdsConnect {
             await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
                 connectGate = continuation
