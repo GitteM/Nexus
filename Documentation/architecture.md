@@ -404,7 +404,7 @@ exists — is an *alternative adapter* implementing the same
 ```swift
 @MainActor
 @Observable
-public final class APISessionManager: SessionManagerProtocol {
+public final class APISessionManager: @preconcurrency SessionManagerProtocol {
     public private(set) var sessionStatus: SessionStatus = .disconnected
     // SDK delegate/callback → hop to MainActor → continuation.yield(event)
     // Pending-subscription queue on reconnect: plain state, no barrier queue.
@@ -416,6 +416,9 @@ Rules:
 - `sessionStatus` is the only public read and is consumed by UI — so the
   whole object lives on the main actor. **No `@unchecked Sendable`, no
   `DispatchQueue` barriers** — actor isolation *is* the synchronization.
+  Swift 6.2+ conformance isolation: because the protocol inherits
+  `Sendable`, the conformance must be marked `@preconcurrency` (an
+  *isolated* conformance cannot carry `Sendable`) — see §12.3.
 - `events(for:)` returns an `AsyncStream` whose continuation the SDK bridge
   yields into; `onTermination` cleans up the channel.
 - `connect()` bridges the delegate callback into
@@ -1137,6 +1140,15 @@ this codebase and the decisions that keep it honest.
    code must opt back out with `nonisolated`, and un-opted repository calls
    hop to the main actor. Adopt it only if the whole team commits to the
    model (§3).
+8. **`@MainActor` conformers of `Sendable` protocols need
+   `@preconcurrency`.** Swift 6.2+'s conformance-isolation diagnostics
+   (`#ConformanceIsolation`, `#IsolatedConformances`) reject a
+   main-actor-isolated class satisfying a nonisolated protocol that
+   inherits `Sendable`; an isolated conformance (`: @MainActor P`) cannot
+   carry `Sendable`. Mark the conformance `@preconcurrency` instead
+   (runtime-checked, still zero `@unchecked Sendable`) — applies to
+   `APISessionManager` (§6.2) and any `@MainActor` session/mock conformer;
+   the Day 4 test doubles set the pattern.
 
 ---
 
