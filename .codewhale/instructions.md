@@ -26,7 +26,8 @@ Entry point for Codewhale working in this repository. The docs below are the sou
 4. **Architecture-sensitive work** — read `Documentation/architecture.md` first and follow its patterns; never import upward or create package cycles.
 5. **Docs** — keep `README.md`, `CHANGELOG.md`, `Documentation/architecture.md`, and `Documentation/AGENTS.md` updated when relevant.
 
-## Current repo status (as of 2026-09-01)
+## Current repo status (as of 2026-09-02)
 
-- **Not yet a git repository** — git has not been initialized, and no remote exists. Do not assume `main` or `origin` exist until the repo is initialized; confirm with `git status` before following AGENTS.md git steps.
-- `Documentation/ROADMAP.md`, `Documentation/tasks.md`, and `Documentation/appspec.md` are still being populated.
+- **Repo initialized** 2026-09-01 (Day 1); remote `origin` = `git@github.com:GitteM/Nexus.git`; default branch `main`. Trunk-based workflow applies — confirm with `git status` before following AGENTS.md git steps.
+- **Progress: M0 (Day 1) and M1 (Days 2–4) merged to `main`** — workspace + package skeletons (M0); Domain entities, `AppError`, repository/service protocols (M1). Verified: full TestPlan green (159 Domain tests in 20 suites), zero build warnings.
+- `Documentation/ROADMAP.md` and `tasks.md` are populated and kept in sync; `Documentation/appspec.md` is still empty (not a source of truth).
