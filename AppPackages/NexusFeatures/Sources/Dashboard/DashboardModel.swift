@@ -32,6 +32,20 @@ public final class DashboardModel {
     /// can read either surface (§9.1).
     public private(set) var cardStates: [String: CardState] = [:]
 
+    /// Offer ids with an `addOffer` call in flight — the offers row disables
+    /// the matching row (and prevents duplicate taps) while the id is set.
+    public private(set) var offersBeingAdded: Set<String> = []
+
+    /// The last add-offer failure, or `nil` when the last add succeeded (or
+    /// none has run). Views surface it and call `dismissAddOfferError()`;
+    /// the dashboard's main `viewState` is untouched so a failed add never
+    /// blanks content that is already on screen.
+    public private(set) var addOfferError: AppError?
+
+    /// Id of the card most recently created from an offer — the success
+    /// signal views use for haptics (`.sensoryFeedback` trigger).
+    public private(set) var lastAddedCardID: String?
+
     private let cardRepository: CardRepositoryProtocol
     private let offersRepository: CardOffersRepositoryProtocol
     private let statusRepository: CardStatusRepositoryProtocol
@@ -100,6 +114,46 @@ public final class DashboardModel {
             guard !hasContent else { return }
             viewState = .error(.unknown(underlying: error))
         }
+    }
+
+    // MARK: - Adding an offer (architecture.md §4.4: one model method over
+
+    // one repository — `CardRepositoryProtocol.addCard`)
+
+    /// Turns an accepted offer into a managed card: the repository creates
+    /// the card (the duplicate rule's owner — it throws
+    /// `AppError.cardAlreadyExists` for an offer that is already managed),
+    /// then the model appends it to `cards`, starts its live status
+    /// subscription, and drops the offer from the catalog. A second tap
+    /// while an add is in flight is a no-op; the offers row disables itself
+    /// on the same in-flight signal and for offers already in `cards`.
+    public func addOffer(_ offer: CardOffer) async {
+        guard !offersBeingAdded.contains(offer.id) else { return }
+        guard offeredCards.contains(where: { $0.id == offer.id }) else { return }
+
+        offersBeingAdded.insert(offer.id)
+        addOfferError = nil
+        defer { offersBeingAdded.remove(offer.id) }
+
+        do {
+            let card = try await cardRepository.addCard(offer)
+            cards.append(card)
+            offeredCards.removeAll { $0.id == offer.id }
+            syncSubscriptions(to: cards)
+            lastAddedCardID = card.id
+        } catch is CancellationError {
+            // The triggering view task was cancelled mid-add; nothing
+            // changed, and the next tap simply tries again.
+        } catch let error as AppError {
+            addOfferError = error
+        } catch {
+            addOfferError = .unknown(underlying: error)
+        }
+    }
+
+    /// Clears the surfaced add-offer error (alert dismissal).
+    public func dismissAddOfferError() {
+        addOfferError = nil
     }
 
     // MARK: - Live subscriptions
