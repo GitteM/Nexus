@@ -69,12 +69,12 @@
 
 ### Day 7 — Repositories + persistence (M2)
 
-- [ ] `CardRepository`, `CardOffersRepository`, `CardStatusRepository`, `CardActionRepository` — thin, validate, wrap errors with operation context (architecture.md §6.3).
-- [ ] SwiftData: `StoredCard` `@Model` + `SwiftDataCardRepository` mapping to Domain structs (`@Model` classes never leave NexusData); hand-written `ModelActor` for background writes on the iOS 17 floor (architecture.md §6.4).
-- [ ] `KeychainWrapper` for credentials; never persist card numbers/CVV/tokens in plaintext (architecture.md §6.4).
-- [ ] `CacheManager` actor (NSCache, 50 items / 25 MB, TTL) for ephemeral live state (architecture.md §6.4).
-- [ ] Tests: repository validation/error wrapping; integration tests over real `CacheManager` + repository.
-- **Verify:** Repositories + persistence tests green; no `@Model` type crosses the boundary.
+- [x] `CardRepository`, `CardOffersRepository`, `CardStatusRepository`, `CardActionRepository` — thin, validate, wrap errors with operation context (architecture.md §6.3).
+- [x] SwiftData: `StoredCard` `@Model` + `SwiftDataCardRepository` mapping to Domain structs (`@Model` classes never leave NexusData); hand-written `ModelActor` for background writes on the iOS 17 floor (architecture.md §6.4).
+- [x] `KeychainWrapper` for credentials; never persist card numbers/CVV/tokens in plaintext (architecture.md §6.4).
+- [x] `CacheManager` actor (NSCache, 50 items / 25 MB, TTL) for ephemeral live state (architecture.md §6.4).
+- [x] Tests: repository validation/error wrapping; integration tests over real `CacheManager` + repository.
+- **Verify:** Repositories + persistence tests green; no `@Model` type crosses the boundary. — done: full workspace TestPlan green on the iPhone 17 simulator, zero build warnings (NexusData 115 tests in 15 suites via `swift test` on macOS; 112 execute in the iOS gate — the 3 real-Keychain tests are macOS-gated because standalone iOS test runners have no Keychain entitlement, -34018). Notes for review: `StoredCardModelActor` owns a single background context for reads *and* writes — mainContext cross-context merge timing is not deterministic on the iOS 17 floor, so the store's read-your-writes guarantee lives in one context; `SecItem*` calls sit behind `KeychainSessionProtocol` (Day 5 seam pattern) with `SecurityKeychainSession` as the real session; `CardRepository.addCard` maps an offer to a provisional local `Card` (empty holder/last-4) until the §11.4 issuance contract lands — demo offers use the Day 8 mocks instead.
 
 ### Day 8 — Logging + shared mocks (M2)
 
