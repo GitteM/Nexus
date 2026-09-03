@@ -111,7 +111,7 @@ struct SwiftDataCardRepositoryTests {
     @Test
     func `insert with same id updates in place`() async throws {
         let repository = try makeRepository()
-        var card = sampleCard
+        let card = sampleCard
         try await repository.insert(card)
 
         let updated = Card(
