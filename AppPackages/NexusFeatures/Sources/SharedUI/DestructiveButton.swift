@@ -1,3 +1,4 @@
+import Design
 import SwiftUI
 
 /// Full-width destructive action button (architecture.md §9.4, tasks.md

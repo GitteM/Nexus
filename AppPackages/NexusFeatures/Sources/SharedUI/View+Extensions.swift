@@ -1,3 +1,4 @@
+import Design
 import SwiftUI
 
 /// Shared view affordances (architecture.md §9.4, tasks.md Day 9).

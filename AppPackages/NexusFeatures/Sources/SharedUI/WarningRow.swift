@@ -1,3 +1,4 @@
+import Design
 import SwiftUI
 
 /// Attention row for non-blocking warnings (architecture.md §9.4, tasks.md

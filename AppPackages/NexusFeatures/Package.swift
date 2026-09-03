@@ -6,9 +6,9 @@ let package = Package(
     name: "NexusFeatures",
     platforms: [
         .iOS(.v17),
-        .macOS(.v14),
     ],
     products: [
+        .library(name: "Design", targets: ["Design"]),
         .library(name: "SharedUI", targets: ["SharedUI"]),
         .library(name: "Navigation", targets: ["Navigation"]),
         .library(name: "Dashboard", targets: ["Dashboard"]),
@@ -19,9 +19,15 @@ let package = Package(
         .package(path: "../NexusData"),
     ],
     targets: [
+        // Design tokens (colors, spacing, icons, copy) live in their own
+        // target so any UI consumer can adopt them without pulling in
+        // components (architecture.md §3, §9.4). Depends on nothing but the
+        // platform SDKs — the single place platform-resolved values live.
+        .target(name: "Design"),
         .target(
             name: "SharedUI",
             dependencies: [
+                "Design",
                 .product(name: "Entities", package: "NexusDomain"),
             ],
         ),

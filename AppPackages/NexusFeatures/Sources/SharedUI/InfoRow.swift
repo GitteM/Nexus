@@ -1,3 +1,4 @@
+import Design
 import SwiftUI
 
 /// Informational row for hints and neutral context (architecture.md §9.4,

@@ -1,3 +1,4 @@
+import Design
 import SwiftUI
 
 /// App-level launch/bootstrapping state (architecture.md §9.4, tasks.md

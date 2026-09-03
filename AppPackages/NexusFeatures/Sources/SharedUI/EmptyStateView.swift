@@ -1,3 +1,4 @@
+import Design
 import SwiftUI
 
 /// Empty-state surface for a screen with no content (architecture.md §9.4,

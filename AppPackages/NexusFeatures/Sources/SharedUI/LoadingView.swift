@@ -1,3 +1,4 @@
+import Design
 import SwiftUI
 
 /// Centered, full-area loading state (architecture.md §9.4, tasks.md Day 9).

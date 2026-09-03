@@ -1,3 +1,4 @@
+import Design
 import SwiftUI
 
 /// Full-area "session dropped" state (architecture.md §9.4, tasks.md Day 9).
