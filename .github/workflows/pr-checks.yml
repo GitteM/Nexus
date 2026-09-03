@@ -45,5 +45,8 @@ jobs:
       - name: Build NexusData
         run: swift build --package-path AppPackages/NexusData
 
-      - name: Build NexusFeatures
-        run: swift build --package-path AppPackages/NexusFeatures
+      - name: Build NexusFeatures (iOS simulator)
+        run: |
+          swift build --package-path AppPackages/NexusFeatures \
+            --triple arm64-apple-ios17.0-simulator \
+            --sdk "$(xcrun --sdk iphonesimulator --show-sdk-path)"

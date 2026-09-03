@@ -121,15 +121,23 @@ umbrella modules**.
 |---|---|---|
 | **NexusDomain** | `Entities`, `RepositoryProtocols`, `ServiceProtocols` | nothing |
 | **NexusData** | `Session`, `DataSources`, `Repositories`, `Persistence`, `Logging`, `Mocks` (`#if DEBUG`) | NexusDomain, networking SDK (only in `Session`) |
-| **NexusFeatures** | `SharedUI`, `Navigation`, `Dashboard`, `CardDetail` | NexusDomain, NexusData |
+| **NexusFeatures** | `Design`, `SharedUI`, `Navigation`, `Dashboard`, `CardDetail` | NexusDomain, NexusData |
 | **Nexus app target** | `Nexus`, `NexusTests`, `NexusUITests` | all three packages |
 
 Notes on the map:
 
-- Each package declares `platforms: [.iOS(.v17), .macOS(.v14)]` and
-  `swift-tools-version: 6.3` (Xcode 26.6, Swift 6 language mode). iOS 17 is
-  the deployment floor; raise it to iOS 18 to unlock SwiftData macros and
-  `@Entry` (§6.4, §9.4).
+- Each package declares `swift-tools-version: 6.3` (Xcode 26.6, Swift 6
+  language mode). `NexusDomain` and `NexusData` declare
+  `platforms: [.iOS(.v17), .macOS(.v14)]` (the Data layer runs its test
+  suite on macOS); **`NexusFeatures` is iOS-only** (`platforms: [.iOS(.v17)]`)
+  — it carries SwiftUI components that use UIKit-backed system colors, so
+  CI builds it for the iOS simulator rather than the host (pr-checks
+  `packages` job). iOS 17 is the deployment floor; raise it to iOS 18 to
+  unlock SwiftData macros and `@Entry` (§6.4, §9.4).
+- **`Design` (in NexusFeatures) is the token home**: `ColorPalette`,
+  `Spacing`, `Icons`, `Strings` live in their own dependency-free target so
+  any UI consumer (components, screens, the app target) adopts the design
+  language without importing components (§9.4).
 - **No umbrella targets** — consumers import concrete targets
   (`import Entities`, `import CardDetail`). `@_exported` is private Swift API
   and was removed (§12.1).
@@ -577,11 +585,12 @@ only display-safe identifiers (last four digits).
 
 **Path:** `AppPackages/NexusFeatures/Sources/Navigation/`
 
-The `Router` is a plain `@Observable` class holding a **stack of `Route`
-values** — it has no knowledge of views, and the target depends on nothing but
-SwiftUI/Foundation (no Presentation imports, no package cycle):
+The `Router` is a `@MainActor @Observable` class holding a **stack of
+`Route` values** — it has no knowledge of views, and the target depends on
+nothing but SwiftUI/Foundation (no Presentation imports, no package cycle):
 
 ```swift
+@MainActor
 @Observable
 public final class Router {
     public var routes: [Route] = []
@@ -765,18 +774,26 @@ struct DashboardView: View {
 
 ### 9.4 SharedUI
 
-- **Design tokens:** `Spacing` (static CGFloat scale, `xs…section3`),
-  `Icons` (SF Symbol names), `ColorPalette` (namespace).
-- **Components:** `LoadingView`, `EmptyStateView`, `ErrorView`,
-  `SessionStatusIndicator`, `WarningRow`, `InfoRow`, `DestructiveButton`,
-  `BackToolbarItem`, `DisconnectedView` (shown when the session drops),
-  `AppLoadingView`, `AppErrorView`.
-- **Localization:** a single `Strings` enum using `String(localized:)` — all
-  UI copy goes through it.
-- **Extensions:** `View+Extensions` (row-tap helper, etc.), `Date+Extensions`.
+Presentation-layer UI lives in two NexusFeatures targets: the **`Design`**
+target holds the design language, `SharedUI` holds components.
+
+- **Design tokens (`Design` target — dependency-free):** `Spacing` (static
+  CGFloat scale, `xs…section3`), `Icons` (SF Symbol names), `ColorPalette`
+  (namespace; system colors resolve per platform/appearance here — the one
+  place platform-backed values live), plus the **localization seam**: a
+  single `Strings` enum using `String(localized:)` — all UI copy goes
+  through it. Components and screens import `Design` directly.
+- **Components (`SharedUI` target):** `LoadingView`, `EmptyStateView`,
+  `ErrorView`, `SessionStatusIndicator`, `WarningRow`, `InfoRow`,
+  `DestructiveButton`, `BackToolbarItem`, `DisconnectedView` (shown when
+  the session drops), `AppLoadingView`, `AppErrorView`.
+- **Extensions (`SharedUI`):** `View+Extensions` (row-tap helper, etc.),
+  `Date+Extensions`.
 - **iOS 17+/18+ niceties:** `EmptyStateView` can wrap `ContentUnavailableView`
   (iOS 17+); hand-written `EnvironmentKey` conformances can be replaced by
   the `@Entry` macro (iOS 18+).
+- **NexusFeatures is iOS-only** — no macOS platform target (§3); the SPM
+  package CI build uses the iOS simulator triple.
 
 ### 9.5 Preview, mock & demo strategy
 
