@@ -27,21 +27,21 @@ struct SwiftDataCardRepositoryTests {
             type: .credit,
             status: .active,
             currency: "EUR",
-            spendingLimit: 2500
+            spendingLimit: 2500,
         )
     }
 
     // MARK: - Round-trips
 
     @Test
-    func emptyStoreFetchesNoCards() async throws {
+    func `empty store fetches no cards`() async throws {
         let repository = try makeRepository()
         let cards = try await repository.fetchCards()
         #expect(cards.isEmpty)
     }
 
     @Test
-    func insertThenFetchRoundTripsCard() async throws {
+    func `insert then fetch round trips card`() async throws {
         let repository = try makeRepository()
         let card = sampleCard
         try await repository.insert(card)
@@ -51,7 +51,7 @@ struct SwiftDataCardRepositoryTests {
     }
 
     @Test
-    func roundTripPreservesOptionalLimit() async throws {
+    func `round trip preserves optional limit`() async throws {
         let repository = try makeRepository()
         var card = sampleCard
         card = Card(
@@ -61,14 +61,14 @@ struct SwiftDataCardRepositoryTests {
             type: card.type,
             status: card.status,
             currency: card.currency,
-            spendingLimit: nil
+            spendingLimit: nil,
         )
         try await repository.insert(card)
         #expect(try await repository.fetchCards() == [card])
     }
 
     @Test
-    func roundTripPreservesEnumRawValues() async throws {
+    func `round trip preserves enum raw values`() async throws {
         let repository = try makeRepository()
         // Every CardType and CardStatus must survive a store round-trip.
         for type in CardType.allCases {
@@ -80,7 +80,7 @@ struct SwiftDataCardRepositoryTests {
                     type: type,
                     status: status,
                     currency: "EUR",
-                    spendingLimit: nil
+                    spendingLimit: nil,
                 )
                 try await repository.insert(card)
             }
@@ -91,15 +91,15 @@ struct SwiftDataCardRepositoryTests {
     }
 
     @Test
-    func fetchIsStableOrderedById() async throws {
+    func `fetch is stable ordered by id`() async throws {
         let repository = try makeRepository()
         let cardB = Card(
             id: "b", cardholderName: "B", lastFourDigits: "0002",
-            type: .debit, status: .active, currency: "EUR", spendingLimit: nil
+            type: .debit, status: .active, currency: "EUR", spendingLimit: nil,
         )
         let cardA = Card(
             id: "a", cardholderName: "A", lastFourDigits: "0001",
-            type: .credit, status: .active, currency: "EUR", spendingLimit: nil
+            type: .credit, status: .active, currency: "EUR", spendingLimit: nil,
         )
         try await repository.insert(cardB)
         try await repository.insert(cardA)
@@ -109,7 +109,7 @@ struct SwiftDataCardRepositoryTests {
     // MARK: - Writes
 
     @Test
-    func insertWithSameIdUpdatesInPlace() async throws {
+    func `insert with same id updates in place`() async throws {
         let repository = try makeRepository()
         var card = sampleCard
         try await repository.insert(card)
@@ -121,7 +121,7 @@ struct SwiftDataCardRepositoryTests {
             type: card.type,
             status: .frozen,
             currency: card.currency,
-            spendingLimit: 500
+            spendingLimit: 500,
         )
         try await repository.insert(updated)
 
@@ -131,7 +131,7 @@ struct SwiftDataCardRepositoryTests {
     }
 
     @Test
-    func deleteRemovesCard() async throws {
+    func `delete removes card`() async throws {
         let repository = try makeRepository()
         let card = sampleCard
         try await repository.insert(card)
@@ -140,7 +140,7 @@ struct SwiftDataCardRepositoryTests {
     }
 
     @Test
-    func deleteUnknownIdIsANoOp() async throws {
+    func `delete unknown id is A no op`() async throws {
         let repository = try makeRepository()
         let card = sampleCard
         try await repository.insert(card)
@@ -151,7 +151,7 @@ struct SwiftDataCardRepositoryTests {
     // MARK: - Mapping corruption
 
     @Test
-    func corruptedTypeRawSurfacesPersistenceError() {
+    func `corrupted type raw surfaces persistence error`() {
         // @Model records are internal; the corruption path (a stored raw
         // value that no longer maps to a domain enum) is tested directly on
         // the mapping so no SwiftData context is needed.
@@ -176,7 +176,7 @@ struct SwiftDataCardRepositoryTests {
     }
 
     @Test
-    func corruptedStatusRawSurfacesPersistenceError() throws {
+    func `corrupted status raw surfaces persistence error`() throws {
         let stored = StoredCard(card: sampleCard)
         stored.statusRaw = "repossessed"
         #expect(throws: AppError.self) {

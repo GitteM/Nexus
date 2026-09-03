@@ -14,7 +14,7 @@ struct CardStatusRepositoryTests {
         let session = FakeEventSubscriptionManager()
         let source = CardStateDataSource(
             eventSubscriptionManager: session,
-            logger: RecordingLogger()
+            logger: RecordingLogger(),
         )
         return (CardStatusRepository(source: source), session)
     }
@@ -22,7 +22,7 @@ struct CardStatusRepositoryTests {
     private func statusEvent(cardId: String, status: CardStatus) throws -> BankingEvent {
         let payload = try String(
             decoding: JSONEncoder().encode(CardState(cardId: cardId, status: status)),
-            as: UTF8.self
+            as: UTF8.self,
         )
         return BankingEvent(channel: EventChannels.cardEvents(cardId: cardId), payload: payload)
     }

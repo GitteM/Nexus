@@ -16,7 +16,7 @@ struct KeychainWrapperTests {
     private let sampleToken = Data("session-token-abc-123".utf8)
 
     @Test
-    func saveThenReadRoundTrips() throws {
+    func `save then read round trips`() throws {
         let wrapper = makeWrapper()
         let account = "auth-token"
         defer { try? wrapper.delete(account: account) }
@@ -26,13 +26,13 @@ struct KeychainWrapperTests {
     }
 
     @Test
-    func missingAccountReadsAsNil() throws {
+    func `missing account reads as nil`() throws {
         let wrapper = makeWrapper()
         #expect(try wrapper.data(forAccount: "never-saved") == nil)
     }
 
     @Test
-    func deleteRemovesItemAndIsIdempotent() throws {
+    func `delete removes item and is idempotent`() throws {
         let wrapper = makeWrapper()
         let account = "auth-token"
         try wrapper.save(sampleToken, account: account)
@@ -44,7 +44,7 @@ struct KeychainWrapperTests {
     }
 
     @Test
-    func overwriteReplacesValue() throws {
+    func `overwrite replaces value`() throws {
         let wrapper = makeWrapper()
         let account = "auth-token"
         defer { try? wrapper.delete(account: account) }
@@ -55,7 +55,7 @@ struct KeychainWrapperTests {
     }
 
     @Test
-    func servicesAreIsolated() throws {
+    func `services are isolated`() throws {
         let first = KeychainWrapper(service: "nexus.tests.first.\(UUID().uuidString)")
         let second = KeychainWrapper(service: "nexus.tests.second.\(UUID().uuidString)")
         let account = "shared-account"
@@ -71,7 +71,7 @@ struct KeychainWrapperTests {
     }
 
     @Test
-    func arbitraryBytesRoundTrip() throws {
+    func `arbitrary bytes round trip`() throws {
         let wrapper = makeWrapper()
         let account = "opaque-token"
         defer { try? wrapper.delete(account: account) }
@@ -84,7 +84,7 @@ struct KeychainWrapperTests {
     }
 
     @Test
-    func accountsAreIsolatedUnderOneService() throws {
+    func `accounts are isolated under one service`() throws {
         let wrapper = makeWrapper()
         defer {
             try? wrapper.delete(account: "token-a")

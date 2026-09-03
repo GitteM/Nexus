@@ -13,7 +13,7 @@ struct CardActionRepositoryTests {
         let session = FakeEventSubscriptionManager()
         let source = CardActionDataSource(
             eventSubscriptionManager: session,
-            logger: RecordingLogger()
+            logger: RecordingLogger(),
         )
         return (CardActionRepository(source: source), session)
     }
@@ -40,7 +40,7 @@ struct CardActionRepositoryTests {
         let command = CardCommand.setSpendingLimit(
             cardId: "card-credit-001",
             period: .daily,
-            amount: 500
+            amount: 500,
         )
 
         try await repository.execute(command)
@@ -104,7 +104,7 @@ struct CardActionRepositoryTests {
             cardId: "card-credit-001",
             type: .freeze,
             amount: 100,
-            period: .daily
+            period: .daily,
         )
 
         await #expect(throws: AppError.self) {

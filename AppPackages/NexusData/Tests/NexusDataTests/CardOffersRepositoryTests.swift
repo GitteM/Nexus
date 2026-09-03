@@ -13,7 +13,7 @@ struct CardOffersRepositoryTests {
         let session = FakeEventSubscriptionManager()
         let source = OffersDataSource(
             eventSubscriptionManager: session,
-            logger: RecordingLogger()
+            logger: RecordingLogger(),
         )
         return (CardOffersRepository(source: source), session)
     }
@@ -23,7 +23,7 @@ struct CardOffersRepositoryTests {
     private func offersEvent(_ offers: [CardOffer]) throws -> BankingEvent {
         let payload = try String(
             decoding: JSONEncoder().encode(OffersSnapshotDTO(offers: offers)),
-            as: UTF8.self
+            as: UTF8.self,
         )
         return BankingEvent(channel: EventChannels.offers, payload: payload)
     }
@@ -34,7 +34,7 @@ struct CardOffersRepositoryTests {
     }
 
     @Test
-    func `offers read empty before any snapshot`() async throws {
+    func `offers read empty before any snapshot`() async {
         let (repository, _) = makeRepository()
         let offers = await repository.getAvailableOffers()
         #expect(offers.isEmpty)

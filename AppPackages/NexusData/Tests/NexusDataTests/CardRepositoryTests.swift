@@ -24,7 +24,7 @@ struct CardRepositoryTests {
             type: .credit,
             currency: "EUR",
             annualFee: nil,
-            benefits: ["2% cashback on everything"]
+            benefits: ["2% cashback on everything"],
         )
     }
 
@@ -69,7 +69,7 @@ struct CardRepositoryTests {
         let repository = try makeRepository()
         let offer = CardOffer(
             id: "", title: "Broken", subtitle: "", type: .credit,
-            currency: "EUR", annualFee: nil, benefits: []
+            currency: "EUR", annualFee: nil, benefits: [],
         )
         await #expect(throws: AppError.self) {
             _ = try await repository.addCard(offer)
@@ -81,7 +81,7 @@ struct CardRepositoryTests {
         let repository = try makeRepository()
         let offer = CardOffer(
             id: "offer-x", title: "Broken", subtitle: "", type: .credit,
-            currency: "", annualFee: nil, benefits: []
+            currency: "", annualFee: nil, benefits: [],
         )
         await #expect(throws: AppError.self) {
             _ = try await repository.addCard(offer)
@@ -93,7 +93,7 @@ struct CardRepositoryTests {
         let repository = try makeRepository()
         let other = CardOffer(
             id: "offer-travel-001", title: "Travel Rewards Card", subtitle: "",
-            type: .credit, currency: "EUR", annualFee: 95, benefits: []
+            type: .credit, currency: "EUR", annualFee: 95, benefits: [],
         )
         _ = try await repository.addCard(sampleOffer)
         _ = try await repository.addCard(other)

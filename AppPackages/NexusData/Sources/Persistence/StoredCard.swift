@@ -86,7 +86,7 @@ final class StoredCard {
             type: type,
             status: status,
             currency: currency,
-            spendingLimit: spendingLimit
+            spendingLimit: spendingLimit,
         )
     }
 }

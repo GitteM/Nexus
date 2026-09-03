@@ -47,7 +47,7 @@ public struct CardStatusRepository: CardStatusRepositoryProtocol, Sendable {
         guard !cardId.isEmpty else {
             throw AppError.validationError(
                 field: "cardId",
-                reason: "Card id must not be empty."
+                reason: "Card id must not be empty.",
             )
         }
     }

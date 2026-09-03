@@ -114,11 +114,10 @@ public struct KeychainWrapper: Sendable {
     /// operation context. The message carries the status code and the
     /// system's description — never any credential data.
     private static func persistenceError(operation: String, status: OSStatus) -> AppError {
-        let details: String
-        if let message = SecCopyErrorMessageString(status, nil) as String? {
-            details = "Keychain status \(status): \(message)"
+        let details = if let message = SecCopyErrorMessageString(status, nil) as String? {
+            "Keychain status \(status): \(message)"
         } else {
-            details = "Keychain status \(status)"
+            "Keychain status \(status)"
         }
         return AppError.persistenceError(operation: operation, details: details)
     }

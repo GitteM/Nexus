@@ -68,13 +68,13 @@ public struct CardRepository: CardRepositoryProtocol, Sendable {
         guard !offer.id.isEmpty else {
             throw AppError.validationError(
                 field: "offerId",
-                reason: "Offer id must not be empty."
+                reason: "Offer id must not be empty.",
             )
         }
         guard !offer.currency.isEmpty else {
             throw AppError.validationError(
                 field: "currency",
-                reason: "Offer currency must not be empty."
+                reason: "Offer currency must not be empty.",
             )
         }
     }
@@ -84,7 +84,7 @@ public struct CardRepository: CardRepositoryProtocol, Sendable {
         guard !cardId.isEmpty else {
             throw AppError.validationError(
                 field: "cardId",
-                reason: "Card id must not be empty."
+                reason: "Card id must not be empty.",
             )
         }
     }
@@ -99,7 +99,7 @@ public struct CardRepository: CardRepositoryProtocol, Sendable {
             type: offer.type,
             status: .active,
             currency: offer.currency,
-            spendingLimit: nil
+            spendingLimit: nil,
         )
     }
 }

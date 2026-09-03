@@ -14,7 +14,7 @@ struct CacheManagerTests {
     // MARK: - Basics
 
     @Test
-    func setAndGetRoundTrip() async {
+    func `set and get round trip`() async {
         let cache = CacheManager()
         await cache.set("hello", forKey: "greeting")
         let value: String? = await cache.value(forKey: "greeting")
@@ -22,14 +22,14 @@ struct CacheManagerTests {
     }
 
     @Test
-    func missingKeyReturnsNil() async {
+    func `missing key returns nil`() async {
         let cache = CacheManager()
         let value: String? = await cache.value(forKey: "absent")
         #expect(value == nil)
     }
 
     @Test
-    func wrongTypeReadsAsNil() async {
+    func `wrong type reads as nil`() async {
         let cache = CacheManager()
         await cache.set(42, forKey: "number")
         let asString: String? = await cache.value(forKey: "number")
@@ -39,7 +39,7 @@ struct CacheManagerTests {
     }
 
     @Test
-    func overwriteReplacesValue() async {
+    func `overwrite replaces value`() async {
         let cache = CacheManager()
         await cache.set("first", forKey: "key")
         await cache.set("second", forKey: "key")
@@ -50,7 +50,7 @@ struct CacheManagerTests {
     }
 
     @Test
-    func removeAndRemoveAll() async {
+    func `remove and remove all`() async {
         let cache = CacheManager()
         await cache.set(1, forKey: "a")
         await cache.set(2, forKey: "b")
@@ -66,7 +66,7 @@ struct CacheManagerTests {
     // MARK: - TTL
 
     @Test
-    func entryExpiresAfterPerSetTTL() async throws {
+    func `entry expires after per set TTL`() async throws {
         let cache = CacheManager()
         await cache.set("fresh", forKey: "key", ttl: 0.05)
         #expect(await cache.value(forKey: "key") == "fresh")
@@ -77,7 +77,7 @@ struct CacheManagerTests {
     }
 
     @Test
-    func expiredReadRemovesEntry() async throws {
+    func `expired read removes entry`() async throws {
         let cache = CacheManager()
         await cache.set("fresh", forKey: "key", ttl: 0.05)
         try await Task.sleep(for: .milliseconds(120))
@@ -86,7 +86,7 @@ struct CacheManagerTests {
     }
 
     @Test
-    func defaultTTLAppliesWhenSetOmitsTTL() async throws {
+    func `default TTL applies when set omits TTL`() async throws {
         let cache = CacheManager(defaultTTL: 0.05)
         await cache.set("fresh", forKey: "key")
         #expect(await cache.value(forKey: "key") == "fresh")
@@ -97,7 +97,7 @@ struct CacheManagerTests {
     }
 
     @Test
-    func overwriteResetsExpiry() async throws {
+    func `overwrite resets expiry`() async throws {
         let cache = CacheManager()
         await cache.set("short-lived", forKey: "key", ttl: 0.05)
         // The replacement is stored with no expiry (manager default is nil).
@@ -108,7 +108,7 @@ struct CacheManagerTests {
     }
 
     @Test
-    func entryWithoutTTLDoesNotExpire() async throws {
+    func `entry without TTL does not expire`() async throws {
         let cache = CacheManager()
         await cache.set("persistent", forKey: "key")
         try await Task.sleep(for: .milliseconds(120))
@@ -119,7 +119,7 @@ struct CacheManagerTests {
     // MARK: - Item cap (actor-enforced LRU)
 
     @Test
-    func itemCapEvictsLeastRecentlyUsed() async {
+    func `item cap evicts least recently used`() async {
         let cache = CacheManager(itemLimit: 3)
         await cache.set("a", forKey: "a")
         await cache.set("b", forKey: "b")
@@ -136,7 +136,7 @@ struct CacheManagerTests {
     }
 
     @Test
-    func overwritingKeepsCountFlat() async {
+    func `overwriting keeps count flat`() async {
         let cache = CacheManager(itemLimit: 3)
         await cache.set("a", forKey: "a")
         await cache.set("b", forKey: "b")
@@ -145,9 +145,9 @@ struct CacheManagerTests {
     }
 
     @Test
-    func bulkWritesStayWithinCap() async {
+    func `bulk writes stay within cap`() async {
         let cache = CacheManager(itemLimit: 50)
-        for index in 0..<200 {
+        for index in 0 ..< 200 {
             await cache.set(index, forKey: "key-\(index)")
         }
         #expect(await cache.count == 50)
@@ -159,7 +159,7 @@ struct CacheManagerTests {
     // MARK: - Cost parameter
 
     @Test
-    func costParameterIsAcceptedAndValueReadable() async {
+    func `cost parameter is accepted and value readable`() async {
         let cache = CacheManager()
         let payload = String(repeating: "x", count: 4096)
         await cache.set(payload, forKey: "large", cost: 4096)
@@ -170,10 +170,10 @@ struct CacheManagerTests {
     // MARK: - Concurrency smoke
 
     @Test
-    func concurrentWritesAreRaceFree() async {
+    func `concurrent writes are race free`() async {
         let cache = CacheManager(itemLimit: 1000)
         await withTaskGroup(of: Void.self) { group in
-            for index in 0..<200 {
+            for index in 0 ..< 200 {
                 group.addTask {
                     await cache.set(index, forKey: "key-\(index)")
                 }

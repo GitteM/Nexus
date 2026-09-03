@@ -96,11 +96,11 @@ public actor CacheManager {
     ///     `totalCostLimit`. Defaults to 1 (out of the byte accounting).
     ///   - ttl: Freshness window for this entry; `nil` falls back to the
     ///     manager's `defaultTTL`.
-    public func set<Value: Sendable>(
-        _ value: Value,
+    public func set(
+        _ value: some Sendable,
         forKey key: String,
         cost: Int = 1,
-        ttl: TimeInterval? = nil
+        ttl: TimeInterval? = nil,
     ) {
         purgeExpiredIfNeeded()
         let effectiveTTL = ttl ?? defaultTTL
@@ -108,7 +108,7 @@ public actor CacheManager {
         cache.setObject(
             CacheBox(value: value),
             forKey: key as NSString,
-            cost: max(cost, 1)
+            cost: max(cost, 1),
         )
         touch(key)
         enforceItemLimit()

@@ -38,7 +38,7 @@ actor StoredCardModelActor {
     func fetchAll() throws -> [Card] {
         try wrap("read_cards") {
             let descriptor = FetchDescriptor<StoredCard>(
-                sortBy: [SortDescriptor(\StoredCard.id)]
+                sortBy: [SortDescriptor(\StoredCard.id)],
             )
             return try context.fetch(descriptor).map { try $0.toDomain() }
         }
@@ -51,7 +51,7 @@ actor StoredCardModelActor {
         try wrap("write_card") {
             let cardId = card.id
             let descriptor = FetchDescriptor<StoredCard>(
-                predicate: #Predicate<StoredCard> { $0.id == cardId }
+                predicate: #Predicate<StoredCard> { $0.id == cardId },
             )
             if let existing = try context.fetch(descriptor).first {
                 existing.apply(card)
@@ -67,7 +67,7 @@ actor StoredCardModelActor {
     func delete(cardId: String) throws {
         try wrap("delete_card") {
             let descriptor = FetchDescriptor<StoredCard>(
-                predicate: #Predicate<StoredCard> { $0.id == cardId }
+                predicate: #Predicate<StoredCard> { $0.id == cardId },
             )
             let matches = try context.fetch(descriptor)
             for match in matches {
@@ -91,7 +91,7 @@ actor StoredCardModelActor {
         } catch {
             throw AppError.persistenceError(
                 operation: operation,
-                details: error.localizedDescription
+                details: error.localizedDescription,
             )
         }
     }
