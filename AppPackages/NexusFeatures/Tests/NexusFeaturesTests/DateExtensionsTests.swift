@@ -29,7 +29,12 @@ struct DateExtensionsTests {
         let locale = Locale(identifier: "en_US")
         let timeZone = try #require(TimeZone(secondsFromGMT: 0))
 
-        #expect(noonJanuary12.formattedShortTime(locale: locale, timeZone: timeZone) == "12:00 PM")
+        let formatted = noonJanuary12.formattedShortTime(locale: locale, timeZone: timeZone)
+        // en_US uses a 12-hour clock; ICU separates the meridiem with a
+        // narrow no-break space (U+202F), so assert hour/minute and meridiem
+        // rather than one exact whitespace variant.
+        #expect(formatted.hasPrefix("12:00"))
+        #expect(formatted.hasSuffix("PM"))
     }
 
     @Test func `now is in today`() {
