@@ -18,15 +18,28 @@ import Security
 ///   carry the OSStatus code only (display-safe, architecture.md §7.2).
 /// - Reads return raw `Data`; callers decode their own token format.
 ///
-/// Thread-safety: `SecItem*` calls are thread-safe, and the wrapper is a
-/// stateless `Sendable` value — safe to share across concurrency domains.
+/// The `SecItem*` calls themselves are confined behind
+/// `KeychainSessionProtocol` (`SecurityKeychainSession` in production) so
+/// the wrapper's logic is testable on platforms where the standalone test
+/// runner has no Keychain entitlement (see `KeychainSession` documentation).
+/// The wrapper is a stateless `Sendable` value over its session — safe to
+/// share across concurrency domains.
 public struct KeychainWrapper: Sendable {
     /// The Keychain "service" attribute scoping this wrapper's items (use the
     /// app's bundle id in production; tests pass a unique value).
     public let service: String
 
+    private let session: any KeychainSessionProtocol
+
+    /// Creates a wrapper over the real Keychain (`SecurityKeychainSession`).
     public init(service: String) {
+        self.init(service: service, session: SecurityKeychainSession())
+    }
+
+    /// Creates a wrapper over a specific session (tests inject a fake).
+    public init(service: String, session: any KeychainSessionProtocol) {
         self.service = service
+        self.session = session
     }
 
     // MARK: - Public API
@@ -44,7 +57,7 @@ public struct KeychainWrapper: Sendable {
             kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
             kSecValueData as String: data,
         ]
-        let status = SecItemAdd(attributes as CFDictionary, nil)
+        let status = session.add(attributes: attributes)
         guard status != errSecSuccess else {
             return
         }
@@ -53,7 +66,7 @@ public struct KeychainWrapper: Sendable {
         guard status == errSecDuplicateItem else {
             throw Self.persistenceError(operation: "keychain_save", status: status)
         }
-        let update: [String: Any] = [
+        let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
             kSecAttrAccount as String: account,
@@ -62,7 +75,7 @@ public struct KeychainWrapper: Sendable {
             kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
             kSecValueData as String: data,
         ]
-        let updateStatus = SecItemUpdate(update as CFDictionary, updatedAttributes as CFDictionary)
+        let updateStatus = session.update(query: query, attributesToUpdate: updatedAttributes)
         guard updateStatus == errSecSuccess else {
             throw Self.persistenceError(operation: "keychain_save", status: updateStatus)
         }
@@ -80,8 +93,7 @@ public struct KeychainWrapper: Sendable {
             kSecReturnData as String: true,
             kSecMatchLimit as String: kSecMatchLimitOne,
         ]
-        var result: CFTypeRef?
-        let status = SecItemCopyMatching(query as CFDictionary, &result)
+        let (status, result) = session.copyMatching(query: query)
         guard status != errSecItemNotFound else {
             return nil
         }
@@ -102,7 +114,7 @@ public struct KeychainWrapper: Sendable {
             kSecAttrService as String: service,
             kSecAttrAccount as String: account,
         ]
-        let status = SecItemDelete(query as CFDictionary)
+        let status = session.delete(query: query)
         guard status == errSecSuccess || status == errSecItemNotFound else {
             throw Self.persistenceError(operation: "keychain_delete", status: status)
         }
