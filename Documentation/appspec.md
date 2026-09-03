@@ -33,12 +33,33 @@
 ## 2. Feature specifications
 
 ### 2.1 Card Management — dashboard, carousel, offers
-- **Status:** not yet specified — fill at M4 (Days 10–11).
+- **Status:** Day 10 (M4) portion settled — model contract below; carousel
+  behavior, card art, and offer→card confirmation are open decisions that
+  land with Day 11.
 - **Scope pointer:** features.md §Core Features (Card Dashboard, Card
   Personalization); tasks.md Days 10–11; architecture.md §9 (Dashboard
   model/view), §11.4 (CardOffer → Card add path).
 - **Open decisions to record here at M4:** carousel behavior (swipe
   boundaries, reorder?), card art variants, offer→card add confirmation.
+
+**Model contract (Day 10, pinned by tests):**
+
+- `DashboardModel` (MV model, no ViewModel layer) publishes `viewState`
+  `{loading, loaded, empty, error(AppError)}`, `cards`, `offeredCards`,
+  and `cardStates` (per-card live status).
+- `.loaded` iff a successful fetch returned cards or offers; `.empty` only
+  when both lists are empty (fresh account). `.error` carries the `AppError`
+  with its `errorDescription`/`recoverySuggestion` projections.
+- `load()` is idempotent: no-op once content is on screen or while a load
+  is in flight; from `.error` it retries. `refresh()` is the force path
+  (pull-to-refresh, empty-state refresh): it never blanks on-screen content
+  and keeps the last good data if the refresh fails.
+- Per-card live subscriptions are owned by the model (one task per card,
+  started on load, cancelled when the card leaves the list or the model
+  deallocates); each `CardState` updates `cardStates` and the matching
+  card's effective status via `Card.withStatus`.
+- Views switch on `viewState`; one-shot work is view-triggered
+  (`.task`/`.refreshable`).
 
 ### 2.2 Card Controls — freeze/unfreeze, lost/stolen, replacement, spending limits
 - **Status:** draft — proposed defaults marked 🔶, confirm at M5 (Day 12).

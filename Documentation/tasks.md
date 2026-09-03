@@ -94,12 +94,12 @@
 
 ### Day 10 — Dashboard model + view (M4)
 
-- [ ] `DashboardModel`: `@MainActor @Observable`, `viewState` (loading/loaded/error/empty), idempotent `load()`, per-card live subscription `Task`s owned by the model (architecture.md §9.1).
-- [ ] `DashboardViewState` Equatable enum with `errorMessage`/`recoverySuggestion` (architecture.md §9.2).
-- [ ] `DashboardView` switches on `viewState`; `@Environment(DashboardModel.self)`; one-shot work via `.task`/`.refreshable` (architecture.md §9.3).
-- [ ] Preview factories `.preview`/`.emptyPreview`/`.loadingPreview`/`.errorPreview` over the shared mock repositories (architecture.md §9.5).
-- [ ] Model tests: state transitions, call counts, loading/error knobs.
-- **Verify:** Model + view tests green; no ViewModel layer, no `ObservableObject`.
+- [x] `DashboardModel`: `@MainActor @Observable`, `viewState` (loading/loaded/error/empty), idempotent `load()`, per-card live subscription `Task`s owned by the model (architecture.md §9.1).
+- [x] `DashboardViewState` Equatable enum with `errorMessage`/`recoverySuggestion` (architecture.md §9.2).
+- [x] `DashboardView` switches on `viewState`; `@Environment(DashboardModel.self)`; one-shot work via `.task`/`.refreshable` (architecture.md §9.3).
+- [x] Preview factories `.preview`/`.emptyPreview`/`.loadingPreview`/`.errorPreview` over the shared mock repositories (architecture.md §9.5).
+- [x] Model tests: state transitions, call counts, loading/error knobs.
+- **Verify:** Model + view tests green; no ViewModel layer, no `ObservableObject`. — done: full workspace TestPlan green on iPhone 17 (Domain 161 tests/20 suites, Data 156/19, Features 30/5 — incl. new Dashboard suites — plus 1 app smoke + 1 UI launch test), zero build warnings after the documented first-build noise, `swiftformat` clean; repository protocols strengthened to `Sendable` (architecture.md §4.2) so the `@MainActor` model can hand them to `async let`/subscription tasks — Data implementations already were `Sendable`, only Domain test doubles needed `@MainActor`; loaded screen is a minimal cards/offers content scaffold (the Day 11 carousel restyle), with `#Preview`s per state.
 
 ### Day 11 — Dashboard content + card carousel (M4)
 
