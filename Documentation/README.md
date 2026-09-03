@@ -17,14 +17,16 @@ table below, then the narrower maps in `AGENTS.md` and
 | `tasks.md` | Day-by-day task breakdown with checkboxes; the live project state | "Where are we / what is next?" — confirm with `git log` |
 | `CONTRIBUTING.md` | Conventional Commits spec, branches, PR process, setup, testing | Writing a commit or opening a PR |
 | `README.md` | This index | Orientation |
-| `appspec.md` | App specification | **Empty on purpose** — not a source of truth until populated |
+| `appspec.md` | App **behavior** spec: per-feature rules, flows, acceptance criteria | Feature work needing behavior detail — read only the § for your feature; §2.2 (Card Controls) is the worked example |
 | `CHANGELOG.md` | Release notes | **Empty on purpose** — written at v1.0 (Day 15, tasks.md M8) |
 
 ## Decision table (short form)
 
 - **New task** → `AGENTS.md`.
-- **Code change** → the `architecture.md` section for the layer (§4 Domain,
+- **Feature work** → the `architecture.md` section for the layer (§4 Domain,
   §6 Data, §9 Features, §11 app target) + `CONTRIBUTING.md` for the commit.
+- **Feature behavior** → `features.md` for scope, then the matching
+  `appspec.md` §2.x for that feature's rules and acceptance criteria.
 - **Docs change** → update the matching file above and anything it points to.
 - **"Where are we?"** → `tasks.md` checkboxes + `git log` (dated prose
   status blocks rot; trust checkboxes and commits).

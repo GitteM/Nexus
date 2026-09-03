@@ -81,7 +81,11 @@ Estimated effort: **28 working days (~6 weeks)**. Milestones map 1:1 to days in 
 - **Demo persistence (features.md vs architecture.md).** `features.md` once said demo state persists via "UserDefaults/Keychain"; `architecture.md` says demo mode is in-memory only and durable data lives in SwiftData, credentials in Keychain. **Decision: architecture.md wins** — demo is in-memory with reset; persistence is a live-mode concern. (`features.md` now says the same.)
 - **Features with no blueprint coverage.** Payments, security, Apple Pay, Wallet extension, alerts, insights, virtual cards appear only in `features.md`; the architecture document is a pattern guide, not a scope list. **Decision:** build them on the same MV patterns, adding domain protocols (e.g., `PaymentRepositoryProtocol`, `BiometricAuthServiceProtocol`) following §4.2/§4.3.
 - **Wallet issuer extension adds a new target.** The `NexusWalletExtension` extension target goes beyond the module map in `architecture.md` §3 — update that document when it lands (Day 23).
-- **`appspec.md` is empty.** Not a source; revisit when populated.
+- **`appspec.md` is the behavior spec.** `features.md` wins on scope;
+  `appspec.md` refines it with per-feature rules, flows, and acceptance
+  criteria (skeleton + Card Controls example as of 2026-09-03);
+  `architecture.md` wins on patterns. Shipped behavior is ruled by code +
+  tests — update `appspec.md` in the same PR that implements or changes it.
 
 ## 6. Risks
 

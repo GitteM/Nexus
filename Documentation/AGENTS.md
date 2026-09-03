@@ -6,8 +6,9 @@
 > `.codewhale/instructions.md`; when the two differ, this file wins.
 >
 > Companion docs: [architecture.md](architecture.md) (patterns) ·
-> [features.md](features.md) (product) · [CONTRIBUTING.md](CONTRIBUTING.md)
-> (commits/PRs) · [README.md](README.md) (doc index & read-when map) ·
+> [features.md](features.md) (product) · [appspec.md](appspec.md) (feature
+> behavior/acceptance) · [CONTRIBUTING.md](CONTRIBUTING.md) (commits/PRs) ·
+> [README.md](README.md) (doc index & read-when map) ·
 > [tasks.md](tasks.md) / [ROADMAP.md](ROADMAP.md) (day/milestone state).
 
 ## 1. Repo at a glance
@@ -48,7 +49,7 @@ touch:
 | Need a mental reset | architecture.md §14 (one-paragraph summary) |
 | Verify you kept the rules | architecture.md §13 Step 8 (invariants checklist) |
 | Commit / PR rules | CONTRIBUTING.md |
-| Product scope vs. decisions | features.md; conflicts resolved in ROADMAP.md §5 (architecture.md wins) |
+| Product scope vs. decisions | features.md (scope); the feature's appspec.md §2.x for rules/acceptance; conflicts resolved in ROADMAP.md §5 (architecture.md wins) |
 | Current day/milestone state | tasks.md (checkboxes) + ROADMAP.md; confirm with `git log` |
 
 ## 3. Trunk-based workflow (critical)

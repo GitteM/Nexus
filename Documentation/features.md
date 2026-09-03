@@ -1,5 +1,9 @@
 # Nexus — iOS Banking App Features
 
+> **Scope overview.** Feature-by-feature behavior, business rules, and
+> acceptance criteria live in [appspec.md](appspec.md). Scope conflicts are
+> resolved in ROADMAP.md §5.
+
 ## 🏦 Core Features
 
 ### Card Management

@@ -44,7 +44,7 @@ whole documents. One concern per file; `Documentation/README.md` is the index.
 | Any new work | `Documentation/AGENTS.md` (workflow + gates) |
 | Architecture-sensitive code | `architecture.md`: §2 layering; the § for the layer you touch — §3 module map, §4 Domain, §5 `AppError`, §6 Data, §7 config/logging, §8 navigation, §9 presentation, §11 app target; §14 for one-paragraph recall; §13 Step 8 to verify invariants |
 | Commit / PR rules | `Documentation/CONTRIBUTING.md` |
-| Product scope | `Documentation/features.md`; conflicts are resolved in `ROADMAP.md` §5 (architecture.md wins) |
+| Product scope + behavior | `Documentation/features.md` (scope overview) → `appspec.md` §2.x (rules/acceptance for the feature you touch); conflicts → `ROADMAP.md` §5 (architecture.md wins on patterns) |
 | Day / milestone status | `Documentation/tasks.md` + `ROADMAP.md` |
 | Which doc does what | `Documentation/README.md` |
 
@@ -65,6 +65,7 @@ whole documents. One concern per file; `Documentation/README.md` is the index.
 
 ## Know the intentional gaps
 
-`Documentation/appspec.md`, `Documentation/CHANGELOG.md`, and the root
-README.md are empty **on purpose** (populated at v1.0, Day 15 — see
-`tasks.md`). Do not treat them as broken or "fix" them.
+`Documentation/CHANGELOG.md` and the root README.md are empty **on
+purpose** (populated at v1.0, Day 15 — see `tasks.md`). Do not treat them
+as broken or "fix" them. `appspec.md` holds a behavior-spec skeleton — fill
+feature sections at their milestone PRs, don't front-load them.
