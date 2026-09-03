@@ -5,6 +5,12 @@ into every session, so it stays short.** The agent may run on a
 limited-context model (DeepSeek): read only what the table below says, never
 whole documents. One concern per file; `Documentation/README.md` is the index.
 
+**Authority.** The rules below are a **condensed mirror** of
+`Documentation/AGENTS.md` §3–§6 so the highest-severity rules survive
+injection. `AGENTS.md` is the canonical operating guide and wins on
+conflict; if these two files disagree, this one is stale — fix it. The full
+authority chain lives in `Documentation/README.md` (Conventions).
+
 ## Non-negotiables (worst failures, in order)
 
 1. **Git.** Trunk-based development on `main`. Never commit or push to

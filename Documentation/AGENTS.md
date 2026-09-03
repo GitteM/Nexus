@@ -3,7 +3,8 @@
 > Who this is for: any AI coding agent working in this repo (Codewhale on
 > Claude or DeepSeek, and similar), plus humans who want the same rules.
 > Codewhale agents get a condensed injection summary in
-> `.codewhale/instructions.md`; when the two differ, this file wins.
+> `.codewhale/instructions.md`; when the two differ, this file wins. The
+> full authority chain lives in `Documentation/README.md` (Conventions).
 >
 > Companion docs: [architecture.md](architecture.md) (patterns) ·
 > [features.md](features.md) (product) · [appspec.md](appspec.md) (feature

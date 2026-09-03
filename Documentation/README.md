@@ -33,6 +33,13 @@ table below, then the narrower maps in `AGENTS.md` and
 
 ## Conventions
 
+- **Authority.** Start here, then `AGENTS.md` (process/workflow) → the file
+  your task maps to above. On conflict: `architecture.md` wins for patterns,
+  `appspec.md` for behavior detail, `features.md` for scope, code + tests
+  for shipped behavior — any remaining contradiction is a stale-doc bug:
+  fix it in the same PR. `.codewhale/instructions.md` is a condensed
+  mirror of `AGENTS.md` (injected every session); `AGENTS.md` wins when
+  they differ.
 - **Status claims rot.** Prefer checkboxes (`tasks.md`) and git history over
   "as of <date>" prose. When a status block is unavoidable, date it and keep
   it to three lines.
