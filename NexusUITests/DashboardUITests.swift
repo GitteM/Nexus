@@ -1,3 +1,5 @@
+import Dashboard
+import Entities
 import XCTest
 
 /// Dashboard UI suite (tasks.md Day 11, architecture.md §10): launches the
@@ -9,6 +11,10 @@ import XCTest
 /// tests exercise the same orchestration code previews and demo mode run —
 /// only the transport/persistence edges are faked (§9.5). Replaces the
 /// Day 1 launch smoke test, which only proved the runner installed.
+///
+/// Accessibility identifiers come from the shared `DashboardAccessibility`
+/// namespace (and entity ids from the domain mocks), never from literals —
+/// the views set exactly what these tests query (architecture.md §9.4).
 final class DashboardUITests: XCTestCase {
     /// The `-demoState` values the demo root understands — mirrors
     /// `DemoRootView.DemoState` (Nexus/DemoRootView.swift).
@@ -45,20 +51,20 @@ final class DashboardUITests: XCTestCase {
         let app = launchApp(state: .ready)
 
         XCTAssertTrue(app.navigationBars["Dashboard"].waitForExistence(timeout: 10))
-        XCTAssertTrue(app.descendants(matching: .any)["dashboard.carousel"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.descendants(matching: .any)[DashboardAccessibility.carousel].waitForExistence(timeout: 10))
 
         // The first managed card (mock credit card, ending 4821, active)
         // is one combined accessibility element whose label names the tail
         // and the status — the data the carousel must expose to VoiceOver.
-        let firstCard = app.descendants(matching: .any)["dashboard.card.card-credit-001"]
+        let firstCard = app.descendants(matching: .any)[DashboardAccessibility.card(Card.mockCreditCard.id)]
         XCTAssertTrue(firstCard.waitForExistence(timeout: 5))
         XCTAssertTrue(firstCard.label.contains("4821"), "label was: \(firstCard.label)")
         XCTAssertTrue(firstCard.label.contains("Active"), "label was: \(firstCard.label)")
         XCTAssertEqual(firstCard.value as? String, "Card 1 of 6")
 
         // The offers row lists the demo offers with add actions.
-        XCTAssertTrue(app.buttons["dashboard.offer.add.offer-cashback-001"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.buttons["dashboard.offer.add.offer-travel-001"].exists)
+        XCTAssertTrue(app.buttons[DashboardAccessibility.addOffer(CardOffer.mockCashbackOffer.id)].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons[DashboardAccessibility.addOffer(CardOffer.mockTravelOffer.id)].exists)
     }
 
     /// Adding an offer turns it into a managed card: the repository accepts
@@ -68,13 +74,13 @@ final class DashboardUITests: XCTestCase {
     func testAddingAnOfferRemovesItFromTheCatalog() {
         let app = launchApp(state: .ready)
 
-        let addButton = app.buttons["dashboard.offer.add.offer-cashback-001"]
+        let addButton = app.buttons[DashboardAccessibility.addOffer(CardOffer.mockCashbackOffer.id)]
         XCTAssertTrue(addButton.waitForExistence(timeout: 10))
         addButton.tap()
 
         XCTAssertTrue(addButton.waitForNonExistence(timeout: 10))
         // The other offers are untouched.
-        XCTAssertTrue(app.buttons["dashboard.offer.add.offer-travel-001"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons[DashboardAccessibility.addOffer(CardOffer.mockTravelOffer.id)].waitForExistence(timeout: 5))
     }
 
     /// The `-demoState=loading` knob parks the card fetch, so the loading
@@ -84,7 +90,7 @@ final class DashboardUITests: XCTestCase {
         let app = launchApp(state: .loading)
 
         XCTAssertTrue(app.staticTexts["Loading your cards"].waitForExistence(timeout: 10))
-        XCTAssertFalse(app.descendants(matching: .any)["dashboard.carousel"].exists)
+        XCTAssertFalse(app.descendants(matching: .any)[DashboardAccessibility.carousel].exists)
     }
 
     /// The `-demoState=error` knob makes the card fetch throw, so the error
@@ -95,6 +101,6 @@ final class DashboardUITests: XCTestCase {
 
         XCTAssertTrue(app.staticTexts["We couldn't reach the server."].waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["Retry"].waitForExistence(timeout: 5))
-        XCTAssertFalse(app.descendants(matching: .any)["dashboard.carousel"].exists)
+        XCTAssertFalse(app.descendants(matching: .any)[DashboardAccessibility.carousel].exists)
     }
 }
