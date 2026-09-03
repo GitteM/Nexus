@@ -100,6 +100,20 @@ type(scope): subject        # feat | fix | docs | style | refactor | perf |
 **Docs-only changes** (markdown/config prose): skip the test suite, but state
 that you did, and confirm nothing but docs changed.
 
+> **Known tooling noise — Xcode dependency-scan warnings (not a DoD
+> failure).** The first `build-for-testing`/test run after a fresh
+> DerivedData (or after `Reset Package Caches`) prints 12 warnings of the
+> form `'Session' is missing a dependency on 'Entities' because dependency
+> scan of Swift module 'Session' …` (Session/DataSources/Repositories/
+> Persistence → Entities/ServiceProtocols/…). Verified facts: (1) they
+> appear on **any** code state — same set with or without a diff — so they
+> are never a regression; (2) NexusData's `Package.swift` already declares
+> every flagged edge, so there is nothing to "fix" in the manifests; (3)
+> they never fail builds or tests; (4) the next build in the same
+> DerivedData prints **0** of them — they are a one-time artifact of
+> Xcode 26.6's package-graph dependency scan on first generation. Do not
+> chase them as a gate violation; ignore or re-run once.
+
 ## 6. Architecture invariants (from architecture.md §13 Step 8)
 
 Verify these when you touch architecture-sensitive code:
