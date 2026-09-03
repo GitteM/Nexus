@@ -25,6 +25,14 @@
 > document keeps them explicit so the snippets port to projects that do not
 > enable it (§3, §12.3).
 
+> **Reading guide for agents (incl. DeepSeek in Codewhale).** This is a
+> 1,300-line porting guide — for work *inside* Nexus, read only the section
+> for the layer you touch (§3 module map, §4 Domain, §5 `AppError`, §6 Data,
+> §7 config/logging, §8 navigation, §9 presentation, §11 app target), not
+> the whole file. §14 is the one-paragraph summary for quick recall; §13
+> Step 8 is the invariants checklist used to verify Nexus itself. The
+> section map also lives in `AGENTS.md` and `.codewhale/instructions.md`.
+
 ---
 
 ## 1. What This Architecture Is

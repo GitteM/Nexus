@@ -1,33 +1,70 @@
 # Nexus — Codewhale Project Instructions
 
-Entry point for Codewhale working in this repository. The docs below are the source of truth; this file summarizes the standing rules. **Read `Documentation/AGENTS.md` first when starting any work, and re-read it before architecture-sensitive or workflow-sensitive changes.**
+Entry point for Codewhale working in this repository. **This file is injected
+into every session, so it stays short.** The agent may run on a
+limited-context model (DeepSeek): read only what the table below says, never
+whole documents. One concern per file; `Documentation/README.md` is the index.
 
-## Source of truth (all under `Documentation/`)
+## Non-negotiables (worst failures, in order)
 
-- **`AGENTS.md`** — agent guidance: where to work, trunk-based workflow, agent conventions, slash commands.
-- **`architecture.md`** — architecture blueprint / porting guide; source of truth for patterns. Read before any architecture-sensitive work.
-- **`features.md`** — product features.
-- **`CONTRIBUTING.md`** — commit message spec & PR process.
-- **`appspec.md`** — app specification.
-- **`ROADMAP.md`** / **`tasks.md`** — roadmap and task tracking.
+1. **Git.** Trunk-based development on `main`. Never commit or push to
+   `main`. Work on a short-lived branch (`feature/`, `bugfix/`, `hotfix/`,
+   `chore/`, `docs/`), open a PR, and let the user merge. Branches < 1 day;
+   changes small. Confirm with `git status` / `git branch --show-current`
+   before any git step.
+2. **Commits.** Conventional Commits: `type(scope): subject` — subject ≤ 72
+   chars, imperative mood, capitalized, no trailing period. Full spec:
+   `Documentation/CONTRIBUTING.md`.
+3. **Gates before submitting code.** `swiftformat .` clean, full workspace
+   TestPlan green, zero build warnings. Docs-only changes skip the test
+   suite — say so and state what you did verify.
+4. **Architecture rules are constraints, not suggestions.** Read the
+   relevant `Documentation/architecture.md` section first (see table). Never
+   import upward or create package cycles; one `AppError` everywhere; no
+   ViewModels, Combine, completion handlers, or `Result` at repository
+   boundaries; `@Model` classes never leave NexusData; no sensitive data in
+   logs/caches/configs.
+5. **Docs stay in sync.** User-facing change → README/CHANGELOG; pattern or
+   target change → `architecture.md`; workflow change → `AGENTS.md`;
+   milestone/day state → `tasks.md` / `ROADMAP.md`.
 
-## Project at a glance
+## Reality beats prose
 
-- **Nexus**: SwiftUI iOS banking app focused on cards and their features (issuing, freeze/unfreeze, spending limits, balances, transactions, payments, security, Apple Pay).
-- **Stack**: Swift 6.3 (Swift 6 mode), Xcode 26.6, iOS 17.0+ deployment target, Swift Package Manager (`NexusDomain`, `NexusData`, `NexusFeatures` + thin app target), workspace `Nexus.xcworkspace`.
-- **Architecture**: MV (Model-View) — SwiftUI views driven by `@MainActor @Observable` models; no ViewModels, no Combine, no completion handlers; one `AppError`; SwiftData + Keychain + in-memory actor cache; mocks behind `#if DEBUG`; `-demoMode` for previews/tests/demo.
-- **Testing**: Swift Testing (`@Suite`/`@Test`/`#expect`), workspace TestPlan, UI tests launch with `-demoMode`.
+- Read `Documentation/AGENTS.md` at the start of any task — it is the
+  operating guide (workflow, gates, conventions).
+- Current day state comes from `Documentation/tasks.md` checkboxes and
+  `git log`, never from dated "as of" notes in docs.
+- Read files before describing them; verify results with tools; report what
+  you could not verify.
 
-## Standing rules (critical)
+## Where to look (decision table)
 
-1. **Git workflow** — trunk-based development on `main` with short-lived branches (`feature/`, `bugfix/`, `hotfix/`, `chore/`). **Never push to or commit directly on `main`.** Always branch, open a PR, and let the user merge. Keep branches < 1 day and changes small.
-2. **Commits** — Conventional Commits: `type(scope): description`, subject ≤ 72 chars, imperative mood. See `Documentation/CONTRIBUTING.md`.
-3. **Before submitting a change** — run `swiftformat .`, run the workspace test suite (`xcodebuild test -workspace Nexus.xcworkspace -scheme Nexus -destination 'platform=iOS Simulator,name=iPhone 17'`), and build without warnings.
-4. **Architecture-sensitive work** — read `Documentation/architecture.md` first and follow its patterns; never import upward or create package cycles.
-5. **Docs** — keep `README.md`, `CHANGELOG.md`, `Documentation/architecture.md`, and `Documentation/AGENTS.md` updated when relevant.
+| Task | Read first |
+|---|---|
+| Any new work | `Documentation/AGENTS.md` (workflow + gates) |
+| Architecture-sensitive code | `architecture.md`: §2 layering; the § for the layer you touch — §3 module map, §4 Domain, §5 `AppError`, §6 Data, §7 config/logging, §8 navigation, §9 presentation, §11 app target; §14 for one-paragraph recall; §13 Step 8 to verify invariants |
+| Commit / PR rules | `Documentation/CONTRIBUTING.md` |
+| Product scope | `Documentation/features.md`; conflicts are resolved in `ROADMAP.md` §5 (architecture.md wins) |
+| Day / milestone status | `Documentation/tasks.md` + `ROADMAP.md` |
+| Which doc does what | `Documentation/README.md` |
 
-## Current repo status (as of 2026-09-02)
+## Repo at a glance
 
-- **Repo initialized** 2026-09-01 (Day 1); remote `origin` = `git@github.com:GitteM/Nexus.git`; default branch `main`. Trunk-based workflow applies — confirm with `git status` before following AGENTS.md git steps.
-- **Progress: M0 (Day 1) and M1 (Days 2–4) merged to `main`** — workspace + package skeletons (M0); Domain entities, `AppError`, repository/service protocols (M1). Verified: full TestPlan green (159 Domain tests in 20 suites), zero build warnings.
-- `Documentation/ROADMAP.md` and `tasks.md` are populated and kept in sync; `Documentation/appspec.md` is still empty (not a source of truth).
+- **Nexus**: SwiftUI iOS banking app — card issuing, freeze/unfreeze,
+  spending limits, balances, transactions, payments, security, Apple Pay.
+- **Stack**: Swift 6.3 (Swift 6 mode), Xcode 26.6, iOS 17.0+; SPM packages
+  `NexusDomain` / `NexusData` / `NexusFeatures` + thin app target
+  (composition root); workspace `Nexus.xcworkspace`.
+- **Architecture**: MV — `@MainActor @Observable` models drive SwiftUI
+  views; explicit `viewState` enums; SwiftData + Keychain + in-memory actor
+  cache; mocks behind `#if DEBUG`; `-demoMode` / `API_ENVIRONMENT = demo`.
+- **Testing**: Swift Testing (`@Suite`/`@Test`/`#expect`) aggregated in
+  `TestPlan.xctestplan`; UI tests launch with `-demoMode`. Local run:
+  `xcodebuild test -workspace Nexus.xcworkspace -scheme Nexus -destination
+  'platform=iOS Simulator,name=iPhone 17'`
+
+## Know the intentional gaps
+
+`Documentation/appspec.md`, `Documentation/CHANGELOG.md`, and the root
+README.md are empty **on purpose** (populated at v1.0, Day 15 — see
+`tasks.md`). Do not treat them as broken or "fix" them.
