@@ -375,6 +375,45 @@ struct DashboardModelTests {
         #expect(cardRepository.addCardCallCount == 0) // never asked the backend
         #expect(model.addOfferError == nil)
     }
+
+    @Test func `a non-AppError add failure maps to the unknown error state`() async {
+        // A double that throws a plain Error from `addCard` only — impossible
+        // through the AppError-only mocks — pins the model's catch-all
+        // mapping for the add path.
+        let cardRepository = AddFailingUnknownErrorCardRepository(cards: Card.mockDefaults)
+        let model = DashboardModel(
+            cardRepository: cardRepository,
+            offersRepository: MockOffersRepository(seed: CardOffer.mockDefaults),
+            statusRepository: MockStatusRepository(seed: CardState.mockDefaults),
+        )
+        await model.load()
+
+        await model.addOffer(CardOffer.mockCashbackOffer)
+
+        // .unknown equality compares the underlying error's presence only.
+        #expect(model.addOfferError == .unknown(underlying: URLError(.badServerResponse)))
+        #expect(model.cards.count == Card.mockDefaults.count) // no partial add
+        #expect(model.offeredCards.contains { $0.id == CardOffer.mockCashbackOffer.id })
+        #expect(model.viewState == .loaded) // the screen error surface stays untouched
+    }
+}
+
+/// A `CardRepositoryProtocol` double whose `addCard` throws a plain `Error`
+/// while the read path succeeds — only reachable through a hand-rolled
+/// double, which is exactly its purpose (see `a non-AppError add failure
+/// maps to the unknown error state`).
+private struct AddFailingUnknownErrorCardRepository: CardRepositoryProtocol {
+    let cards: [Card]
+
+    func getCards() async throws -> [Card] {
+        cards
+    }
+
+    func addCard(_: CardOffer) async throws -> Card {
+        throw URLError(.badServerResponse)
+    }
+
+    func removeCard(cardId _: String) async throws {}
 }
 
 /// Bounded main-actor spin: yields until `condition` holds or the budget
