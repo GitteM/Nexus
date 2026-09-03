@@ -89,14 +89,22 @@ public actor OffersDataSource {
             if let cached {
                 continuation.yield(cached)
             }
-            let task = Task {
+            // The producer task is unstructured and deliberately does NOT
+            // inherit the actor's isolation: `self` is captured weakly so a
+            // subscription must not pin the whole actor (and its session
+            // facade) in memory once the source is no longer needed. Every
+            // event hops to the actor via `await process`, which keeps the
+            // cache write race-free and yields only after caching — delivery
+            // stays the happens-before edge for reads.
+            let task = Task { [weak self] in
                 for await event in source {
                     if Task.isCancelled {
                         break
                     }
-                    // The task inherits the actor's isolation, so `process`
-                    // runs on the actor and writes the cache race-free.
-                    self.process(event, continuation: continuation)
+                    guard let self else {
+                        break
+                    }
+                    await process(event, continuation: continuation)
                 }
                 continuation.finish()
             }

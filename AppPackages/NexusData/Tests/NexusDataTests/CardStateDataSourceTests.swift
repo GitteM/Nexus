@@ -167,4 +167,84 @@ struct CardStateDataSourceTests {
             payload: "{broken",
         )) == nil)
     }
+
+    @Test func `per-id cache stays bounded with LRU eviction`() async throws {
+        let session = FakeEventSubscriptionManager()
+        let source = CardStateDataSource(
+            eventSubscriptionManager: session,
+            logger: RecordingLogger(),
+            cacheLimit: 2,
+        )
+
+        let a = try await source.subscribeToCardStatus(cardId: "card-a")
+        try session.inject(statusEvent(cardId: "card-a", status: .active))
+        #expect(await nextState(a) == CardState(cardId: "card-a", status: .active))
+
+        let b = try await source.subscribeToCardStatus(cardId: "card-b")
+        try session.inject(statusEvent(cardId: "card-b", status: .frozen))
+        #expect(await nextState(b) == CardState(cardId: "card-b", status: .frozen))
+
+        let c = try await source.subscribeToCardStatus(cardId: "card-c")
+        try session.inject(statusEvent(cardId: "card-c", status: .lost))
+        #expect(await nextState(c) == CardState(cardId: "card-c", status: .lost))
+
+        // Three cards, limit 2: the least recently used entry (card-a) is gone.
+        #expect(await source.getCardStatus(cardId: "card-a") == nil)
+        // Read order drives recency: card-c is touched before card-b, so
+        // card-b ends the reads as the most recently used entry and card-c
+        // as the least recently used one.
+        #expect(await source.getCardStatus(cardId: "card-c")
+            == CardState(cardId: "card-c", status: .lost))
+        #expect(await source.getCardStatus(cardId: "card-b")
+            == CardState(cardId: "card-b", status: .frozen))
+
+        // card-b was read last, so it is now most recent; a new frame for
+        // card-a evicts the least recently used card-c.
+        try session.inject(statusEvent(cardId: "card-a", status: .frozen))
+        #expect(await nextState(a) == CardState(cardId: "card-a", status: .frozen))
+        #expect(await source.getCardStatus(cardId: "card-c") == nil)
+        #expect(await source.getCardStatus(cardId: "card-b")
+            == CardState(cardId: "card-b", status: .frozen))
+        #expect(await source.getCardStatus(cardId: "card-a")
+            == CardState(cardId: "card-a", status: .frozen))
+    }
+
+    @Test func `cancelling the consumer releases the session subscriber`() async throws {
+        let session = FakeEventSubscriptionManager()
+        let source = CardStateDataSource(eventSubscriptionManager: session, logger: RecordingLogger())
+
+        let stream = try await source.subscribeToCardStatus(cardId: "card-credit-001")
+        try session.inject(statusEvent(cardId: "card-credit-001", status: .active))
+        #expect(await nextState(stream) == .mockActiveState)
+        #expect(session.subscribedChannelCount == 1)
+
+        // Model teardown (architecture.md §9.1): the model cancels its
+        // per-card subscription task while it awaits the next frame.
+        // Cancelling a consumer terminates its AsyncStream, which fires the
+        // data source's `onTermination` and cancels the producer task; the
+        // producer unwinds, releases its session stream, and the facade
+        // drops the subscriber. (A consumer that merely ends its iteration
+        // does NOT terminate the stream — only cancellation or releasing the
+        // stream does.)
+        let consumer = Task {
+            var iterator = stream.makeAsyncIterator()
+            _ = await iterator.next()
+        }
+        // The consumer inherits this suite's main-actor isolation, so the
+        // sleep guarantees it has reached (and is blocked in) `next()`
+        // before the cancellation below.
+        try await Task.sleep(for: .milliseconds(50))
+        consumer.cancel()
+        await consumer.value
+
+        var unregistered = false
+        for _ in 0 ..< 200 {
+            if session.subscribedChannelCount == 0 {
+                unregistered = true
+                break
+            }
+            try await Task.sleep(for: .milliseconds(10))
+        }
+        #expect(unregistered)
+    }
 }

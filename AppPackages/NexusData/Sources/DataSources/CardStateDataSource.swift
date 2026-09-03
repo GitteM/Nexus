@@ -29,20 +29,69 @@ import Session
 ///   ordering guarantee — event processing is asynchronous.)
 /// - The per-id cache lets `getCardStatus` answer immediately without a
 ///   network round-trip; `nil` means no state is known yet.
+/// - The per-id cache is bounded (`cacheLimit`, default 50 entries, LRU
+///   eviction) so a long-lived source never grows without bound — the same
+///   50-item budget the §6.4 `CacheManager` applies to ephemeral live
+///   state. Evicted entries simply read as "not known" until the next
+///   status frame arrives.
 public actor CardStateDataSource {
     private let eventSubscriptionManager: any EventSubscriptionManagerProtocol
     private let logger: any LoggerProtocol
     private let decoder = JSONDecoder()
 
+    /// Default cap for the per-id cache (architecture.md §6.4: 50 items).
+    public static let defaultCacheLimit = 50
+
+    private let cacheLimit: Int
+
     /// Per-id cache of the latest decoded `CardState` seen on the wire.
     private var cardStatesCache: [String: CardState] = [:]
 
+    /// Card ids most-recently-used first; bounds the cache to `cacheLimit`
+    /// entries (LRU eviction on insert when the cap is exceeded).
+    private var cacheRecency: [String] = []
+
+    /// - Parameters:
+    ///   - eventSubscriptionManager: The session facade data sources receive.
+    ///   - logger: Receives `.error` messages for skipped malformed payloads.
+    ///   - cacheLimit: Maximum per-id cache entries before LRU eviction;
+    ///     inject a small value in tests.
     public init(
         eventSubscriptionManager: any EventSubscriptionManagerProtocol,
         logger: any LoggerProtocol,
+        cacheLimit: Int = CardStateDataSource.defaultCacheLimit,
     ) {
         self.eventSubscriptionManager = eventSubscriptionManager
         self.logger = logger
+        self.cacheLimit = cacheLimit
+    }
+
+    // MARK: - Cache
+
+    /// Reads one card's cached state and bumps its recency (LRU).
+    private func cachedState(for cardId: String) -> CardState? {
+        guard cardStatesCache[cardId] != nil else {
+            return nil
+        }
+        touch(cardId)
+        return cardStatesCache[cardId]
+    }
+
+    /// Writes or refreshes one card's state under LRU order, evicting the
+    /// least-recently-used entry when the cache is over its limit.
+    private func cache(_ state: CardState) {
+        cardStatesCache[state.cardId] = state
+        touch(state.cardId)
+        while cacheRecency.count > cacheLimit {
+            let evicted = cacheRecency.removeLast()
+            cardStatesCache.removeValue(forKey: evicted)
+        }
+    }
+
+    /// Marks `cardId` as most-recently-used.
+    private func touch(_ cardId: String) {
+        cacheRecency.removeAll { $0 == cardId }
+        cacheRecency.insert(cardId, at: 0)
     }
 
     // MARK: - One-shot
@@ -50,7 +99,7 @@ public actor CardStateDataSource {
     /// The latest known status for one card, or `nil` when no status has
     /// arrived on the wire yet (cache read — no network round-trip).
     public func getCardStatus(cardId: String) async -> CardState? {
-        cardStatesCache[cardId]
+        cachedState(for: cardId)
     }
 
     // MARK: - Subscription
@@ -75,7 +124,7 @@ public actor CardStateDataSource {
         let source = await MainActor.run {
             eventManager.events(for: channel)
         }
-        let cached = cardStatesCache[cardId]
+        let cached = cachedState(for: cardId)
         return AsyncStream { continuation in
             // Seed the stream *synchronously*, before the stream is handed
             // out: whatever the cache holds right now is buffered as the
@@ -85,14 +134,22 @@ public actor CardStateDataSource {
             if let cached {
                 continuation.yield(cached)
             }
-            let task = Task {
+            // The producer task is unstructured and deliberately does NOT
+            // inherit the actor's isolation: `self` is captured weakly so a
+            // subscription must not pin the whole actor (and its session
+            // facade) in memory once the source is no longer needed. Every
+            // event hops to the actor via `await process`, which keeps the
+            // cache write race-free and yields only after caching — delivery
+            // stays the happens-before edge for reads.
+            let task = Task { [weak self] in
                 for await event in source {
                     if Task.isCancelled {
                         break
                     }
-                    // The task inherits the actor's isolation, so `process`
-                    // runs on the actor and writes the cache race-free.
-                    self.process(event, cardId: cardId, continuation: continuation)
+                    guard let self else {
+                        break
+                    }
+                    await process(event, cardId: cardId, continuation: continuation)
                 }
                 continuation.finish()
             }
@@ -137,7 +194,7 @@ public actor CardStateDataSource {
         guard let state = parseEvent(event) else {
             return
         }
-        cardStatesCache[state.cardId] = state
+        cache(state)
         guard state.cardId == cardId else {
             return
         }
