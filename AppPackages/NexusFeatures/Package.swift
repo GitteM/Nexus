@@ -19,7 +19,12 @@ let package = Package(
         .package(path: "../NexusData"),
     ],
     targets: [
-        .target(name: "SharedUI"),
+        .target(
+            name: "SharedUI",
+            dependencies: [
+                .product(name: "Entities", package: "NexusDomain"),
+            ],
+        ),
         .target(name: "Navigation"),
         .target(
             name: "Dashboard",
