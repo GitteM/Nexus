@@ -49,11 +49,7 @@ actor StoredCardModelActor {
     /// the iOS 17 floor, where `#Unique` is unavailable).
     func upsert(_ card: Card) throws {
         try wrap("write_card") {
-            let cardId = card.id
-            let descriptor = FetchDescriptor<StoredCard>(
-                predicate: #Predicate<StoredCard> { $0.id == cardId },
-            )
-            if let existing = try context.fetch(descriptor).first {
+            if let existing = try existingRecord(id: card.id) {
                 existing.apply(card)
             } else {
                 context.insert(StoredCard(card: card))
@@ -62,19 +58,51 @@ actor StoredCardModelActor {
         }
     }
 
+    /// Inserts `card` only when no record with the same id exists. The
+    /// existence check and the insert run in a single actor turn, so they
+    /// cannot interleave with any other operation on this actor — concurrent
+    /// `insertIfAbsent` calls for the same id yield exactly one insert
+    /// (atomic duplicate rejection on the iOS 17 floor, where `#Unique` is
+    /// unavailable).
+    ///
+    /// - Returns: `true` when `card` was inserted; `false` when a record
+    ///   with the same id already exists (nothing changes).
+    func insertIfAbsent(_ card: Card) throws -> Bool {
+        try wrap("write_card") {
+            guard try existingRecord(id: card.id) == nil else {
+                return false
+            }
+            context.insert(StoredCard(card: card))
+            try context.save()
+            return true
+        }
+    }
+
     /// Deletes the stored record for `cardId` when one exists. Deleting an
     /// unknown id is a no-op (idempotent removal).
     func delete(cardId: String) throws {
         try wrap("delete_card") {
-            let descriptor = FetchDescriptor<StoredCard>(
-                predicate: #Predicate<StoredCard> { $0.id == cardId },
-            )
-            let matches = try context.fetch(descriptor)
+            let matches = try context.fetch(existingDescriptor(id: cardId))
             for match in matches {
                 context.delete(match)
             }
             try context.save()
         }
+    }
+
+    // MARK: - Lookup
+
+    /// The stored record for `cardId`, if any.
+    private func existingRecord(id cardId: String) throws -> StoredCard? {
+        try context.fetch(existingDescriptor(id: cardId)).first
+    }
+
+    /// A predicate descriptor matching the record for `cardId` (the id is
+    /// the natural key — the schema has no `#Unique` on the iOS 17 floor).
+    private func existingDescriptor(id cardId: String) -> FetchDescriptor<StoredCard> {
+        FetchDescriptor<StoredCard>(
+            predicate: #Predicate<StoredCard> { $0.id == cardId },
+        )
     }
 
     // MARK: - Error wrapping

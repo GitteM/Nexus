@@ -57,9 +57,25 @@ public struct SwiftDataCardRepository: Sendable {
         try await store.fetchAll()
     }
 
-    /// Persists `card`, replacing any stored record with the same id.
+    /// Persists `card`, replacing any stored record with the same id
+    /// (idempotent write).
     public func insert(_ card: Card) async throws {
         try await store.upsert(card)
+    }
+
+    /// Persists `card` only when no stored record with the same id exists.
+    ///
+    /// The existence check and the insert run in one `StoredCardModelActor`
+    /// turn, so concurrent `insertIfAbsent` calls on this store cannot both
+    /// insert the same id — exactly one wins and the rest report the
+    /// existing record. `CardRepository.addCard` relies on this for atomic
+    /// duplicate rejection (the check-then-act guard lives on the actor, not
+    /// in the repository).
+    ///
+    /// - Returns: `true` when `card` was inserted; `false` when a record
+    ///   with the same id already exists (nothing changes).
+    public func insertIfAbsent(_ card: Card) async throws -> Bool {
+        try await store.insertIfAbsent(card)
     }
 
     /// Removes the stored record for `cardId`; unknown ids are a no-op.

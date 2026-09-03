@@ -37,18 +37,21 @@ public struct CardRepository: CardRepositoryProtocol, Sendable {
 
     /// Turns an accepted `CardOffer` into a managed `Card`.
     ///
+    /// The duplicate check and the insert are atomic: the store performs
+    /// both in one `StoredCardModelActor` turn (`insertIfAbsent`), so
+    /// concurrent `addCard` calls for the same offer produce exactly one
+    /// managed card and one `cardAlreadyExists`.
+    ///
     /// - Throws `AppError.validationError` when the offer cannot be
     ///   persisted (empty id or currency).
     /// - Throws `AppError.cardAlreadyExists` when an offer with the same id
     ///   is already managed (architecture.md §4.2 contract).
     public func addCard(_ offer: CardOffer) async throws -> Card {
         try Self.validate(offer)
-        let existing = try await store.fetchCards()
-        guard !existing.contains(where: { $0.id == offer.id }) else {
+        let card = Self.provisionedCard(from: offer)
+        guard try await store.insertIfAbsent(card) else {
             throw AppError.cardAlreadyExists(cardId: offer.id)
         }
-        let card = Self.provisionedCard(from: offer)
-        try await store.insert(card)
         return card
     }
 
