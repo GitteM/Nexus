@@ -1,34 +1,32 @@
 # DeepSeek AI code review for pull requests.
 #
-# Uses hustcer/deepseek-review (MIT) — an official DeepSeek API client that
-# posts a formal review on every qualifying PR:
-#   https://github.com/hustcer/deepseek-review
+# Uses a vendored copy of hustcer/deepseek-review (MIT) with a Nexus patch
+# that fixes a nushell↔awk pipe deadlock on large diffs:
+#   .github/actions/deepseek-review/  (see VENDORED.md for provenance + patch)
 #
 # Setup (one-time):
 #   1. Add your DeepSeek API key as a repository secret named
 #      `DEEPSEEK_API_KEY` (Settings → Secrets and variables → Actions →
 #      New repository secret). The key is only used by this workflow.
-#   2. Merge this workflow. The next PR gets an automatic review.
 #
-# Cost control:
-#   - Every push to an open PR triggers a review. Add `skip review` (or
-#     `skip cr`) to a PR's title or body to opt a single PR out.
-#   - To review on demand instead, replace the `on:` block below with the
-#     `labeled` trigger + `if: contains(github.event.pull_request.labels.*.name,
-#     'ai review')` pattern documented in the action's README.
+# On-demand review:
+#   - Reviews run only when the `ai review` label is added to a PR. Add the
+#     label to request a review; remove it if you want it re-run after
+#     changes (re-adding the label triggers another run).
+#   - Cost control: no automatic review per push; large PRs are supported by
+#     the vendored patch (upstream deadlocks on diffs > ~64 KB).
+#   - Opt out of a specific review by removing the label.
 #
 # Model: defaults to `deepseek-v4-flash` on https://api.deepseek.com.
-# Override via the `model` / `base-url` inputs (e.g. `deepseek-reasoner`
-# for R1-style reasoning) if the key's plan exposes different models.
+# Override via the `model` / `base-url` inputs if the key's plan exposes
+# different models.
 
 name: DeepSeek PR Review
 
 on:
   pull_request:
     types:
-      - opened # A new PR
-      - synchronize # A commit was pushed to the PR
-      - reopened
+      - labeled # A label was added to the PR (the `ai review` trigger)
 
 permissions:
   pull-requests: write # Post the review on the PR
@@ -41,14 +39,14 @@ jobs:
     # DEEPSEEK_API_KEY secret, and `pull_request` keeps that secret out of
     # fork-PR contexts. Switch to `pull_request_target` only if fork PRs
     # must be reviewed too.
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      contains(github.event.pull_request.labels.*.name, 'ai review')
     # A healthy review finishes in well under a minute (observed ~18 s).
     # Cap at 8 minutes so a stalled run fails fast and visibly instead of
     # zombie-ing for 30 minutes; re-run the job to retry after a blip.
     timeout-minutes: 8
-    # One review at a time per PR: a newer push cancels the stale run so
-    # hangs cannot pile up (Sep 2026: the action's diff-filter step stalled
-    # on ubuntu-latest until the job timeout killed it).
+    # One review at a time per PR: a newer run cancels the stale one.
     concurrency:
       group: deepseek-review-${{ github.event.pull_request.number }}
       cancel-in-progress: true
@@ -57,16 +55,18 @@ jobs:
     env:
       DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
     steps:
+      # A local action runs from the checked-out workspace. For
+      # `pull_request` events the default checkout is the merge commit
+      # (base + head), which contains .github/actions/deepseek-review once
+      # this vendored action is on main.
+      - name: Check out merge ref
+        uses: actions/checkout@v4
+
       - name: Run DeepSeek code review
-        # Skip (rather than fail) until the secret exists — e.g. on the PR
-        # that introduces this workflow.
+        # Skip (rather than fail) until the secret exists.
         if: env.DEEPSEEK_API_KEY != ''
-        # Pinned to the newest upstream `main` commit (2026-08-23) for
-        # supply-chain safety and the post-v1.21 fixes (#262-#264: diff
-        # filtering / glob grouping, config parsing hardening). v1.21 (the
-        # pinned 2026-07-20 SHA, eccde2e) predates them. When a release
-        # newer than v1.21 exists, replace the SHA with that tag's commit
-        # from https://github.com/hustcer/deepseek-review/tags
-        uses: hustcer/deepseek-review@02734b66d5b7dbbeb4836774f7ab6dc3602339a6
+        # Vendored + patched (see VENDORED.md). Re-point at the upstream pin
+        # when upstream ships the pipe-deadlock fix.
+        uses: ./.github/actions/deepseek-review
         with:
           chat-token: ${{ secrets.DEEPSEEK_API_KEY }}
