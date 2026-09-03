@@ -151,7 +151,13 @@ public actor OffersDataSource {
     }
 
     /// The cached snapshot when it is still fresh; a stale (or never
-    /// received) snapshot is dropped and reported as missing.
+    /// received) snapshot is reported as missing.
+    ///
+    /// Side effect: reading past the TTL clears the stale snapshot and its
+    /// timestamp, so an expired list is neither served nor retained — the
+    /// dashboard must never render offers the backend stopped publishing.
+    /// Both the one-shot read and the subscription seed go through this one
+    /// method, so eviction behaves identically on either path.
     private func freshSnapshot() -> [CardOffer]? {
         guard
             let cachedOffers,

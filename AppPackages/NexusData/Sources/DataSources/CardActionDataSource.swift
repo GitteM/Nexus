@@ -11,7 +11,10 @@ import Session
 /// and sends it on the `card.commands` channel (architecture.md §11.4: the
 /// resulting state arrives back on the live per-card event channel, which is
 /// what `CardStateDataSource` streams).
-public struct CardActionDataSource {
+///
+/// `Sendable`: stateless, safe to pass across concurrency domains — both
+/// collaborators are `Sendable` protocol requirements.
+public struct CardActionDataSource: Sendable {
     private let eventSubscriptionManager: any EventSubscriptionManagerProtocol
     private let logger: any LoggerProtocol
 

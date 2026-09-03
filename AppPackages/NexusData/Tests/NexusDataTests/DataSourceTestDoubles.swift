@@ -26,9 +26,10 @@ final class RecordingLogger: LoggerProtocol {
         storage.withLock { $0.records }
     }
 
-    /// Messages recorded at `.error`, oldest first.
+    /// Messages recorded at `.error`, oldest first. Filtering happens inside
+    /// the lock so the read and the filter observe one consistent snapshot.
     var errorRecords: [(message: String, level: LogLevel)] {
-        records.filter { $0.level == .error }
+        storage.withLock { $0.records.filter { $0.level == .error } }
     }
 }
 

@@ -11,9 +11,11 @@ import Foundation
 /// - `card.offers` — server→client: full-list offer snapshots. The payload
 ///   is an `OffersSnapshotDTO` envelope.
 /// - `card.commands` — client→server: outgoing `CardCommand` payloads sent
-///   by `CardActionDataSource`. The backend acknowledges by pushing the new
-///   state on `card.events.{cardId}` (architecture.md §11.4: "the resulting
-///   state arrives through the live event streams").
+///   by `CardActionDataSource`. The payload is the JSON encoding of a
+///   `CardCommand` (`cardId`, `type`, plus `amount` and `period` only for
+///   `.setSpendingLimit`). The backend acknowledges by pushing the new state
+///   on `card.events.{cardId}` (architecture.md §11.4: "the resulting state
+///   arrives through the live event streams").
 ///
 /// The namespace is what the backend mirrors; when the §11.4 REST endpoints
 /// land (tasks.md Day 7), the repository layer reuses these names for the

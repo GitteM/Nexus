@@ -47,7 +47,7 @@ public extension JSONDecoder {
 
     /// Builds a readable reason for a decoding failure. `DecodingError` kinds
     /// map to their coding path and description; anything else (defensive
-    /// fallback) keeps its own description.
+    /// fallback) names its type and keeps its own description.
     private static func describe(_ error: Error) -> String {
         switch error {
         case let DecodingError.dataCorrupted(context):
@@ -59,7 +59,7 @@ public extension JSONDecoder {
         case let DecodingError.valueNotFound(type, context):
             path(context) + "Value of type '\(type)' not found: \(context.debugDescription)"
         default:
-            error.localizedDescription
+            "\(type(of: error)): \(error.localizedDescription)"
         }
     }
 
