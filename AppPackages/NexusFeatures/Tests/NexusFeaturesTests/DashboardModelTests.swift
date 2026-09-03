@@ -251,7 +251,7 @@ struct DashboardModelTests {
         await model.load()
         await waitUntil { statusRepository.subscribeToCardStatusCallCount == Card.mockDefaults.count }
 
-        try await cardRepository.addCard(CardOffer.mockCashbackOffer)
+        _ = try await cardRepository.addCard(CardOffer.mockCashbackOffer)
         await model.refresh()
 
         #expect(model.cards.contains { $0.id == CardOffer.mockCashbackOffer.id })
