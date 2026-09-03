@@ -78,11 +78,11 @@
 
 ### Day 8 — Logging + shared mocks (M2)
 
-- [ ] `LoggingService` (OSLog-backed, maps Domain `LogLevel` → `OSLogType`; logs display-safe data only — last four digits, never card numbers) (architecture.md §7.2).
-- [ ] `MockCardRepository`, `MockOffersRepository`, `MockStatusRepository`, `MockActionRepository` in `NexusData/Mocks` (`#if DEBUG`): seed data, `shouldThrowError`/`shouldNeverComplete` knobs, call counts (architecture.md §9.5).
-- [ ] `MockSessionManager` + `MockEventGenerator` emitting synthetic `BankingEvent`s **through the same `parseEvent` path** as live data (architecture.md §11.2, §12.3).
-- [ ] Tests: mock failure modes; demo events decode through the real path.
-- **Verify:** Mocks live only in `NexusData/Mocks` behind `#if DEBUG`; release build compiles them to empty.
+- [x] `LoggingService` (OSLog-backed, maps Domain `LogLevel` → `OSLogType`; logs display-safe data only — last four digits, never card numbers) (architecture.md §7.2).
+- [x] `MockCardRepository`, `MockOffersRepository`, `MockStatusRepository`, `MockActionRepository` in `NexusData/Mocks` (`#if DEBUG`): seed data, `shouldThrowError`/`shouldNeverComplete` knobs, call counts (architecture.md §9.5).
+- [x] `MockSessionManager` + `MockEventGenerator` emitting synthetic `BankingEvent`s **through the same `parseEvent` path** as live data (architecture.md §11.2, §12.3).
+- [x] Tests: mock failure modes; demo events decode through the real path.
+- **Verify:** Mocks live only in `NexusData/Mocks` behind `#if DEBUG`; release build compiles them to empty. — done: full workspace TestPlan green on iPhone 17 (NexusData 159 tests/19 suites, Domain 159/20 — same counts via macOS `swift test`), zero build warnings on re-run (first-run noise was the documented dependency-scan set); `swift build -c release` compiles the `Mocks` target to empty (no public symbols in its object files) while `Logging` ships `LoggingService`; demo payloads are canonical JSON (`JSONEncoder.sortedKeys`) and decode through the real `CardStateDataSource`/`OffersDataSource` `parseEvent` path end to end over `MockSessionManager`.
 
 ### Day 9 — SharedUI + Navigation (M3)
 
