@@ -100,6 +100,56 @@ struct CardRepositoryTests {
         #expect(try await repository.getCards().count == 2)
     }
 
+    @Test
+    func `concurrent duplicate adds persist once and throw once`() async throws {
+        let repository = try makeRepository()
+        let offer = sampleOffer
+        let attempts = 20
+
+        // Fire many addCard calls for the same offer at once. The duplicate
+        // check runs inside the store's single ModelActor turn, so exactly
+        // one call inserts and every other call reports cardAlreadyExists
+        // (the check-then-act guard in CardRepository is no longer racy).
+        let outcomes = await withTaskGroup(of: Result<Card, Error>.self) { group in
+            for _ in 0 ..< attempts {
+                group.addTask {
+                    do {
+                        return try await .success(repository.addCard(offer))
+                    } catch {
+                        return .failure(error)
+                    }
+                }
+            }
+            var results: [Result<Card, Error>] = []
+            for await outcome in group {
+                results.append(outcome)
+            }
+            return results
+        }
+
+        let inserted = outcomes.filter {
+            if case .success = $0 {
+                return true
+            }
+            return false
+        }
+        let alreadyExists = outcomes.filter {
+            if case let .failure(error) = $0,
+               let appError = error as? AppError,
+               appError == .cardAlreadyExists(cardId: offer.id)
+            {
+                return true
+            }
+            return false
+        }
+        #expect(inserted.count == 1)
+        #expect(alreadyExists.count == attempts - 1)
+
+        let cards = try await repository.getCards()
+        #expect(cards.count == 1)
+        #expect(cards.first?.id == offer.id)
+    }
+
     // MARK: - removeCard
 
     @Test

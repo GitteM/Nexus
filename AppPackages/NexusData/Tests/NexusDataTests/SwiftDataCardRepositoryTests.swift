@@ -131,6 +131,51 @@ struct SwiftDataCardRepositoryTests {
     }
 
     @Test
+    func `insertIfAbsent inserts once and reports existing id`() async throws {
+        let repository = try makeRepository()
+        #expect(try await repository.insertIfAbsent(sampleCard) == true)
+
+        // A later insert with the same id reports the duplicate and leaves
+        // the first record untouched (it is not an upsert).
+        let changed = Card(
+            id: sampleCard.id,
+            cardholderName: "Someone Else",
+            lastFourDigits: "0000",
+            type: .prepaid,
+            status: .frozen,
+            currency: "USD",
+            spendingLimit: 1,
+        )
+        #expect(try await repository.insertIfAbsent(changed) == false)
+        #expect(try await repository.fetchCards() == [sampleCard])
+    }
+
+    @Test
+    func `concurrent insertIfAbsent with the same id inserts once`() async throws {
+        let repository = try makeRepository()
+        let card = sampleCard
+        let attempts = 20
+
+        let outcomes = await withTaskGroup(of: Bool.self) { group in
+            for _ in 0 ..< attempts {
+                group.addTask {
+                    await (try? repository.insertIfAbsent(card)) ?? false
+                }
+            }
+            var inserted = 0
+            for await outcome in group where outcome {
+                inserted += 1
+            }
+            return inserted
+        }
+
+        // The actor serializes the check-then-insert, so exactly one
+        // concurrent caller wins; the record is stored once.
+        #expect(outcomes == 1)
+        #expect(try await repository.fetchCards() == [card])
+    }
+
+    @Test
     func `delete removes card`() async throws {
         let repository = try makeRepository()
         let card = sampleCard
