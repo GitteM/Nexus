@@ -60,7 +60,7 @@ struct DashboardCarouselView: View {
                 pageDots
             }
         }
-        .accessibilityIdentifier("dashboard.carousel")
+        .accessibilityIdentifier(DashboardAccessibility.carousel)
     }
 
     private var pageDots: some View {
@@ -163,7 +163,7 @@ private struct CardFrontView: View {
         .accessibilityLabel(accessibilityLabel)
         .accessibilityValue(Strings.Dashboard.cardPage(pageIndex + 1, of: pageCount))
         .accessibilityAdjustableAction(adjust)
-        .accessibilityIdentifier("dashboard.card.\(card.id)")
+        .accessibilityIdentifier(DashboardAccessibility.card(card.id))
     }
 
     /// Display-safe number area: only the tail is shown, and a provisioned

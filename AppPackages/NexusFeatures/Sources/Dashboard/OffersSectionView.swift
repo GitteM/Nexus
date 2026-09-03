@@ -95,7 +95,7 @@ private struct OfferCardView: View {
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(ColorPalette.success)
                     .accessibilityLabel(Strings.Dashboard.addOffer(offer.title))
-                    .accessibilityIdentifier("dashboard.offer.added.\(offer.id)")
+                    .accessibilityIdentifier(DashboardAccessibility.addedOffer(offer.id))
             } else {
                 Button {
                     Task { await model.addOffer(offer) }
@@ -114,7 +114,7 @@ private struct OfferCardView: View {
                     }
                 }
                 .accessibilityLabel(Strings.Dashboard.addOffer(offer.title))
-                .accessibilityIdentifier("dashboard.offer.add.\(offer.id)")
+                .accessibilityIdentifier(DashboardAccessibility.addOffer(offer.id))
             }
         }
         .padding(Spacing.md)
@@ -124,7 +124,7 @@ private struct OfferCardView: View {
             in: RoundedRectangle(cornerRadius: 16, style: .continuous),
         )
         .accessibilityElement(children: .contain)
-        .accessibilityIdentifier("dashboard.offer.\(offer.id)")
+        .accessibilityIdentifier(DashboardAccessibility.offer(offer.id))
     }
 }
 
