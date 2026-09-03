@@ -8,7 +8,7 @@ import Entities
 /// (`CardStatusRepositoryProtocol.subscribeToCardStatus` for status,
 /// `BankingEvent` channels for limits); implementations also apply the change
 /// to their store so later reads reflect it.
-public protocol CardActionRepositoryProtocol {
+public protocol CardActionRepositoryProtocol: Sendable {
     /// Sends one card command to the backend.
     ///
     /// Throws `AppError.cardActionFailed` (or a more specific error) when the

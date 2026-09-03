@@ -7,7 +7,7 @@ import Entities
 /// do not flow through this protocol: status changes arrive on the
 /// `card.events.{cardId}` channel via `CardStatusRepositoryProtocol`
 /// subscriptions (architecture.md §11.4).
-public protocol CardRepositoryProtocol {
+public protocol CardRepositoryProtocol: Sendable {
     /// Lists all managed cards.
     func getCards() async throws -> [Card]
 

@@ -14,9 +14,19 @@ import Foundation
 public enum Strings {
     public enum Common {
         public static let retry = String(localized: "Retry")
+        public static let refresh = String(localized: "Refresh")
         public static let cancel = String(localized: "Cancel")
         public static let done = String(localized: "Done")
         public static let loading = String(localized: "Loading")
+    }
+
+    public enum Dashboard {
+        public static let title = String(localized: "Dashboard")
+        public static let loadingMessage = String(localized: "Loading your cards")
+        public static let cardsSection = String(localized: "Your cards")
+        public static let offersSection = String(localized: "Explore offers")
+        public static let emptyTitle = String(localized: "No cards yet")
+        public static let emptyMessage = String(localized: "Cards you add and offers you can browse will appear here.")
     }
 
     public enum Navigation {

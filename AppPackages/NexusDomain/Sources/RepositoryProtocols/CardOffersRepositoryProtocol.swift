@@ -5,7 +5,7 @@ import Entities
 /// An offer becomes a managed `Card` when the customer adds it through
 /// `CardRepositoryProtocol.addCard`. Live offer changes arrive on the
 /// `card.offers` channel (architecture.md §11.4).
-public protocol CardOffersRepositoryProtocol {
+public protocol CardOffersRepositoryProtocol: Sendable {
     /// Fetches the offers available right now.
     func getAvailableOffers() async throws -> [CardOffer]
 

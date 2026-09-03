@@ -233,6 +233,12 @@ Nexus has four repository protocols: `CardRepositoryProtocol`
 (add/remove/list cards), `CardOffersRepositoryProtocol`,
 `CardStatusRepositoryProtocol`, `CardActionRepositoryProtocol`.
 
+Each protocol is **`Sendable`**: repositories are stateless boundaries that
+models hand to async child tasks (`async let`, subscriptions) from the
+main actor, which Swift 6 refuses for non-`Sendable` receivers. Real
+implementations are `Sendable` structs (§6.3) or `@MainActor` classes
+(mocks, §9.5); the Domain protocol-test doubles are `@MainActor` classes.
+
 ### 4.3 Service protocols (`ServiceProtocols` target)
 
 Abstractions for cross-cutting infrastructure the domain still needs to *name*.

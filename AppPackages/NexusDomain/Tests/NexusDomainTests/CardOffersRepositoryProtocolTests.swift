@@ -4,6 +4,7 @@ import RepositoryProtocols
 import Testing
 
 @Suite("CardOffersRepositoryProtocol")
+@MainActor
 struct CardOffersRepositoryProtocolTests {
     // MARK: - Shape
 
