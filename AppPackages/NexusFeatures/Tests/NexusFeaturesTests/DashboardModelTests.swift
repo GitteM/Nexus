@@ -266,7 +266,9 @@ struct DashboardModelTests {
 /// Bounded main-actor spin: yields until `condition` holds or the budget
 /// runs out. The model, the mocks, and the tests share the main actor, so
 /// suspending here lets spawned subscription tasks and stream deliveries
-/// run.
+/// run. When the budget expires the helper records an issue, so a stale
+/// wait surfaces a diagnostic at the poll instead of only as a confusing
+/// follow-up expectation failure.
 @MainActor
 private func waitUntil(_ condition: () -> Bool) async {
     for _ in 0 ..< 200 {
@@ -275,6 +277,7 @@ private func waitUntil(_ condition: () -> Bool) async {
         }
         try? await Task.sleep(for: .milliseconds(5))
     }
+    Issue.record("Timed out waiting for the condition after a 1 s budget.")
 }
 
 /// A `CardRepositoryProtocol` double that throws a plain `Error` instead of
