@@ -29,4 +29,10 @@ public enum Icons {
 
     /// A card concept (used by empty states and app surfaces).
     public static let card = "creditcard.fill"
+
+    /// Add an item (offer rows) / confirm an action.
+    public static let add = "plus"
+
+    /// An item is already added / confirmed (offer rows).
+    public static let added = "checkmark.circle.fill"
 }

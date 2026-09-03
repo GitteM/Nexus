@@ -17,6 +17,9 @@ public enum Strings {
         public static let refresh = String(localized: "Refresh")
         public static let cancel = String(localized: "Cancel")
         public static let done = String(localized: "Done")
+        public static let ok = String(localized: "OK")
+        public static let add = String(localized: "Add")
+        public static let added = String(localized: "Added")
         public static let loading = String(localized: "Loading")
     }
 
@@ -27,6 +30,19 @@ public enum Strings {
         public static let offersSection = String(localized: "Explore offers")
         public static let emptyTitle = String(localized: "No cards yet")
         public static let emptyMessage = String(localized: "Cards you add and offers you can browse will appear here.")
+
+        /// Accessibility value for one carousel page: "Card 1 of 3".
+        public static func cardPage(_ page: Int, of total: Int) -> String {
+            String(localized: "Card \(page) of \(total)")
+        }
+
+        /// Accessibility label for an offer's add action: "Add Cashback Card".
+        public static func addOffer(_ title: String) -> String {
+            String(localized: "Add \(title)")
+        }
+
+        /// Title of the alert shown when adding an offer fails.
+        public static let addOfferFailedTitle = String(localized: "Couldn't Add Card")
     }
 
     public enum Navigation {

@@ -261,6 +261,159 @@ struct DashboardModelTests {
             statusRepository.subscribeToCardStatusCallCount == Card.mockDefaults.count + 1
         }
     }
+
+    // MARK: - Adding an offer
+
+    @Test func `adding an offer creates a managed card and drops the offer`() async {
+        let (model, cardRepository, _, statusRepository) = makeModel()
+        await model.load()
+        await waitUntil { statusRepository.subscribeToCardStatusCallCount == Card.mockDefaults.count }
+
+        await model.addOffer(CardOffer.mockCashbackOffer)
+
+        // The card lands in the carousel list, the offer leaves the catalog…
+        #expect(model.cards.count == Card.mockDefaults.count + 1)
+        #expect(model.cards.last?.id == CardOffer.mockCashbackOffer.id)
+        #expect(model.cards.last?.status == .active)
+        #expect(model.offeredCards.contains { $0.id == CardOffer.mockCashbackOffer.id } == false)
+        // …the repository was asked exactly once with the offer…
+        #expect(cardRepository.addCardCallCount == 1)
+        #expect(cardRepository.addedOffers == [CardOffer.mockCashbackOffer])
+        // …and the new card got its own live status subscription.
+        await waitUntil {
+            statusRepository.subscribeToCardStatusCallCount == Card.mockDefaults.count + 1
+        }
+        #expect(model.addOfferError == nil)
+        #expect(model.lastAddedCardID == CardOffer.mockCashbackOffer.id)
+        #expect(model.viewState == .loaded)
+    }
+
+    @Test func `an in-flight add refuses a second add of the same offer`() async {
+        let (model, cardRepository, _, _) = makeModel()
+        await model.load()
+
+        cardRepository.shouldNeverComplete = true
+        let firstAdd = Task { await model.addOffer(CardOffer.mockTravelOffer) }
+        await waitUntil { model.offersBeingAdded.contains(CardOffer.mockTravelOffer.id) }
+
+        await model.addOffer(CardOffer.mockTravelOffer) // second tap while parked
+
+        #expect(cardRepository.addCardCallCount == 1)
+        firstAdd.cancel()
+        // The cancelled task's defer removes the in-flight marker once it
+        // unwinds on the main actor.
+        await waitUntil { model.offersBeingAdded.isEmpty }
+        #expect(model.offersBeingAdded.isEmpty)
+    }
+
+    @Test func `a failed add surfaces the error and keeps the dashboard content`() async {
+        let (model, cardRepository, _, _) = makeModel()
+        await model.load()
+        let cardsBefore = model.cards
+        let offersBefore = model.offeredCards
+
+        cardRepository.shouldThrowError = true
+        cardRepository.thrownError = .apiConnectionFailed()
+        await model.addOffer(CardOffer.mockTravelOffer)
+
+        #expect(model.addOfferError == .apiConnectionFailed())
+        #expect(model.cards == cardsBefore) // nothing partial on screen
+        #expect(model.offeredCards == offersBefore)
+        #expect(model.viewState == .loaded) // the screen error surface stays untouched
+        #expect(model.lastAddedCardID == nil)
+    }
+
+    @Test func `dismissing the add error clears it for the next attempt`() async {
+        let (model, cardRepository, _, _) = makeModel()
+        await model.load()
+        cardRepository.shouldThrowError = true
+
+        await model.addOffer(CardOffer.mockTravelOffer)
+        #expect(model.addOfferError == .apiConnectionFailed())
+
+        model.dismissAddOfferError()
+        #expect(model.addOfferError == nil)
+
+        cardRepository.shouldThrowError = false
+        await model.addOffer(CardOffer.mockTravelOffer)
+        #expect(model.cards.last?.id == CardOffer.mockTravelOffer.id)
+        #expect(model.addOfferError == nil)
+    }
+
+    @Test func `adding an offer that is already managed surfaces cardAlreadyExists`() async {
+        // An out-of-sync catalog still lists an offer whose card already
+        // exists locally; the repository is the duplicate rule's owner and
+        // the model surfaces its verdict.
+        let alreadyManaged = Card(
+            id: CardOffer.mockCashbackOffer.id,
+            cardholderName: "Jordan Avery",
+            lastFourDigits: "4821",
+            type: .credit,
+            status: .active,
+            currency: "EUR",
+            spendingLimit: nil,
+        )
+        let (model, cardRepository, _, _) = makeModel(cards: [alreadyManaged], offers: CardOffer.mockDefaults)
+        await model.load()
+        #expect(model.cards.count == 1)
+
+        await model.addOffer(CardOffer.mockCashbackOffer)
+
+        #expect(cardRepository.addCardCallCount == 1)
+        #expect(model.addOfferError == .cardAlreadyExists(cardId: CardOffer.mockCashbackOffer.id))
+        #expect(model.cards.count == 1)
+        #expect(model.offeredCards.count == CardOffer.mockDefaults.count)
+    }
+
+    @Test func `addOffer refuses an offer that is no longer in the catalog`() async {
+        let (model, cardRepository, _, _) = makeModel(offers: [])
+        await model.load()
+        #expect(model.viewState == .loaded) // cards on screen, no offers
+
+        await model.addOffer(CardOffer.mockCashbackOffer)
+
+        #expect(cardRepository.addCardCallCount == 0) // never asked the backend
+        #expect(model.addOfferError == nil)
+    }
+
+    @Test func `a non-AppError add failure maps to the unknown error state`() async {
+        // A double that throws a plain Error from `addCard` only — impossible
+        // through the AppError-only mocks — pins the model's catch-all
+        // mapping for the add path.
+        let cardRepository = AddFailingUnknownErrorCardRepository(cards: Card.mockDefaults)
+        let model = DashboardModel(
+            cardRepository: cardRepository,
+            offersRepository: MockOffersRepository(seed: CardOffer.mockDefaults),
+            statusRepository: MockStatusRepository(seed: CardState.mockDefaults),
+        )
+        await model.load()
+
+        await model.addOffer(CardOffer.mockCashbackOffer)
+
+        // .unknown equality compares the underlying error's presence only.
+        #expect(model.addOfferError == .unknown(underlying: URLError(.badServerResponse)))
+        #expect(model.cards.count == Card.mockDefaults.count) // no partial add
+        #expect(model.offeredCards.contains { $0.id == CardOffer.mockCashbackOffer.id })
+        #expect(model.viewState == .loaded) // the screen error surface stays untouched
+    }
+}
+
+/// A `CardRepositoryProtocol` double whose `addCard` throws a plain `Error`
+/// while the read path succeeds — only reachable through a hand-rolled
+/// double, which is exactly its purpose (see `a non-AppError add failure
+/// maps to the unknown error state`).
+private struct AddFailingUnknownErrorCardRepository: CardRepositoryProtocol {
+    let cards: [Card]
+
+    func getCards() async throws -> [Card] {
+        cards
+    }
+
+    func addCard(_: CardOffer) async throws -> Card {
+        throw URLError(.badServerResponse)
+    }
+
+    func removeCard(cardId _: String) async throws {}
 }
 
 /// Bounded main-actor spin: yields until `condition` holds or the budget

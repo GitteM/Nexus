@@ -3,7 +3,7 @@ import Entities
 import SharedUI
 import SwiftUI
 
-/// The dashboard screen (architecture.md §9.3, tasks.md Day 10).
+/// The dashboard screen (architecture.md §9.3, tasks.md Day 10–11).
 ///
 /// A thin switch over the model's `viewState`: the loading / error / empty
 /// surfaces come from SharedUI components and the loaded screen delegates
@@ -19,6 +19,7 @@ public struct DashboardView: View {
 
     public var body: some View {
         content
+            .navigationTitle(Strings.Dashboard.title)
             .task { await model.load() }
             .refreshable { await model.refresh() }
     }
@@ -46,11 +47,17 @@ public struct DashboardView: View {
     }
 }
 
-/// The Day 10 loaded dashboard: cards and offers as grouped rows in a
-/// scroll view. This is the minimal placeholder content that Day 11 (M4)
-/// restyles into the swipeable card carousel and offers row; the model
-/// contract it renders — `cards`, `offeredCards`, and effective card status
-/// folded in from live `CardState` updates — is final.
+/// The loaded dashboard (tasks.md Day 11): the swipeable card carousel and
+/// the offers row, each under a section header, in one scroll view. This is
+/// the content restyle of the Day 10 scaffold; the model contract it
+/// renders — `cards`, `offeredCards`, and effective card status folded in
+/// from live `CardState` updates — is unchanged.
+///
+/// The action surfaces live here: adding an offer is the dashboard's one
+/// card action in M4, so success and failure haptics ride the model's
+/// `lastAddedCardID` / `addOfferError` signals, and a failed add surfaces
+/// the `AppError` in an alert without touching the loaded content
+/// (features.md §UX, architecture.md §9.3).
 private struct DashboardContentView: View {
     private let model: DashboardModel
 
@@ -62,154 +69,71 @@ private struct DashboardContentView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: Spacing.section1) {
                 if !model.cards.isEmpty {
-                    DashboardSection(title: Strings.Dashboard.cardsSection) {
-                        ForEach(model.cards) { card in
-                            CardRow(card: card)
-                                .overlay(alignment: .bottom) { Divider() }
-                        }
+                    section(Strings.Dashboard.cardsSection) {
+                        DashboardCarouselView(cards: model.cards)
                     }
                 }
                 if !model.offeredCards.isEmpty {
-                    DashboardSection(title: Strings.Dashboard.offersSection) {
-                        ForEach(model.offeredCards) { offer in
-                            OfferRow(offer: offer)
-                                .overlay(alignment: .bottom) { Divider() }
-                        }
+                    section(Strings.Dashboard.offersSection) {
+                        OffersSectionView(model: model)
                     }
                 }
             }
-            .padding(Spacing.lg)
+            .padding(.vertical, Spacing.xl)
+        }
+        .sensoryFeedback(.success, trigger: model.lastAddedCardID)
+        .sensoryFeedback(.error, trigger: model.addOfferError) { _, newValue in
+            newValue != nil
+        }
+        .alert(
+            Strings.Dashboard.addOfferFailedTitle,
+            isPresented: addErrorPresented,
+            presenting: model.addOfferError,
+        ) { _ in
+            Button(Strings.Common.ok) {
+                model.dismissAddOfferError()
+            }
+        } message: { error in
+            Text(alertMessage(for: error))
         }
     }
-}
 
-/// Titled, rounded group of rows (dashboard content scaffolding).
-private struct DashboardSection<Content: View>: View {
-    private let title: String
-    private let content: Content
-
-    init(title: String, @ViewBuilder content: () -> Content) {
-        self.title = title
-        self.content = content()
-    }
-
-    var body: some View {
+    private func section(_ title: String, @ViewBuilder content: () -> some View) -> some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
             Text(title)
                 .font(.headline)
                 .foregroundStyle(ColorPalette.label)
                 .accessibilityAddTraits(.isHeader)
-            VStack(spacing: 0) {
-                content
-            }
-            .background(
-                ColorPalette.secondaryBackground,
-                in: RoundedRectangle(cornerRadius: 12),
-            )
+                .padding(.horizontal, Spacing.lg)
+            content()
         }
     }
-}
 
-/// One managed card row: type icon, masked number, holder, live status.
-private struct CardRow: View {
-    private let card: Card
-
-    init(card: Card) {
-        self.card = card
+    /// The alert's dismissal clears the model's transient error so the next
+    /// failure can present again (architecture.md §9.1: views mutate model
+    /// state through model methods).
+    private var addErrorPresented: Binding<Bool> {
+        Binding(
+            get: { model.addOfferError != nil },
+            set: { presented in
+                if !presented {
+                    model.dismissAddOfferError()
+                }
+            },
+        )
     }
 
-    var body: some View {
-        HStack(spacing: Spacing.md) {
-            Image(systemName: card.type.icon)
-                .font(.title3)
-                .foregroundStyle(ColorPalette.brand)
-                .frame(width: Spacing.xl)
-                .accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: Spacing.xs) {
-                Text(maskedNumber)
-                    .font(.body.weight(.medium))
-                    .foregroundStyle(ColorPalette.label)
-                Text(card.cardholderName)
-                    .font(.caption)
-                    .foregroundStyle(ColorPalette.secondaryLabel)
-            }
-            Spacer(minLength: Spacing.md)
-            StatusBadge(status: card.status)
+    /// Alert copy reuses the `AppError` surfaces: the headline first, the
+    /// recovery guidance below (ErrorView order, §5).
+    private func alertMessage(for error: AppError) -> String {
+        var parts: [String] = []
+        if let description = error.errorDescription {
+            parts.append(description)
         }
-        .padding(Spacing.md)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(accessibilityLabel)
-    }
-
-    /// Only the display-safe tail is shown; a provisioned card with no
-    /// number yet (Day 7, empty last-four) falls back to its type name.
-    private var maskedNumber: String {
-        card.lastFourDigits.isEmpty ? card.type.displayName : "•••• \(card.lastFourDigits)"
-    }
-
-    private var accessibilityLabel: String {
-        card.lastFourDigits.isEmpty
-            ? "\(card.type.displayName) card, \(card.status.displayName)"
-            : "Card ending in \(card.lastFourDigits), \(card.status.displayName)"
-    }
-}
-
-/// One offer row: type icon, marketing title and subtitle. The add-offer
-/// action lands with the Day 11 offers row.
-private struct OfferRow: View {
-    private let offer: CardOffer
-
-    init(offer: CardOffer) {
-        self.offer = offer
-    }
-
-    var body: some View {
-        HStack(spacing: Spacing.md) {
-            Image(systemName: offer.type.icon)
-                .font(.title3)
-                .foregroundStyle(ColorPalette.brand)
-                .frame(width: Spacing.xl)
-                .accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: Spacing.xs) {
-                Text(offer.title)
-                    .font(.body.weight(.medium))
-                    .foregroundStyle(ColorPalette.label)
-                Text(offer.subtitle)
-                    .font(.caption)
-                    .foregroundStyle(ColorPalette.secondaryLabel)
-            }
-            Spacer(minLength: Spacing.md)
+        if let suggestion = error.recoverySuggestion {
+            parts.append(suggestion)
         }
-        .padding(Spacing.md)
-        .accessibilityElement(children: .combine)
-    }
-}
-
-/// Small colored pill showing a card's lifecycle status.
-private struct StatusBadge: View {
-    private let status: CardStatus
-
-    init(status: CardStatus) {
-        self.status = status
-    }
-
-    var body: some View {
-        Label(status.displayName, systemImage: status.icon)
-            .font(.caption.weight(.medium))
-            .labelStyle(.titleAndIcon)
-            .foregroundStyle(tint)
-            .padding(.horizontal, Spacing.sm)
-            .padding(.vertical, Spacing.xs)
-            .background(tint.opacity(0.12), in: Capsule())
-            .accessibilityHidden(true) // the row already reads the status
-    }
-
-    private var tint: Color {
-        switch status {
-        case .active: ColorPalette.success
-        case .frozen: ColorPalette.warning
-        case .expired, .lost: ColorPalette.destructive
-        }
+        return parts.joined(separator: "\n")
     }
 }
 

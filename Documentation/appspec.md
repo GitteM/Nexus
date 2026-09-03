@@ -33,16 +33,14 @@
 ## 2. Feature specifications
 
 ### 2.1 Card Management — dashboard, carousel, offers
-- **Status:** Day 10 (M4) portion settled — model contract below; carousel
-  behavior, card art, and offer→card confirmation are open decisions that
-  land with Day 11.
+- **Status:** M4 (Days 10–11) settled — model contract and Day 11
+  dashboard behaviors below are pinned by code + tests; card controls land
+  at M5 (§2.2).
 - **Scope pointer:** features.md §Core Features (Card Dashboard, Card
   Personalization); tasks.md Days 10–11; architecture.md §9 (Dashboard
   model/view), §11.4 (CardOffer → Card add path).
-- **Open decisions to record here at M4:** carousel behavior (swipe
-  boundaries, reorder?), card art variants, offer→card add confirmation.
 
-**Model contract (Day 10, pinned by tests):**
+**Model contract (Days 10–11, pinned by tests):**
 
 - `DashboardModel` (MV model, no ViewModel layer) publishes `viewState`
   `{loading, loaded, empty, error(AppError)}`, `cards`, `offeredCards`,
@@ -60,6 +58,49 @@
   card's effective status via `Card.withStatus`.
 - Views switch on `viewState`; one-shot work is view-triggered
   (`.task`/`.refreshable`).
+- `addOffer(_:)` is the offer→card operation: one model method over one
+  repository (`CardRepositoryProtocol.addCard`, architecture.md §4.4). On
+  success the returned card is appended to `cards`, its live subscription
+  starts, and the offer leaves `offeredCards`. In-flight adds are tracked
+  per offer (`offersBeingAdded`); a failed add sets a transient
+  `addOfferError` (never blanks `.loaded` content); `dismissAddOfferError()`
+  clears it.
+
+**Day 11 dashboard behaviors (pinned by code + tests):**
+
+1. *Card carousel* — a paged `TabView`, one card front per managed card, in
+   repository order (no manual reorder in v1.0). Swipe to change page;
+   custom dots below the art; VoiceOver reads each front as one element
+   ("Credit card ending in 4821, Active", value "Card 1 of 6") with an
+   adjustable action to page up/down. The front shows the live status
+   (chip drawn from `card.status`, so `CardState` updates repaint it).
+2. *Card art* — a physical-card look, per `CardType` gradient
+   (`ColorPalette.CardArt` + `CardArtwork` in SharedUI, reused by later
+   card screens) with fixed white on-art text; same art in dark and light
+   (appearance support comes from the chrome around it). Height scales with
+   Dynamic Type. Only display-safe data is drawn: the last four digits, or
+   the type name for a provisioned card with no number yet — no PAN is
+   ever fabricated or rendered.
+3. *Offers row* — a horizontal row of offer mini-cards (type art + title +
+   subtitle) with an explicit add action. No confirmation sheet: Add calls
+   `addOffer` directly; the button shows a spinner while in flight and the
+   offer disappears from the catalog on success. An offer whose id is
+   already managed renders as "Added" (disabled) — the repository is the
+   duplicate rule's owner and throws `cardAlreadyExists` if asked.
+4. *Failure UX* — a failed add surfaces the `AppError` (headline +
+   recovery guidance) in an alert; the loaded dashboard content stays on
+   screen. Success/failure haptics ride the model's `lastAddedCardID` /
+   `addOfferError` signals (`.sensoryFeedback`, features.md §UX).
+5. *UI-test harness* — the dashboard UI suite launches with `-demoMode` and
+   the `-demoState=ready|loading|error` knobs, which drive the shared mock
+   repositories (architecture.md §10). **Interim app-target note:** Day 11
+   adds a small DEBUG-only `DemoRootView` (Nexus/DemoRootView.swift) that
+   parses the launch arguments and builds the dashboard over the mocks;
+   Day 14's `AppContainer` replaces it — it is not a shipped pattern.
+
+**Rule of record:** `DashboardModel` code + tests (Day 10–11),
+`DashboardView`/carousel/offers code + UI tests, and this section — keep
+in sync in the M4 PR.
 
 ### 2.2 Card Controls — freeze/unfreeze, lost/stolen, replacement, spending limits
 - **Status:** draft — proposed defaults marked 🔶, confirm at M5 (Day 12).

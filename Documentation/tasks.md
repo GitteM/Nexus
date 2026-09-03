@@ -103,11 +103,11 @@
 
 ### Day 11 — Dashboard content + card carousel (M4)
 
-- [ ] Swipeable card carousel with card art, last-4 digits, status indicators (active/frozen/expired) (features.md — Card Dashboard).
-- [ ] Offers row: add an offer → becomes a managed card via `CardRepository.addCard` (architecture.md §4.4 example).
-- [ ] Dark/light appearance; haptic feedback on card actions; Dynamic Type + VoiceOver pass (features.md — UX).
-- [ ] UI tests: `-demoMode` renders ready state; `-demoState=error`/`-demoState=loading` knobs drive the mock repositories (architecture.md §10).
-- **Verify:** UI tests green on the iPhone 17 simulator; carousel accessible.
+- [x] Swipeable card carousel with card art, last-4 digits, status indicators (active/frozen/expired) (features.md — Card Dashboard).
+- [x] Offers row: add an offer → becomes a managed card via `CardRepository.addCard` (architecture.md §4.4 example).
+- [x] Dark/light appearance; haptic feedback on card actions; Dynamic Type + VoiceOver pass (features.md — UX).
+- [x] UI tests: `-demoMode` renders ready state; `-demoState=error`/`-demoState=loading` knobs drive the mock repositories (architecture.md §10).
+- **Verify:** UI tests green on the iPhone 17 simulator; carousel accessible. — done: full workspace TestPlan green on iPhone 17 (Domain 161 tests/20 suites, Data 156/19, Features 36/5, 1 app smoke, 4 UI tests in `DashboardUITests` — ready/error/loading states + add-offer flow, replacing the Day 1 launch smoke), zero build warnings (second-run clean; first-run set was the documented dependency-scan noise), `swiftformat` clean, Release build compiles the DEBUG-only demo root out; appspec §2.1 records the M4 behavior decisions (paged carousel in repository order, per-`CardType` art via `ColorPalette.CardArt` + `CardArtwork`, direct offer→card add with transient-error alert, haptics on add success/failure). Coverage note: the UI tests assert the accessibility surface (labels/values/identifiers) and the add flow; haptics ride model signals asserted in unit tests — the physical haptic feel and the full visual Dynamic Type/VoiceOver pass are Day 15 human QA.
 
 ### Day 12 — Card detail & controls (M5)
 
