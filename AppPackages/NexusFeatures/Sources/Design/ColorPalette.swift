@@ -28,9 +28,7 @@ public enum ColorPalette {
     public static let warning = Color(hex: 0xB26A00)
     public static let destructive = Color(hex: 0xD64541)
 
-    // MARK: Card art (physical card front; fixed values, not
-
-    // appearance-aware — a card is the same object in dark and light)
+    // MARK: Card art — fixed card-front values (not appearance-aware)
 
     /// The card-front look per `CardType`. The artwork is a product-design
     /// decision, so it ships in the token layer (`ColorPalette`); the
