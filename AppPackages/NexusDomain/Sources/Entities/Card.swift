@@ -35,6 +35,24 @@ public struct Card: Codable, Sendable, Equatable, Identifiable {
 }
 
 public extension Card {
+    /// A copy of this card with a new lifecycle status — the model's way to
+    /// fold live `CardState` updates back into the managed-card list
+    /// (architecture.md §9.1: subscriptions "also update card.status")
+    /// without reconstructing the whole entity at the call site.
+    func withStatus(_ status: CardStatus) -> Card {
+        Card(
+            id: id,
+            cardholderName: cardholderName,
+            lastFourDigits: lastFourDigits,
+            type: type,
+            status: status,
+            currency: currency,
+            spendingLimit: spendingLimit,
+        )
+    }
+}
+
+public extension Card {
     static let mockCreditCard = Card(
         id: "card-credit-001",
         cardholderName: "Jordan Avery",

@@ -118,6 +118,27 @@ struct CardTests {
         #expect(decoded.status == .active)
     }
 
+    // MARK: - Copying
+
+    @Test func `withStatus copies every property and swaps only the status`() {
+        let card = Card.mockDebitCard
+
+        let frozen = card.withStatus(.frozen)
+
+        #expect(frozen.status == .frozen)
+        #expect(frozen.id == card.id)
+        #expect(frozen.cardholderName == card.cardholderName)
+        #expect(frozen.lastFourDigits == card.lastFourDigits)
+        #expect(frozen.type == card.type)
+        #expect(frozen.currency == card.currency)
+        #expect(frozen.spendingLimit == card.spendingLimit)
+        #expect(card.status == .active) // original untouched — value semantics
+    }
+
+    @Test func `withStatus can reactivate a frozen card`() {
+        #expect(Card.mockFrozenCard.withStatus(.active).status == .active)
+    }
+
     // MARK: - Mocks
 
     @Test func `mock defaults are non empty and unique`() {
