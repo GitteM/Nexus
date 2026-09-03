@@ -10,10 +10,13 @@ import ServiceProtocols
 // (architecture.md §9.5, tasks.md Day 8); these doubles exist only so the
 // NexusDomain test target can exercise the protocols without leaving the
 // package. Each double is created per test, so mutable state never crosses
-// concurrency domains.
+// concurrency domains. The repository protocols are `Sendable` (§4.2), so
+// the doubles are main-actor classes (implicitly Sendable), matching the
+// `@MainActor` mock repositories.
 
 // MARK: - Repository doubles
 
+@MainActor
 final class TestCardRepository: CardRepositoryProtocol {
     private(set) var cards: [Card]
     var error: AppError?
@@ -54,6 +57,7 @@ final class TestCardRepository: CardRepositoryProtocol {
     }
 }
 
+@MainActor
 final class TestCardOffersRepository: CardOffersRepositoryProtocol {
     private(set) var offers: [CardOffer]
     var error: AppError?
@@ -90,6 +94,7 @@ final class TestCardOffersRepository: CardOffersRepositoryProtocol {
     }
 }
 
+@MainActor
 final class TestCardStatusRepository: CardStatusRepositoryProtocol {
     private(set) var states: [String: CardState]
     var error: AppError?
@@ -138,6 +143,7 @@ final class TestCardStatusRepository: CardStatusRepositoryProtocol {
     }
 }
 
+@MainActor
 final class TestCardActionRepository: CardActionRepositoryProtocol {
     private(set) var commands: [CardCommand] = []
     var error: AppError?
