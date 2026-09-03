@@ -1,33 +1,16 @@
 # Contributing to Nexus
 
-> **TL;DR:** All commits must follow Conventional Commits. Use `type(scope): description`. Keep subject lines under 72 characters, use imperative mood, and no period at the end.
+> **TL;DR:** Conventional Commits: `type(scope): subject`. Subject ≤ 72
+> chars, imperative mood, capitalized, no trailing period. Branches:
+> `feature/` `bugfix/` `hotfix/` `chore/` `docs/`. You never merge your own
+> PR — the user does. Nothing here is enforced by a commit hook; CI and the
+> reviewer check, so agents must self-check against the rules below.
 
 ---
 
-## 📋 Table of Contents
+## 1. Commit message specification
 
-1. [Commit Message Specification](#-commit-message-specification)
-   - [Format Overview](#format-overview)
-   - [Allowed Types](#allowed-types)
-   - [Scope Rules](#scope-rules)
-   - [Subject Line Rules](#subject-line-rules)
-   - [Body Rules](#body-rules)
-   - [Footer Rules](#footer-rules)
-   - [Breaking Changes](#breaking-changes)
-   - [Validation Examples](#validation-examples)
-2. [Branch Naming Convention](#-branch-naming-convention)
-3. [Pull Request Process](#-pull-request-process)
-4. [Development Setup](#-development-setup)
-5. [Testing Requirements](#-testing-requirements)
-6. [Code of Conduct](#-code-of-conduct)
-
----
-
-## 📝 Commit Message Specification
-
-### Format Overview
-
-All commit messages MUST follow the **Conventional Commits v1.0.0** specification:
+All commit messages follow the **Conventional Commits v1.0.0** spec:
 
 ```
 <type>[optional scope]: <description>
@@ -37,204 +20,167 @@ All commit messages MUST follow the **Conventional Commits v1.0.0** specificatio
 [optional footer(s)]
 ```
 
-### Allowed Types
+### Allowed types
 
-| Type | When to Use | Example |
+| Type | When to use | Example (Swift-flavored) |
 | :--- | :--- | :--- |
-| **`feat`** | A new feature or user-facing functionality | `feat: add password reset flow` |
-| **`fix`** | A bug fix for existing functionality | `fix: correct session timeout handling` |
-| **`docs`** | Documentation-only changes (README, API docs, comments) | `docs: update installation guide` |
-| **`style`** | Code style changes: formatting, whitespace, missing semicolons, etc. | `style: format with Prettier` |
-| **`refactor`** | Code restructuring that neither fixes a bug nor adds a feature | `refactor: extract validation service` |
-| **`perf`** | Performance optimization | `perf: memoize expensive computation` |
-| **`test`** | Adding new tests or correcting existing ones | `test: add edge cases for login` |
-| **`chore`** | Build tooling, dependency updates, or maintenance tasks | `chore: upgrade typescript to v5` |
-| **`ci`** | Changes to CI/CD configuration and scripts | `ci: add GitHub Actions workflow` |
-| **`build`** | Changes to build system or external dependencies | `build: update webpack configuration` |
-| **`revert`** | Reverts a previous commit | `revert: revert "feat: add logout button"` |
+| **`feat`** | New feature or user-facing functionality | `feat(data): add OffersDataSource with TTL cache` |
+| **`fix`** | Bug fix | `fix(session): correct reconnect subscription replay` |
+| **`docs`** | Documentation only | `docs(tasks): mark Day 6 data sources complete` |
+| **`style`** | Formatting/whitespace, no behavior change | `style: format with swiftformat` |
+| **`refactor`** | Restructure; no bug fix, no feature | `refactor(cards): extract validation helper` |
+| **`perf`** | Performance improvement | `perf: memoize balance formatting` |
+| **`test`** | Add/correct tests | `test(data): cover cache TTL expiry` |
+| **`chore`** | Tooling/maintenance | `chore: drop placeholder DataSources stub` |
+| **`ci`** | CI/CD config changes | `ci(pr): add DeepSeek AI code review workflow` |
+| **`build`** | Build system / dependencies | `build(data): add Session dependency to DataSources` |
+| **`revert`** | Revert a commit | `revert: revert "feat: add freeze card action"` |
 
-### Scope Rules
+### Scope
 
-The scope is **optional** but highly recommended when the change affects a specific module/component.
+Optional but recommended when the change is localized. Lowercase module or
+area name, hyphenated when needed: `domain`, `data`, `session`, `features`,
+`app`, `ui`, `docs`, `ci`, `tasks`. Omit for cross-cutting changes.
 
-- **Format:** `type(scope): description`
-- **Allowed characters:** Lowercase letters, hyphens (`-`), and underscores (`_`)
-- **Examples:**
-  - `feat(auth): add OAuth2 provider`
-  - `fix(api): correct response status code`
-  - `refactor(ui/buttons): simplify button component`
+### Subject line
 
-**Scope Guidance:**
-- Use the folder/module name: `(components)`, `(hooks)`, `(utils)`
-- Use the feature name: `(auth)`, `(dashboard)`, `(checkout)`
-- For cross-cutting changes, omit the scope: `feat: add logging throughout app`
-
-### Subject Line Rules
-
-| Rule | Requirement | ✅ Good Example | ❌ Bad Example |
+| Rule | Requirement | ✅ | ❌ |
 | :--- | :--- | :--- | :--- |
-| **Length** | ≤ 72 characters (50 is ideal) | `fix: correct timeout error` (24 chars) | `fix: correct the timeout error that occurs when the user session expires after 30 minutes` (89 chars) |
-| **Mood** | Imperative (command form) | `Add`, `Fix`, `Update` | `Added`, `Adds`, `Fixed` |
-| **Capitalization** | Capitalize first letter | `Fix login bug` | `fix login bug` |
-| **Punctuation** | No period at the end | `Add user profile view` | `Add user profile view.` |
-| **Content** | Summary of *what* changed, not *how* | `Add payment validation` | `Add if statement for payment` |
+| Length | ≤ 72 chars (50 ideal) | `feat(data): add offers TTL cache` | `feat(data): add an offers data source that caches with a TTL and refreshes in the background` |
+| Mood | Imperative | `Add`, `Fix`, `Update` | `Added`, `Adds`, `Fixed` |
+| Capitalization | First letter capital | `Fix login bug` | `fix login bug` |
+| Punctuation | No trailing period | `Add payment validation` | `Add payment validation.` |
+| Content | What changed, not how | `Add payment validation` | `Add if statement for payment` |
 
-**Quick Subject Checklist:**
-```
-✅ "Fix memory leak in image loader"
-✅ "Add support for dark mode"
-✅ "Update error messages for validation"
-❌ "Fixed memory leak"           (past tense)
-❌ "fix: memory leak"            (lowercase)
-❌ "Add support for dark mode."  (has period)
-```
+### Body
 
-### Body Rules
+- Optional; required when the subject needs context.
+- Blank line after subject; wrap at 72 chars; explain *what* and *why*,
+  not *how*.
 
-The body is **optional** but required when the change needs explanation beyond the subject line.
+### Footers
 
-| Rule | Requirement |
-| :--- | :--- |
-| **Separation** | Separate body from subject with a blank line |
-| **Line wrapping** | Wrap at 72 characters |
-| **Content focus** | Explain the *what* and *why*, NOT the *how* |
-| **Paragraphs** | Use multiple paragraphs for complex changes |
+- `Closes #42` / `Refs #37, #41` for issue links.
+- Breaking changes: `BREAKING CHANGE:` footer, or `!` after the type/scope
+  (`feat(api)!: ...`).
 
-**Good Body Example:**
-```
-fix: correct user session timeout handling
+### Validation examples
 
-The session was not being properly invalidated when users
-closed their browser, leading to stale sessions persisting
-beyond the intended TTL.
-
-This change explicitly calls session.destroy() on browser
-close events and adds a cleanup routine for orphaned
-sessions every 5 minutes.
-```
-
-### Footer Rules
-
-Footers are **optional** and used for:
-
-1. **Breaking Change Notification** (see below)
-2. **Issue References**
-
-**Issue Reference Format:**
-```
-feat: add user settings page
-
-Closes #42
-Refs #37, #41
-```
-
-### Breaking Changes
-
-To signal a breaking change (backward-incompatible API changes), use **ONE** of these methods:
-
-**Method 1: Exclamation Mark in the Header**
-```
-feat(api)!: change response format for user endpoint
-```
-
-**Method 2: Footer with Breaking Change**
-```
-feat: update authentication flow
-
-BREAKING CHANGE: JWT token format has changed. Existing tokens
-will be invalidated and require re-authentication.
-```
-
----
-
-### Validation Examples
-
-**✅ Valid Commits**
+**✅ Valid**
 
 ```bash
 feat(auth): add biometric login support
-fix: correct rate limiting for API endpoints
-docs: update README with new configuration options
+fix: correct session timeout handling
+docs: update contributing guide
 refactor(utils): extract date formatting helpers
-perf: lazy load images in gallery view
-test: add unit tests for payment processor
-chore: upgrade dependencies to latest versions
+test: add edge cases for transaction filtering
+ci(pr): add DeepSeek AI code review workflow
 ```
 
-**❌ Invalid Commits**
+**❌ Invalid**
 
-| Commit Message | Why It's Invalid |
+| Commit | Why invalid |
 | :--- | :--- |
 | `updated code` | No type prefix |
 | `FEAT: add login` | Type must be lowercase |
-| `fix: Added validation` | Past tense ("Added") |
-| `fix(API): update endpoint` | Scope must be lowercase ("api") |
-| `fix: corrected the bug.` | Period at the end |
-| `feat: add long description that goes way beyond the seventy two character limit which makes it hard to read` | Exceeds 72 characters |
-| `refactor: changed function name and updated the README and also fixed a bug` | Multiple changes in one commit (violates atomic commits) |
+| `fix: Added validation` | Past tense |
+| `fix(API): update endpoint` | Scope must be lowercase |
+| `fix: corrected the bug.` | Trailing period |
+| `feat: add long description that goes way beyond seventy two chars` | Subject too long |
+| `refactor: change A and update B and fix C` | Not atomic — one change per commit |
 
 ---
 
-## 🌿 Branch Naming Convention
+## 2. Branch naming
 
-Use descriptive branch names with forward slashes:
+One short-lived branch per day's work, from `main`:
 
-```
-feature/add-dark-mode
-fix/user-login-error
-docs/update-installation-guide
-chore/update-dependencies
-release/v2.0.0
-```
+- `feature/` — new features or enhancements
+- `bugfix/` — bug fixes
+- `hotfix/` — critical fixes for a released state
+- `chore/` — maintenance, tooling, refactoring
+- `docs/` — documentation-only changes
+
+No long-lived or `develop`/`release` branches. Branches live < 1 day.
 
 ---
 
-## 🔄 Pull Request Process
+## 3. Pull request process
 
-1. **Title format:** Follow the same commit format for PR titles (e.g., `feat: add dark mode`)
-2. **Description template:**
-   - **What does this PR do?** - Summary of changes
-   - **Why is this needed?** - Context or issue link
-   - **Testing:** - How to test locally
-   - **Screenshots:** - If UI changes
-3. **Checklist:**
+1. Push the branch and open a PR to `main` early (draft is fine).
+2. **Title:** Conventional Commits format (`feat(cards): ...`).
+3. **Description:**
+   - What does this PR do?
+   - Why is this needed? (issue link or context)
+   - Testing: what you ran and the result
+   - Screenshots: for UI changes
+4. **Checklist:**
    - [ ] Commit messages follow Conventional Commits
-   - [ ] Tests added/updated
-   - [ ] Documentation updated
-   - [ ] All tests pass locally
+   - [ ] `swiftformat .` clean
+   - [ ] Workspace TestPlan green, zero build warnings
+   - [ ] Tests added/updated for new logic
+   - [ ] Docs updated (README/CHANGELOG, architecture.md, AGENTS.md,
+     tasks.md/ROADMAP.md as relevant)
+5. **Merge:** the user reviews and merges (squash). CI must be green first.
+   Never merge your own PR; never push to `main`.
 
 ---
 
-## 🛠️ Development Setup
+## 4. Development setup
 
 ```bash
-# Clone and install
-git clone https://github.com/username/project.git
-cd project
-npm install
+# Prerequisites: Xcode 26.6, iPhone 17 simulator (iOS 26.5), swiftformat
 
-# Development workflow
-npm run dev     # Start dev server
-npm test        # Run tests
-npm run lint    # Check code style
-npm run build   # Build for production
+open Nexus.xcworkspace            # full workspace (app + packages)
+
+# Build / test the whole workspace TestPlan:
+xcodebuild test -workspace Nexus.xcworkspace \
+  -scheme Nexus \
+  -destination 'platform=iOS Simulator,name=iPhone 17'
+
+# Faster: build or test a single package:
+swift build --package-path AppPackages/NexusDomain
+swift test  --package-path AppPackages/NexusData
+
+# Format / lint:
+swiftformat .                     # format in place (run before submitting)
+swiftformat --lint .              # CI lint check
 ```
 
----
-
-## 🧪 Testing Requirements
-
-- **Unit tests:** Required for all new features and bug fixes
-- **Coverage:** Maintain or improve existing coverage (≥80%)
-- **E2E tests:** Required for user-facing features
-- **Run:** `npm run test:coverage` before opening PR
+Configs live in `Configs/` (`Debug.xcconfig`, `Release.xcconfig`,
+`Info.plist`); the scheme and TestPlan are shared at the workspace root.
 
 ---
 
-## 📄 Code of Conduct
+## 5. Testing requirements
 
-Be respectful, inclusive, and constructive. Read our full [Code of Conduct](CODE_OF_CONDUCT.md).
+- **Framework:** Swift Testing (`@Suite`, `@Test`, `#expect`) — no XCTest
+  for new suites.
+- **Placement:** test targets beside code (`AppPackages/*/Tests`); suites
+  aggregate in `TestPlan.xctestplan` and run in CI.
+- **What to cover:** all new business logic (unit); critical user flows
+  (UI tests, launched with `-demoMode`); aim for > 80% coverage overall.
+- **Verify:** the full workspace TestPlan command above, not just the
+  package you touched.
 
 ---
 
-**🎯 Reminder:** All commits are validated automatically using `commitlint`. Invalid commits will be rejected. Save yourself the hassle and use the format above!
+## 6. Documentation
+
+Keep docs in sync with the change:
+
+- Root `README.md` / `Documentation/CHANGELOG.md` — user-facing features
+  (both are empty placeholders until v1.0, Day 15 — see tasks.md).
+- `Documentation/architecture.md` — when a pattern, target, or invariant
+  changes.
+- `Documentation/AGENTS.md` and `.codewhale/instructions.md` — when
+  workflows or agent conventions change.
+- `Documentation/tasks.md` / `ROADMAP.md` — day/milestone status.
+- `Documentation/features.md` — product scope; resolve scope conflicts in
+  `ROADMAP.md` §5 (architecture.md wins).
+
+---
+
+**Living document.** Update it when these rules change, and keep
+`Documentation/AGENTS.md` and `.codewhale/instructions.md` consistent with
+it — agents read all three.

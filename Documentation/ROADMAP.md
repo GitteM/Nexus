@@ -1,8 +1,8 @@
 # Nexus Roadmap
 
-> **Status:** Living document — drafted 2026-09-01 from [architecture.md](architecture.md) (the "how") and [features.md](features.md) (the "what"). The daily breakdown lives in [tasks.md](tasks.md). **M0 (Day 1) complete 2026-09-01** — workspace, three package skeletons, thin `Nexus` app target, TestPlan and CI files in place. **M1 (Days 2–4) complete 2026-09-02** — Domain entities, `AppError`, and the repository/service protocols merged to `main`; workspace builds with zero warnings and the full TestPlan is green (159 Domain tests in 20 suites).
+> **Status:** Living document — drafted 2026-09-01 from [architecture.md](architecture.md) (the "how") and [features.md](features.md) (the "what"). The daily breakdown lives in [tasks.md](tasks.md). **M0 (Day 1) complete 2026-09-01** — workspace, three package skeletons, thin `Nexus` app target, TestPlan and CI files in place. **M1 (Days 2–4) complete 2026-09-02** — Domain entities, `AppError`, and the repository/service protocols merged to `main`. **M2 (Days 5–8) in progress as of 2026-09-03** — Day 5 session manager merged (#7); the live day state and test counts live in [tasks.md](tasks.md) checkboxes and git history, not in this block.
 >
-> **Source of truth:** `architecture.md` wins on patterns and structure; `features.md` wins on product scope. Where they conflict, this document follows `architecture.md` (see [Known tensions](#5-known-tensions--decisions)).
+> **Source of truth:** `architecture.md` wins on patterns and structure; `appspec.md` wins on behavior detail; `features.md` wins on product scope. Where they conflict, this document follows `architecture.md` (see [Known tensions](#5-known-tensions--decisions)).
 
 ## 1. Goal
 
@@ -78,10 +78,14 @@ Estimated effort: **28 working days (~6 weeks)**. Milestones map 1:1 to days in 
 
 ## 5. Known tensions & decisions
 
-- **Demo persistence (features.md vs architecture.md).** `features.md` says demo state persists via "UserDefaults/Keychain"; `architecture.md` says demo mode is in-memory only and durable data lives in SwiftData, credentials in Keychain. **Decision: architecture.md wins** — demo is in-memory with reset; persistence is a live-mode concern.
+- **Demo persistence (features.md vs architecture.md).** `features.md` once said demo state persists via "UserDefaults/Keychain"; `architecture.md` says demo mode is in-memory only and durable data lives in SwiftData, credentials in Keychain. **Decision: architecture.md wins** — demo is in-memory with reset; persistence is a live-mode concern. (`features.md` now says the same.)
 - **Features with no blueprint coverage.** Payments, security, Apple Pay, Wallet extension, alerts, insights, virtual cards appear only in `features.md`; the architecture document is a pattern guide, not a scope list. **Decision:** build them on the same MV patterns, adding domain protocols (e.g., `PaymentRepositoryProtocol`, `BiometricAuthServiceProtocol`) following §4.2/§4.3.
 - **Wallet issuer extension adds a new target.** The `NexusWalletExtension` extension target goes beyond the module map in `architecture.md` §3 — update that document when it lands (Day 23).
-- **`appspec.md` is empty.** Not a source; revisit when populated.
+- **`appspec.md` is the behavior spec.** `features.md` wins on scope;
+  `appspec.md` refines it with per-feature rules, flows, and acceptance
+  criteria (skeleton + Card Controls example as of 2026-09-03);
+  `architecture.md` wins on patterns. Shipped behavior is ruled by code +
+  tests — update `appspec.md` in the same PR that implements or changes it.
 
 ## 6. Risks
 

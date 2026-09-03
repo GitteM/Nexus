@@ -1,182 +1,126 @@
-# iOS App: Nexus - Agent Guidance
+# AGENTS.md — Nexus Agent Operating Guide
 
-> **Companion docs:** [architecture.md](architecture.md) (architecture blueprint) · [features.md](features.md) (product features) · [CONTRIBUTING.md](CONTRIBUTING.md) (commit message spec & PR process)
+> Who this is for: any AI coding agent working in this repo (Codewhale on
+> Claude or DeepSeek, and similar), plus humans who want the same rules.
+> Codewhale agents get a condensed injection summary in
+> `.codewhale/instructions.md`; when the two differ, this file wins. The
+> full authority chain lives in `Documentation/README.md` (Conventions).
+>
+> Companion docs: [architecture.md](architecture.md) (patterns) ·
+> [features.md](features.md) (product) · [appspec.md](appspec.md) (feature
+> behavior/acceptance) · [CONTRIBUTING.md](CONTRIBUTING.md) (commits/PRs) ·
+> [README.md](README.md) (index for this folder & read-when map) ·
+> [tasks.md](tasks.md) / [ROADMAP.md](ROADMAP.md) (day/milestone state).
 
-## Where to work right now (read this first)
-- **Repo:** [Link to your repository].
-- **Default branch:** `main` - This is always in a releasable state.
-- **Active branch:** Before you start, confirm with `git branch --show-current`. Always branch from `main` for new work.
-- **No `develop` or `release` branches:** We use trunk-based development with `main` as the only permanent branch.
+## 1. Repo at a glance
 
-## 🏦 What the app is (from features.md)
+- **Nexus**: SwiftUI iOS banking app focused on **cards and their features**
+  (issuing, freeze/unfreeze, spending limits, balances, transactions,
+  payments, security, Apple Pay). See [features.md](features.md).
+- **Remote**: `git@github.com:GitteM/Nexus.git`. Default branch `main` is
+  the only permanent branch — no `develop`/`release`.
+- **Stack**: Swift 6.3 (Swift 6 mode, `swift-tools-version: 6.3`), Xcode
+  26.6, iOS 17.0+ floor. Workspace `Nexus.xcworkspace`; three SPM packages
+  under `AppPackages/` (`NexusDomain`, `NexusData`, `NexusFeatures`) plus a
+  thin `Nexus` app target (composition root). No umbrella modules — import
+  concrete targets.
+- **Architecture**: MV (Model-View). SwiftUI views driven by `@MainActor
+  @Observable` models publishing explicit `viewState` enums. No ViewModels,
+  no Combine, no completion handlers. One `AppError`. SwiftData + Keychain +
+  in-memory actor cache; mocks behind `#if DEBUG`; `-demoMode` /
+  `API_ENVIRONMENT = demo`.
+- **Testing**: Swift Testing (`@Suite`/`@Test`/`#expect`), test targets
+  beside code, aggregated in the workspace TestPlan (`TestPlan.xctestplan`);
+  UI tests launch with `-demoMode`.
 
-Nexus is a SwiftUI iOS banking app focused on **cards and their features**. Highlights:
+## 2. Read the right doc (do this before acting)
 
-- **Card management** – dashboard with card art and status (active/frozen/expired), freeze/unfreeze, report lost/stolen, replacement requests, PIN management (biometric-protected), virtual card personalization.
-- **Balances & transactions** – real-time balances, transaction history with search/filter (date, category, amount, status), transaction details.
-- **Payments** – credit card payments (minimum/full/custom amount) with confirmation receipts.
-- **Security** – biometric authentication (Face ID / Touch ID), app lock on background, session timeout, secure PIN entry.
-- **iOS integrations** – Apple Pay provisioning (`PKAddPaymentPassViewController`), Apple Wallet issuer extension, native biometric login.
-- **Controls & alerts** – per-card spending limits (daily/weekly/monthly), real-time push alerts.
-- **Demo mode** – mock data, simulated network calls, local state persistence, and a reset-to-default option for demonstrations (`-demoMode` launch argument or `API_ENVIRONMENT = demo`).
+`Documentation/architecture.md` is 1,300+ lines (a porting guide) — **do not
+read it whole for a routine change**. Read only the section for the layer you
+touch:
 
-See [features.md](features.md) for the full feature list.
+| Task | Read |
+|---|---|
+| Any new work | This file (§3–§5), then the matching row below |
+| Domain code (`NexusDomain`) | architecture.md §2, §4 (entities, protocols), §5 (`AppError`) |
+| Data layer (`NexusData`) | architecture.md §2, §6 (session, data sources, repositories, persistence) |
+| Features/UI (`NexusFeatures`) | architecture.md §2, §8 (Router), §9 (models/views/previews) |
+| App target / composition root | architecture.md §2, §11 (`AppContainer`, `AppState`, demo mode) |
+| Config or logging | architecture.md §7 |
+| Need a mental reset | architecture.md §14 (one-paragraph summary) |
+| Verify you kept the rules | architecture.md §13 Step 8 (invariants checklist) |
+| Commit / PR rules | CONTRIBUTING.md |
+| Product scope vs. decisions | features.md (scope); the feature's appspec.md §2.x for rules/acceptance; conflicts resolved in ROADMAP.md §5 (architecture.md wins) |
+| Current day/milestone state | tasks.md (checkboxes) + ROADMAP.md; confirm with `git log` |
 
-## 🏗️ Core Project Setup
-- **Workspace / Project file:** The main Xcode workspace is `Nexus.xcworkspace`.
-- **Minimum Deployment Target:** iOS 17.0 (raise to iOS 18 to unlock SwiftData macros and `@Entry`).
-- **Dependency Manager:** Swift Package Manager – three packages under `AppPackages/` (`NexusDomain`, `NexusData`, `NexusFeatures`) plus a thin app target (composition root). No umbrella modules; import concrete targets.
-- **Swift Version:** Swift 6.3 (Swift 6 language mode, `swift-tools-version: 6.3`), Xcode 26.6.
-- **UI Framework:** SwiftUI.
-- **Architecture:** MV (Model-View) – SwiftUI views driven by `@Observable` models; **no ViewModel layer, no Combine, no completion handlers**. Dependency rule: Domain depends on nothing; the app target → NexusFeatures → NexusData → NexusDomain.
-- **Testing:** Swift Testing (`@Suite`/`@Test`/`#expect`) with test targets beside code, aggregated in a workspace TestPlan (`TestPlan.xctestplan`); UI tests launch with `-demoMode`.
-- **Full blueprint:** Read [architecture.md](architecture.md) before any architecture-sensitive work – it is the porting guide and source of truth for patterns.
+## 3. Trunk-based workflow (critical)
 
-## 🌿 Trunk-Based Development Workflow
+1. `main` is always releasable. **Never commit to or push `main` directly.**
+2. Start from `main`: `git checkout main && git pull origin main` then
+   `git checkout -b <prefix>/short-name`.
+3. Prefixes: `feature/`, `bugfix/`, `hotfix/`, `chore/`, `docs/`.
+4. Branches live **< 1 day**; keep changes small and commit frequently.
+5. Before merging: `git fetch origin && git rebase origin/main`; resolve
+   conflicts locally; re-run the gates (§5); push `--force-with-lease` only
+   when required.
+6. Always open a PR; **the user merges** (squash). Never merge your own PR.
+7. Slash commands (Codewhale): `/start-feature [description]`,
+   `/sync`, `/pr`, `/status`.
 
-This project strictly follows **Trunk-Based Development** with short-lived feature branches.
-
-### Branch Strategy
-- **Default branch:** `main` - Always in a releasable state.
-- **No long-lived branches:** All work is on `main` or short-lived feature branches.
-- **No `develop` or `release` branches:** These are forbidden. `main` is the only permanent branch.
-
-### Working with Feature Branches
-1. **Always branch from `main`:**
-   ```bash
-   git checkout main
-   git pull origin main
-   git checkout -b feature/short-descriptive-name
-   ```
-
-2. **Branch naming convention:**
-   - `feature/` - New features or enhancements
-   - `bugfix/` - Bug fixes
-   - `hotfix/` - Critical production fixes (merge directly after review)
-   - `chore/` - Maintenance or refactoring
-
-3. **Keep branches short-lived:** 
-   - Branches should live for **< 1 day**
-   - Keep changes small (< 100-200 lines changed)
-   - Commit frequently with clear, descriptive messages
-
-### Merging to `main`
-1. **Before merging:** Update your branch:
-   ```bash
-   git fetch origin
-   git rebase origin/main
-   ```
-
-2. **Always create a Pull Request:** Even for small changes.
-
-3. **CI/CD must pass:** All tests and builds must be green.
-
-4. **Merge strategy:** Use **Squash and Merge** to keep history clean. Fast-forward only.
-
-### Daily Workflow
-- **Start of day:** `git pull origin main` to get latest changes.
-- **Multiple commits per day:** Commit small, logical changes frequently.
-- **End of day:** Push branch and create draft PR if not ready.
-
-### Feature Flags
-- Incomplete features must be hidden behind feature flags
-- Do not merge code that breaks the build or causes regressions
-- Use `#if DEBUG` or remote feature flag services
-
-## ✅ Commit Messages (Conventional Commits)
-
-All commit messages **MUST** follow the **Conventional Commits** specification. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full rules; in short:
+## 4. Commit messages (Conventional Commits)
 
 ```
-type(scope): description
+type(scope): subject        # feat | fix | docs | style | refactor | perf |
+                            # test | chore | ci | build | revert
 ```
 
-- **Types:** `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `ci`, `build`, `revert`
-- **Subject:** ≤ 72 characters, imperative mood, capitalized first letter, no trailing period
-- **Scope (optional):** lowercase feature/module name, e.g. `feat(cards): add freeze card action`
-- **Body (optional):** blank line after subject; explain *what* and *why*, wrapped at 72 chars
-- **Footer (optional):** issue refs (`Closes #42`) and `BREAKING CHANGE:` notes
+- Subject ≤ 72 chars, imperative mood, capitalized, no trailing period.
+- Scope: lowercase module/area, e.g. `feat(data)`, `fix(session)`,
+  `docs(tasks)`. Omit for cross-cutting changes.
+- Body: blank line, explain *what* and *why*, wrapped at 72 chars.
+- Footer: `Closes #42` / `BREAKING CHANGE:` when applicable.
+- Examples from this repo: `feat(data): add OffersDataSource with TTL
+  cache`; `test(data): cover CardStateDataSource cache and parse paths`.
+- Full spec with validation examples: CONTRIBUTING.md.
 
-## ✅ Always Run Before Submitting a Change
-1.  **Format code:** Run `swiftformat .` to ensure consistent style.
-2.  **Run tests:** Execute the test suite (runs the workspace TestPlan):
-    ```bash
-    xcodebuild test -workspace Nexus.xcworkspace \
-      -scheme Nexus \
-      -destination 'platform=iOS Simulator,name=iPhone 17'
-    ```
-3.  **Check for warnings:** Build without warnings. Address any new warnings.
-4.  **Verify CI locally:** Run the same checks that CI would run (Xcode 26.6, iPhone 17 simulator, iOS 26.5).
+## 5. Definition of done — run before submitting any code
 
-## 📦 Code & Architecture Guidelines (from architecture.md)
-
-- **Layering:** Domain is pure Swift (no UI, persistence, SDK, Combine, OSLog). Data implements Domain protocols. Features hold views and `@Observable` models. The app target is the composition root (`AppContainer`). Never import upward or create package cycles.
-- **State Management:** One `@MainActor @Observable` model per screen, injected via `@Environment`. No ViewModels, no `ObservableObject`/`@Published`, no Combine.
-- **View state:** Each model publishes an explicit `viewState` enum (`loading` / `loaded` / `error` / `empty`); views switch on it and use `.task` / `.refreshable` for one-shot work.
-- **Concurrency:** async/await + actors + `AsyncStream`. One-shot calls are `async throws`; live subscriptions return `AsyncStream`. No completion handlers, no `Result` at repository boundaries.
-- **Errors:** The whole app speaks one `AppError` type – never raw `Error`, `NSError`, or SDK types across boundaries.
-- **Use-case rule:** A use case/service type exists only when it composes ≥ 2 collaborators; the default is a model method.
-- **Navigation:** `Router` holds a `[Route]` stack bound to `NavigationStack`; the route→view mapping lives in the app target.
-- **Persistence:** SwiftData for durable data (`@Model` classes never leave NexusData), an in-memory actor cache for ephemeral state, Keychain for credentials. Never persist card numbers/CVV/tokens in plaintext; never log sensitive data.
-- **Mocks & demo:** Mock repositories and the mock session manager live in `NexusData/Mocks` behind `#if DEBUG`; previews, tests, and demo mode all run the real models over the shared mocks.
-- **Testing:** Write unit tests for all new business logic (Swift Testing); UI tests for critical user flows; aim for > 80% test coverage.
-- **Accessibility:** Ensure all new UI elements are accessible with VoiceOver and support Dynamic Type.
-
-## 🤖 Agent Work Conventions
-
-### Git Workflow (CRITICAL)
-- **NEVER** push directly to `main` without explicit permission.
-- **ALWAYS** create a feature branch when making changes.
-- **ALWAYS** check with the user before merging any PR.
-- **DO NOT** commit directly to `main` - this is forbidden.
-
-### Standard Agent Workflow for New Tasks
-1. **Start new feature:**
+1. `swiftformat .` leaves no diffs (CI runs `swiftformat --lint .`).
+2. Full workspace TestPlan green:
    ```bash
-   git checkout main
-   git pull origin main
-   git checkout -b feature/short-descriptive-name
+   xcodebuild test -workspace Nexus.xcworkspace \
+     -scheme Nexus \
+     -destination 'platform=iOS Simulator,name=iPhone 17'
    ```
+3. Build with zero warnings.
+4. Commits conventional + atomic; branch pushed; PR opened.
+5. Docs updated where relevant (Non-negotiables #5 in `.codewhale/instructions.md`).
+6. CI mirrors local (Xcode 26.6, iPhone 17 simulator, iOS 26.5 SDK).
 
-2. **Make changes:** Write code following project guidelines.
+**Docs-only changes** (markdown/config prose): skip the test suite, but state
+that you did, and confirm nothing but docs changed.
 
-3. **Commit changes (Conventional Commits, see CONTRIBUTING.md):**
-   ```bash
-   git add .
-   git commit -m "feat(cards): add freeze card action"
-   ```
+## 6. Architecture invariants (from architecture.md §13 Step 8)
 
-4. **Push and create PR:**
-   ```bash
-   git push origin feature/short-descriptive-name
-   ```
-   Then suggest: "I've pushed the changes. Would you like me to create a Pull Request?"
+Verify these when you touch architecture-sensitive code:
 
-5. **After PR approval:** The user will merge, not the agent.
+- Domain imports nothing above Foundation; no SDK/OSLog/Combine in Domain.
+- No upward imports; no package cycles; `Router` depends on nothing.
+- One `AppError` across boundaries; no `Result` at repository boundaries;
+  no `@unchecked Sendable`.
+- Models own and cancel their subscription `Task`s; one-shot work runs from
+  view `.task`/`.refreshable`.
+- `@Model` classes never leave NexusData; credentials only in Keychain;
+  no card numbers/CVV/tokens in logs, caches, or configs.
+- Demo mode is `#if DEBUG` only — no network/Keychain/disk; release builds
+  ignore `-demoMode`; views never depend on the concrete session class.
 
-### Agent Slash Commands
-- `/start-feature [description]` - Creates new feature branch from `main`
-- `/sync` - Rebase current branch on latest `main`
-- `/pr` - Create PR from current branch to `main`
-- `/status` - Show current branch and uncommitted changes
+## 7. Reporting
 
-## 🔄 Conflict Resolution
-- If conflicts occur, rebase on `main`:
-  ```bash
-  git fetch origin
-  git rebase origin/main
-  ```
-- Resolve conflicts locally
-- Run tests again after resolving
-- Push force if necessary: `git push --force-with-lease`
-
-## 📝 Documentation
-- Update `README.md` when adding significant features
-- Document public APIs with Swift comments
-- Keep `CHANGELOG.md` updated with notable changes
-- Update [architecture.md](architecture.md) when architecture-sensitive patterns change
-- Update this `AGENTS.md` if workflows change
+State what changed, what you verified (and how), and what remains — never
+present an unverified result as done. If a gate blocks you, name it and ask.
 
 ---
 
-**Remember:** This is a living document. Keep it updated as the project evolves!
+**Living document.** Update this file when workflows change; keep
+`.codewhale/instructions.md` in sync (it must stay shorter).

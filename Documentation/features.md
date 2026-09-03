@@ -1,4 +1,8 @@
-# Nexus iOS Banking App** Features 
+# Nexus — iOS Banking App Features
+
+> **Scope overview.** Feature-by-feature behavior, business rules, and
+> acceptance criteria live in [appspec.md](appspec.md). Scope conflicts are
+> resolved in ROADMAP.md §5.
 
 ## 🏦 Core Features
 
@@ -64,7 +68,7 @@
 
 - **Mock Data** – Pre-populated transactions, cards, and balances for demonstration
 - **Simulated Network Calls** – Show loading states, success/error states without real backend
-- **State Persistence** – Save card states (frozen/unfrozen) and settings locally using UserDefaults/Keychain
+- **State Persistence** – Demo state is in-memory with a reset-to-default action (no network/Keychain/disk in `-demoMode`). Durable live-mode persistence is SwiftData; credentials live in Keychain. Scope conflict resolved in `ROADMAP.md` §5 — architecture.md wins.
 - **Reset Demo** – Reset all data to default state for repeated demonstrations
 
 ---
