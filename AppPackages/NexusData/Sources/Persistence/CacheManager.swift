@@ -94,6 +94,10 @@ public actor CacheManager {
     ///   - key: Cache key (e.g. `"cards.4821"`).
     ///   - cost: Estimated byte cost of the value, charged against the
     ///     `totalCostLimit`. Defaults to 1 (out of the byte accounting).
+    ///     The accounting is approximate: `NSCache` charges the number you
+    ///     pass without measuring the value, and eviction under the byte
+    ///     budget is best-effort (see the type documentation) — cost is a
+    ///     hint for large payloads, not a hard byte bound.
     ///   - ttl: Freshness window for this entry; `nil` falls back to the
     ///     manager's `defaultTTL`.
     public func set(

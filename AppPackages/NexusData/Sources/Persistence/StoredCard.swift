@@ -64,8 +64,10 @@ final class StoredCard {
     ///
     /// Throws `AppError.persistenceError` when a stored raw value no longer
     /// matches a known `CardType`/`CardStatus` (schema drift or store
-    /// corruption) — the operation context names the failing record without
-    /// echoing sensitive data.
+    /// corruption). The detail names only the record's id and the offending
+    /// raw value so the corrupted row can be located — never a card number,
+    /// CVV, or auth token (the display-safe posture of architecture.md
+    /// §6.4).
     func toDomain() throws -> Card {
         guard let type = CardType(rawValue: typeRaw) else {
             throw AppError.persistenceError(
