@@ -10,9 +10,30 @@ import XCTest
 /// only the transport/persistence edges are faked (§9.5). Replaces the
 /// Day 1 launch smoke test, which only proved the runner installed.
 final class DashboardUITests: XCTestCase {
-    private func launchApp(state: String) -> XCUIApplication {
+    /// The `-demoState` values the demo root understands — mirrors
+    /// `DemoRootView.DemoState` (Nexus/DemoRootView.swift).
+    ///
+    /// UI tests launch the app as a black box and cannot import the app's
+    /// type, so the raw values are the process-boundary contract and must
+    /// stay in sync by hand. A mismatch fails loudly: the app's parser
+    /// defaults an unknown state to `.ready`, so a loading/error test whose
+    /// state drifted would assert against loaded content and fail — never
+    /// silently pass.
+    private enum DemoState: String, CaseIterable {
+        case ready
+        case loading
+        case error
+
+        /// The launch-argument element the demo root parses,
+        /// e.g. "-demoState=error".
+        var launchArgument: String {
+            "-demoState=\(rawValue)"
+        }
+    }
+
+    private func launchApp(state: DemoState) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments += ["-demoMode", "-demoState=\(state)"]
+        app.launchArguments += ["-demoMode", state.launchArgument]
         app.launch()
         return app
     }
@@ -21,7 +42,7 @@ final class DashboardUITests: XCTestCase {
     /// and the offers row's add actions.
     @MainActor
     func testReadyStateRendersCarouselAndOffers() {
-        let app = launchApp(state: "ready")
+        let app = launchApp(state: .ready)
 
         XCTAssertTrue(app.navigationBars["Dashboard"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.descendants(matching: .any)["dashboard.carousel"].waitForExistence(timeout: 10))
@@ -45,7 +66,7 @@ final class DashboardUITests: XCTestCase {
     /// has nothing left to render).
     @MainActor
     func testAddingAnOfferRemovesItFromTheCatalog() {
-        let app = launchApp(state: "ready")
+        let app = launchApp(state: .ready)
 
         let addButton = app.buttons["dashboard.offer.add.offer-cashback-001"]
         XCTAssertTrue(addButton.waitForExistence(timeout: 10))
@@ -60,7 +81,7 @@ final class DashboardUITests: XCTestCase {
     /// surface stays on screen.
     @MainActor
     func testLoadingStateRendersLoadingSurface() {
-        let app = launchApp(state: "loading")
+        let app = launchApp(state: .loading)
 
         XCTAssertTrue(app.staticTexts["Loading your cards"].waitForExistence(timeout: 10))
         XCTAssertFalse(app.descendants(matching: .any)["dashboard.carousel"].exists)
@@ -70,7 +91,7 @@ final class DashboardUITests: XCTestCase {
     /// surface with the `AppError` headline and a retry action renders.
     @MainActor
     func testErrorStateRendersErrorSurfaceWithRetry() {
-        let app = launchApp(state: "error")
+        let app = launchApp(state: .error)
 
         XCTAssertTrue(app.staticTexts["We couldn't reach the server."].waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["Retry"].waitForExistence(timeout: 5))
