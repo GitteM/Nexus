@@ -93,10 +93,10 @@
             )
         }
 
-        /// JSON-encodes a wire-shaped value into a payload string. The
-        /// encoding cannot fail for these in-memory Codable structs, so the
-        /// forced `try` is safe; anything that would make it throw is a
-        /// demo-plan bug that must surface loudly in DEBUG builds.
+        /// JSON-encodes a wire-shaped value into a payload string. Encoding
+        /// cannot fail for these in-memory Codable structs; if it ever does,
+        /// it is a demo-plan bug that must surface loudly in DEBUG builds —
+        /// hence the explicit `fatalError` rather than a silent `nil`.
         private static func payload(_ value: some Encodable) -> String {
             // `.sortedKeys` keeps the wire shape canonical: JSONEncoder key
             // order is unspecified per encode, and deterministic payloads
@@ -104,7 +104,12 @@
             // `BankingEvent`s) without affecting decoding.
             let encoder = JSONEncoder()
             encoder.outputFormatting = [.sortedKeys]
-            let data = try! encoder.encode(value)
+            guard let data = try? encoder.encode(value) else {
+                fatalError(
+                    "MockEventGenerator: payload encoding failed for "
+                        + "\(type(of: value)) — fix the demo plan.",
+                )
+            }
             return String(decoding: data, as: UTF8.self)
         }
     }

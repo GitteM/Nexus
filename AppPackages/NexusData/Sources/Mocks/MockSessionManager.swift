@@ -158,6 +158,13 @@
         /// every `eventGenerator.interval`, until `stopDemoEvents()` (or a
         /// `disconnect()`). No-op when there is no generator or the loop is
         /// already running.
+        ///
+        /// Lifecycle: the loop holds the session weakly and exits when the
+        /// session (or its generator) is gone, so a deallocated session never
+        /// keeps emitting — at most one in-flight `Task.sleep` ends unused.
+        /// Demo mode keeps the session alive for the app's lifetime
+        /// (composition root); tests stop the loop explicitly before letting
+        /// the session go.
         public func startDemoEvents() {
             guard eventGenerator != nil, emissionTask == nil else {
                 return
