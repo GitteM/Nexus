@@ -48,7 +48,7 @@ final class RecordingLogger: LoggerProtocol {
 ///   its channel.
 /// - `sendError` makes `send`/`connect` throw.
 /// - `sent` records outbound `(channel, payload)` pairs for assertions.
-final class FakeEventSubscriptionManager: @preconcurrency EventSubscriptionManagerProtocol {
+final class FakeEventSubscriptionManager: EventSubscriptionManagerProtocol {
     private struct Registry {
         var nextSubscriberID = 0
         var subscribers: [String: [Int: AsyncStream<BankingEvent>.Continuation]] = [:]
