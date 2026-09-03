@@ -67,11 +67,8 @@ struct RouterTests {
 /// `Route` equality semantics (architecture.md §8).
 @Suite("Route value semantics")
 struct RouteTests {
-    @Test func `same payload routes are equal`() {
+    @Test func `equality follows the payload`() {
         #expect(Route.cardDetail(cardID: "card-a") == Route.cardDetail(cardID: "card-a"))
-    }
-
-    @Test func `different payloads are unequal`() {
         #expect(Route.cardDetail(cardID: "card-a") != Route.cardDetail(cardID: "card-b"))
     }
 }

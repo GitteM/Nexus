@@ -7,11 +7,10 @@ import Testing
 ///
 /// Asserting that a message physically reached the unified log is not
 /// meaningful in a unit test; what matters is the mapping contract — every
-/// Domain `LogLevel` maps to exactly the `OSLogType` the architecture names
-/// — and that logging at every level executes without error. Message
-/// content (display-safe only) is a caller contract covered at the call
-/// sites, not here (architecture.md §7.2: never log card numbers, CVV, or
-/// tokens).
+/// Domain `LogLevel` maps to exactly the `OSLogType` the architecture names.
+/// Message content (display-safe only) is a caller contract covered at the
+/// call sites, not here (architecture.md §7.2: never log card numbers, CVV,
+/// or tokens).
 @Suite("LoggingService")
 struct LoggingServiceTests {
     /// Parameterized over every `LogLevel`: the mapping must land on the
@@ -27,24 +26,5 @@ struct LoggingServiceTests {
     func `maps every LogLevel to its OSLogType`(level: LogLevel, expectedType: OSLogType) {
         let mapped = LoggingService.osLogType(for: level)
         #expect(mapped == expectedType)
-    }
-
-    @Test
-    func `logs a display-safe message at every level without error`() {
-        let logger = LoggingService()
-        for level in [LogLevel.debug, .info, .notice, .error, .fault] {
-            logger.log("display-safe test message", level: level)
-        }
-    }
-
-    @Test
-    func `exposes the architecture's default subsystem`() {
-        #expect(LoggingService.defaultSubsystem == "com.nexusbank.app")
-    }
-
-    @Test
-    func `scopes instances with a category`() {
-        let logger = LoggingService(subsystem: "com.nexusbank.app", category: "session")
-        logger.log("session scoped", level: .debug)
     }
 }

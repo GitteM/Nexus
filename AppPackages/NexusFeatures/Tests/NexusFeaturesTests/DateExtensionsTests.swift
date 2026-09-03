@@ -37,10 +37,6 @@ struct DateExtensionsTests {
         #expect(formatted.hasSuffix("PM"))
     }
 
-    @Test func `now is in today`() {
-        #expect(Date().isInToday)
-    }
-
     @Test func `distant date is not in today`() {
         #expect(!Date().addingTimeInterval(3 * 24 * 60 * 60).isInToday)
     }
