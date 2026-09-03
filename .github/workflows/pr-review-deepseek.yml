@@ -42,7 +42,16 @@ jobs:
     # fork-PR contexts. Switch to `pull_request_target` only if fork PRs
     # must be reviewed too.
     if: github.event.pull_request.head.repo.full_name == github.repository
-    timeout-minutes: 30
+    # A healthy review finishes in well under a minute (observed ~18 s).
+    # Cap at 8 minutes so a stalled run fails fast and visibly instead of
+    # zombie-ing for 30 minutes; re-run the job to retry after a blip.
+    timeout-minutes: 8
+    # One review at a time per PR: a newer push cancels the stale run so
+    # hangs cannot pile up (Sep 2026: the action's diff-filter step stalled
+    # on ubuntu-latest until the job timeout killed it).
+    concurrency:
+      group: deepseek-review-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
     runs-on: ubuntu-latest
     name: DeepSeek Code Review
     env:
@@ -52,9 +61,12 @@ jobs:
         # Skip (rather than fail) until the secret exists — e.g. on the PR
         # that introduces this workflow.
         if: env.DEEPSEEK_API_KEY != ''
-        # Pinned to the commit behind the `v1` tag for supply-chain safety;
-        # bump by replacing the SHA with the newest one from
-        # https://github.com/hustcer/deepseek-review/tags
-        uses: hustcer/deepseek-review@eccde2e9781008d795e366b951e313e37af88dd5
+        # Pinned to the newest upstream `main` commit (2026-08-23) for
+        # supply-chain safety and the post-v1.21 fixes (#262-#264: diff
+        # filtering / glob grouping, config parsing hardening). v1.21 (the
+        # pinned 2026-07-20 SHA, eccde2e) predates them. When a release
+        # newer than v1.21 exists, replace the SHA with that tag's commit
+        # from https://github.com/hustcer/deepseek-review/tags
+        uses: hustcer/deepseek-review@02734b66d5b7dbbeb4836774f7ab6dc3602339a6
         with:
           chat-token: ${{ secrets.DEEPSEEK_API_KEY }}
