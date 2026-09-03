@@ -247,4 +247,24 @@ struct CardStateDataSourceTests {
         }
         #expect(unregistered)
     }
+
+    @Test func `two subscribers on the same card each receive live updates`() async throws {
+        let session = FakeEventSubscriptionManager()
+        let source = CardStateDataSource(eventSubscriptionManager: session, logger: RecordingLogger())
+
+        let first = try await source.subscribeToCardStatus(cardId: "card-credit-001")
+        let second = try await source.subscribeToCardStatus(cardId: "card-credit-001")
+
+        // The facade fans one frame out to every subscriber of the channel
+        // (architecture.md §9.1: several models can watch one card), and each
+        // subscription has its own stream and producer task.
+        try session.inject(statusEvent(cardId: "card-credit-001", status: .frozen))
+        #expect(await nextState(first) == CardState(cardId: "card-credit-001", status: .frozen))
+        #expect(await nextState(second) == CardState(cardId: "card-credit-001", status: .frozen))
+
+        // Later frames reach both subscribers independently.
+        try session.inject(statusEvent(cardId: "card-credit-001", status: .lost))
+        #expect(await nextState(first) == CardState(cardId: "card-credit-001", status: .lost))
+        #expect(await nextState(second) == CardState(cardId: "card-credit-001", status: .lost))
+    }
 }
