@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   build-and-test:
-    name: Build & Test (Xcode 26.6, iPhone 17)
+    name: Build & Test (Xcode 26.6, iOS Simulator)
     runs-on: macos-26
     timeout-minutes: 25
     env:
@@ -33,18 +33,35 @@ jobs:
           restore-keys: |
             deriveddata-${{ runner.os }}-
 
+      # Compiling never needs a concrete device, so build against the
+      # generic simulator destination. A named device ("iPhone 17") would
+      # fail here whenever the runner image's device set differs.
       - name: Build for testing
         run: >
           xcodebuild build-for-testing
           -workspace Nexus.xcworkspace
           -scheme Nexus
-          -destination 'platform=iOS Simulator,name=iPhone 17'
+          -destination 'generic/platform=iOS Simulator'
           -derivedDataPath DerivedData
+
+      # test-without-building cannot target the generic destination: it must
+      # launch on a bootable simulator. Pick the first available iPhone on
+      # the runner so the test step survives device-name drift too.
+      - name: Find available iPhone simulator
+        id: simulator
+        run: |
+          DEVICE="$(xcrun simctl list devices available -j | python3 -c 'import json,sys; d=json.load(sys.stdin); print(next(x["name"] for runtime in d["devices"].values() for x in runtime if x["isAvailable"] and x["name"].startswith("iPhone")))')"
+          if [ -z "$DEVICE" ]; then
+            echo "::error::No available iPhone simulator on this runner"
+            exit 1
+          fi
+          echo "Simulator: $DEVICE"
+          echo "device=$DEVICE" >> "$GITHUB_OUTPUT"
 
       - name: Test (workspace TestPlan)
         run: >
           xcodebuild test-without-building
           -workspace Nexus.xcworkspace
           -scheme Nexus
-          -destination 'platform=iOS Simulator,name=iPhone 17'
+          -destination 'platform=iOS Simulator,name=${{ steps.simulator.outputs.device }}'
           -derivedDataPath DerivedData
