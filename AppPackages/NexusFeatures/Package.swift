@@ -54,7 +54,15 @@ let package = Package(
         ),
         .testTarget(
             name: "NexusFeaturesTests",
-            dependencies: ["CardDetail", "Dashboard", "Navigation", "SharedUI"],
+            dependencies: [
+                "CardDetail",
+                "Dashboard",
+                "Navigation",
+                "SharedUI",
+                // Mock repositories power the model tests' loading/error
+                // knobs and call counts (architecture.md §9.5).
+                .product(name: "Mocks", package: "NexusData"),
+            ],
         ),
     ],
 )
