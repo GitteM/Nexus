@@ -9,6 +9,11 @@ import Observation
 /// push/pop actions views call. Screens reach it through
 /// `@Environment(Router.self)`; detail views that must stay router-agnostic
 /// take an `onNavigate: (Route) -> Void` closure instead (§8, §9.3).
+///
+/// Main-actor isolated like every `@Observable` model (§9.1): the stack is
+/// UI state read and written from SwiftUI, so Observation access stays on
+/// the main actor.
+@MainActor
 @Observable
 public final class Router {
     /// The current navigation path, root first. Bind to a `NavigationStack`

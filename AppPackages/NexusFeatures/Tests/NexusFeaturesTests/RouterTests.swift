@@ -3,6 +3,7 @@ import Testing
 
 /// Router stack behavior (architecture.md §8, tasks.md Day 9).
 @Suite("Router navigation stack")
+@MainActor
 struct RouterTests {
     private let root = Route.cardDetail(cardID: "card-root")
 
@@ -66,6 +67,7 @@ struct RouterTests {
 
 /// `Route` equality semantics (architecture.md §8).
 @Suite("Route value semantics")
+@MainActor
 struct RouteTests {
     @Test func `equality follows the payload`() {
         #expect(Route.cardDetail(cardID: "card-a") == Route.cardDetail(cardID: "card-a"))

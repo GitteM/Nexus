@@ -585,11 +585,12 @@ only display-safe identifiers (last four digits).
 
 **Path:** `AppPackages/NexusFeatures/Sources/Navigation/`
 
-The `Router` is a plain `@Observable` class holding a **stack of `Route`
-values** — it has no knowledge of views, and the target depends on nothing but
-SwiftUI/Foundation (no Presentation imports, no package cycle):
+The `Router` is a `@MainActor @Observable` class holding a **stack of
+`Route` values** — it has no knowledge of views, and the target depends on
+nothing but SwiftUI/Foundation (no Presentation imports, no package cycle):
 
 ```swift
+@MainActor
 @Observable
 public final class Router {
     public var routes: [Route] = []
