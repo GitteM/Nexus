@@ -26,6 +26,11 @@ struct DashboardCarouselView: View {
     /// ratio on a standard-width screen (architecture.md §9.4).
     @ScaledMetric(relativeTo: .body) private var cardHeight: CGFloat = 216
 
+    /// Page-dot metrics (points): the active dot is a wide capsule, the
+    /// inactive dots small circles.
+    private let pageDotSize: CGFloat = 7
+    private let selectedPageDotWidth: CGFloat = 20
+
     init(cards: [Card]) {
         self.cards = cards
         _selection = State(initialValue: cards.first?.id)
@@ -63,7 +68,10 @@ struct DashboardCarouselView: View {
             ForEach(Array(cards.enumerated()), id: \.element.id) { index, _ in
                 Capsule()
                     .fill(index == selectedIndex ? ColorPalette.brand : ColorPalette.separator)
-                    .frame(width: index == selectedIndex ? 20 : 7, height: 7)
+                    .frame(
+                        width: index == selectedIndex ? selectedPageDotWidth : pageDotSize,
+                        height: pageDotSize,
+                    )
                     .padding(.vertical, Spacing.xs)
                     .contentShape(Rectangle())
                     .onTapGesture {
@@ -187,9 +195,10 @@ private struct CardFrontView: View {
     }
 }
 
-/// The lifecycle pill drawn on the card art. Status meaning comes from the
-/// domain icon plus the status name — the VoiceOver label on the whole
-/// front already reads the status, so the chip itself is hidden.
+/// The lifecycle pill drawn on the card art. Its meaning comes from the
+/// domain icon plus the status name; the combined card front above already
+/// reads the status through its explicit label, so the chip never surfaces
+/// as a separate VoiceOver element.
 private struct StatusChip: View {
     private let status: CardStatus
 
@@ -205,7 +214,6 @@ private struct StatusChip: View {
             .padding(.horizontal, Spacing.sm + 2)
             .padding(.vertical, Spacing.xs)
             .background(CardArtwork.foreground.opacity(0.18), in: Capsule())
-            .accessibilityHidden(true)
     }
 }
 
