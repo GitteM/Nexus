@@ -27,6 +27,29 @@ public enum ColorPalette {
     public static let success = Color(hex: 0x1F8A4C)
     public static let warning = Color(hex: 0xB26A00)
     public static let destructive = Color(hex: 0xD64541)
+
+    // MARK: Card art (physical card front; fixed values, not
+
+    // appearance-aware — a card is the same object in dark and light)
+
+    /// The card-front look per `CardType`. The artwork is a product-design
+    /// decision, so it ships in the token layer (`ColorPalette`); the
+    /// per-type composition lives in `CardArtwork` (SharedUI) where the
+    /// domain `CardType` is visible.
+    public enum CardArt {
+        public static let creditStart = Color(hex: 0x14318F)
+        public static let creditEnd = Color(hex: 0x3D7BFF)
+
+        public static let debitStart = Color(hex: 0x0E5A3A)
+        public static let debitEnd = Color(hex: 0x23A06B)
+
+        public static let prepaidStart = Color(hex: 0x4C1D95)
+        public static let prepaidEnd = Color(hex: 0x8B5CF6)
+
+        /// Fixed white for content drawn on the art; tuned to hold
+        /// contrast on every gradient in both appearances.
+        public static let onArt = Color(hex: 0xFFFFFF)
+    }
 }
 
 /// Private design-token helper: builds a `Color` from a `0xRRGGBB` value.
