@@ -9,7 +9,7 @@
 > Companion docs: [architecture.md](architecture.md) (patterns) ·
 > [features.md](features.md) (product) · [appspec.md](appspec.md) (feature
 > behavior/acceptance) · [CONTRIBUTING.md](CONTRIBUTING.md) (commits/PRs) ·
-> [README.md](README.md) (doc index & read-when map) ·
+> [README.md](README.md) (index for this folder & read-when map) ·
 > [tasks.md](tasks.md) / [ROADMAP.md](ROADMAP.md) (day/milestone state).
 
 ## 1. Repo at a glance

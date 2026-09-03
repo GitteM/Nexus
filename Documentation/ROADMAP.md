@@ -2,7 +2,7 @@
 
 > **Status:** Living document — drafted 2026-09-01 from [architecture.md](architecture.md) (the "how") and [features.md](features.md) (the "what"). The daily breakdown lives in [tasks.md](tasks.md). **M0 (Day 1) complete 2026-09-01** — workspace, three package skeletons, thin `Nexus` app target, TestPlan and CI files in place. **M1 (Days 2–4) complete 2026-09-02** — Domain entities, `AppError`, and the repository/service protocols merged to `main`. **M2 (Days 5–8) in progress as of 2026-09-03** — Day 5 session manager merged (#7); the live day state and test counts live in [tasks.md](tasks.md) checkboxes and git history, not in this block.
 >
-> **Source of truth:** `architecture.md` wins on patterns and structure; `features.md` wins on product scope. Where they conflict, this document follows `architecture.md` (see [Known tensions](#5-known-tensions--decisions)).
+> **Source of truth:** `architecture.md` wins on patterns and structure; `appspec.md` wins on behavior detail; `features.md` wins on product scope. Where they conflict, this document follows `architecture.md` (see [Known tensions](#5-known-tensions--decisions)).
 
 ## 1. Goal
 

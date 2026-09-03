@@ -24,7 +24,7 @@
   must be drafted in the milestone PR (per `tasks.md` Definition of Done,
   docs stay in sync).
 - **Tags:** `not yet specified` — fill at implementation ·
-  `draft` — proposed defaults, confirm when the feature ships ·
+  `draft` — proposed defaults (provisional picks marked 🔶), confirm when the feature ships ·
   `specified` — matches shipped behavior (code + tests are the record).
 - **Transitions:** `not yet specified` → `draft` happens in the milestone
   PR that authors the section; `draft` → `specified` only when the feature
