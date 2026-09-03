@@ -86,11 +86,11 @@
 
 ### Day 9 — SharedUI + Navigation (M3)
 
-- [ ] Design tokens: `Spacing`, `Icons`, `ColorPalette`, and a single `Strings` enum via `String(localized:)` (architecture.md §9.4).
-- [ ] Shared components: `LoadingView`, `EmptyStateView`, `ErrorView`, `SessionStatusIndicator`, `WarningRow`, `InfoRow`, `DestructiveButton`, `BackToolbarItem`, `DisconnectedView`, `AppLoadingView`, `AppErrorView` (architecture.md §9.4).
-- [ ] `Router` + `Route` (Hashable, `.cardDetail(cardID:)`) in the dependency-free `Navigation` target (architecture.md §8).
-- [ ] `View+Extensions`, `Date+Extensions` (architecture.md §9.4).
-- **Verify:** Builds green; `Navigation` imports nothing above Foundation/SwiftUI; components ship `#Preview`s.
+- [x] Design tokens: `Spacing`, `Icons`, `ColorPalette`, and a single `Strings` enum via `String(localized:)` (architecture.md §9.4).
+- [x] Shared components: `LoadingView`, `EmptyStateView`, `ErrorView`, `SessionStatusIndicator`, `WarningRow`, `InfoRow`, `DestructiveButton`, `BackToolbarItem`, `DisconnectedView`, `AppLoadingView`, `AppErrorView` (architecture.md §9.4).
+- [x] `Router` + `Route` (Hashable, `.cardDetail(cardID:)`) in the dependency-free `Navigation` target (architecture.md §8).
+- [x] `View+Extensions`, `Date+Extensions` (architecture.md §9.4).
+- **Verify:** Builds green; `Navigation` imports nothing above Foundation/SwiftUI; components ship `#Preview`s. — done: full workspace TestPlan green on the iPhone 17 simulator (295 tests: 159 Domain + 122 Data + 13 NexusFeatures + 1 app), zero build warnings (only the known first-build dependency-scan noise on a fresh DerivedData), `swiftformat` clean; `SharedUI` gained its `Entities` dependency, `Navigation` still declares none; 9 Router/Route tests + 4 date-helper tests replace the M3 smoke suite.
 
 ### Day 10 — Dashboard model + view (M4)
 
