@@ -40,7 +40,7 @@ public struct SessionStatusIndicator: View {
 
 #Preview("All statuses") {
     VStack(alignment: .leading, spacing: Spacing.sm) {
-        ForEach(SessionStatus.allCases, id: \.self) { status in
+        ForEach(SessionStatus.allCases, id: \.rawValue) { status in
             SessionStatusIndicator(status: status)
         }
     }
