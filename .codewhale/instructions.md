@@ -23,7 +23,10 @@ authority chain lives in `Documentation/README.md` (Conventions).
    `Documentation/CONTRIBUTING.md`.
 3. **Gates before submitting code.** `swiftformat .` clean, full workspace
    TestPlan green, zero build warnings. Docs-only changes skip the test
-   suite — say so and state what you did verify.
+   suite — say so and state what you did verify. Note: the first test build
+   after a fresh DerivedData prints 12 Xcode dependency-scan "missing a
+   dependency" warnings — known one-time tooling noise, never a gate
+   failure (AGENTS.md §5); re-run once if you want a clean log.
 4. **Architecture rules are constraints, not suggestions.** Read the
    relevant `Documentation/architecture.md` section first (see table). Never
    import upward or create package cycles; one `AppError` everywhere; no
