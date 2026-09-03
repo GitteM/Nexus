@@ -795,6 +795,13 @@ target holds the design language, `SharedUI` holds components.
   the session drops), `AppLoadingView`, `AppErrorView`.
 - **Extensions (`SharedUI`):** `View+Extensions` (row-tap helper, etc.),
   `Date+Extensions`.
+- **Accessibility identifier contract** — every screen that UI tests query
+  sets `.accessibilityIdentifier` from a public namespace in the module that
+  owns the view (e.g., `DashboardAccessibility.carousel` / `.card(_:)` in
+  the Dashboard target), and `NexusUITests` imports that module and queries
+  the same helpers. Identifiers are a stable UI contract: never literal
+  strings in views or tests — a rename breaks the build on both sides, not
+  the test run — and they do not follow copy, so they survive localization.
 - **iOS 17+/18+ niceties:** `EmptyStateView` can wrap `ContentUnavailableView`
   (iOS 17+); hand-written `EnvironmentKey` conformances can be replaced by
   the `@Entry` macro (iOS 18+).
@@ -853,7 +860,9 @@ per-preview state — compose with the same mock strategy; no new machinery.
   `-demoMode` argument → the container builds the mock graph → optional
   `-demoState=error` / `-demoState=loading` knobs drive the mock
   repositories → assert loading, error, and ready states render. Previews
-  cover states cheaply; UI tests cover the wiring.
+  cover states cheaply; UI tests cover the wiring. Element queries target
+  the shared `…Accessibility` identifier namespaces (§9.4) and domain mock
+  ids — never string literals — so views and tests cannot drift.
 - **Integration tests** exercise real `CacheManager` + `CardRepository`
   (and/or the SwiftData repository) end to end, clearing state between tests.
 - **CI** (`.github/workflows/ci.yml`, `pr-checks.yml`): Xcode 26.6 (Swift
