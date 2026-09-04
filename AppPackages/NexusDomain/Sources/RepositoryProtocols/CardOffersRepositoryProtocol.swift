@@ -1,10 +1,10 @@
 import Entities
 
-/// Offers the dashboard promotes in its offers row (architecture.md §4.2).
+/// Offers the dashboard promotes in its offers row.
 ///
 /// An offer becomes a managed `Card` when the customer adds it through
 /// `CardRepositoryProtocol.addCard`. Live offer changes arrive on the
-/// `card.offers` channel (architecture.md §11.4).
+/// `card.offers` channel.
 public protocol CardOffersRepositoryProtocol: Sendable {
     /// Fetches the offers available right now.
     func getAvailableOffers() async throws -> [CardOffer]

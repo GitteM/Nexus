@@ -1,7 +1,6 @@
 import Foundation
 
-/// Live balance for a card, decoded from the event stream (architecture.md
-/// §4.1).
+/// Live balance for a card, decoded from the event stream.
 ///
 /// `current` is the posted balance; `available` is what the cardholder can
 /// spend right now (posted plus pending activity, or the remaining credit).

@@ -1,12 +1,12 @@
 import Entities
 
-/// The transport seam for the app session (architecture.md §4.3).
+/// The transport seam for the app session.
 ///
 /// The app is built against this protocol; the Data layer implements it with
-/// URLSession (REST + `URLSessionWebSocketTask`) in `APISessionManager`
-/// (architecture.md §6.2), and a banking SDK — when one exists — is just
-/// another adapter (architecture.md §11.4). No completion handlers anywhere:
-/// one-shot calls throw `AppError`, and live events are `AsyncStream`s.
+/// URLSession (REST + `URLSessionWebSocketTask`) in `APISessionManager`, and
+/// a banking SDK — when one exists — is just another adapter. No completion
+/// handlers anywhere: one-shot calls throw `AppError`, and live events are
+/// `AsyncStream`s.
 public protocol SessionManagerProtocol: Sendable {
     /// Current connection state, observed by the UI through the container
     /// (`SessionStatusIndicator`, `DisconnectedView`).

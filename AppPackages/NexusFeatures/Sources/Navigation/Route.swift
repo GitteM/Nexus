@@ -1,7 +1,6 @@
 import Foundation
 
-/// A navigation destination with the data it needs (architecture.md §8,
-/// tasks.md Day 9).
+/// A navigation destination with the data it needs.
 ///
 /// `Route` is `Hashable` so it can drive a `NavigationStack` path
 /// (`navigationDestination(for: Route.self)`), and it carries data
@@ -10,8 +9,8 @@ import Foundation
 /// is a router *action*, not a destination.
 ///
 /// The route → view mapping lives in the app target, the only place that
-/// knows both routes and views (§11.3); the `Navigation` target itself stays
-/// free of Presentation imports and package cycles.
+/// knows both routes and views; the `Navigation` target itself stays free
+/// of Presentation imports and package cycles.
 public enum Route: Hashable, Sendable {
     /// The card detail screen for one managed card.
     case cardDetail(cardID: String)

@@ -3,9 +3,9 @@ import Entities
 import SharedUI
 import SwiftUI
 
-/// The transaction detail screen (architecture.md §9.3, tasks.md Day 13):
-/// a snapshot deep view of one transaction — merchant, amount, category,
-/// status, date, optional location, and the transaction id.
+/// The transaction detail screen: a snapshot deep view of one transaction
+/// — merchant, amount, category, status, date, optional location, and the
+/// transaction id.
 public struct TransactionDetailView: View {
     @Environment(TransactionDetailModel.self) private var model
 

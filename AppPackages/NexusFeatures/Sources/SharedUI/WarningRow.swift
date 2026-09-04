@@ -1,8 +1,8 @@
 import Design
 import SwiftUI
 
-/// Attention row for non-blocking warnings (architecture.md §9.4, tasks.md
-/// Day 9) — e.g. a card approaching its spending limit.
+/// Attention row for non-blocking warnings — e.g. a card approaching its
+/// spending limit.
 ///
 /// The icon and amber tint are fixed; screens pass the copy.
 public struct WarningRow: View {

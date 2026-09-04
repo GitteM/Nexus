@@ -1,6 +1,6 @@
 import Foundation
 
-/// The single error type for the whole app (architecture.md §5).
+/// The single error type for the whole app.
 ///
 /// Every layer throws or returns `AppError` — never raw `Error`, `NSError`,
 /// or SDK-specific types across boundaries. Cases are grouped by feature
@@ -140,7 +140,7 @@ public extension AppError {
 extension AppError: Equatable {
     /// Hand-written comparison: Swift enums with associated values get
     /// synthesis only if the payloads are `Equatable`, and `Error?` payloads
-    /// are not (architecture.md §5).
+    /// are not.
     public static func == (lhs: AppError, rhs: AppError) -> Bool {
         switch (lhs, rhs) {
         case let (.apiConnectionFailed(a), .apiConnectionFailed(b)): a == b

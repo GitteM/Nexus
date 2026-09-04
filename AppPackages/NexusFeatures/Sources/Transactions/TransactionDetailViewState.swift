@@ -1,8 +1,7 @@
 import Entities
 import Foundation
 
-/// The transaction detail screen's explicit UI state (architecture.md
-/// §9.1–§9.2, tasks.md Day 13).
+/// The transaction detail screen's explicit UI state.
 ///
 /// `.loaded` carries the transaction; `.missing` covers a stale deep link
 /// whose transaction left the feed (rendered as an empty state, not an

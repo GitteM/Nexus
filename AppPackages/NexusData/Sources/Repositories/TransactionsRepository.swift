@@ -2,18 +2,17 @@ import DataSources
 import Entities
 import RepositoryProtocols
 
-/// Domain-facing implementation of `TransactionRepositoryProtocol`
-/// (architecture.md §6.3, tasks.md Day 13): a thin wrapper over the
-/// `CardTransactionsDataSource` actor that adds boundary validation and
-/// owns the error contract models rely on.
+/// Domain-facing implementation of `TransactionRepositoryProtocol`: a thin
+/// wrapper over the `CardTransactionsDataSource` actor that adds boundary
+/// validation and owns the error contract models rely on.
 ///
 /// The data source keeps the per-card, newest-first transaction lists,
-/// parses `card.events.{cardId}` frames, and owns the live streams (§6.1);
+/// parses `card.events.{cardId}` frames, and owns the live streams;
 /// this repository adds no business rules — it validates the `cardId` every
 /// method takes (so an empty id fails fast with
 /// `AppError.validationError`) and rethrows the source's `AppError`s
 /// untouched. A non-`AppError` escaping the source would be a Data-layer
-/// bug; it is mapped defensively to `AppError.unknown` (architecture.md §5).
+/// bug; it is mapped defensively to `AppError.unknown`.
 public struct TransactionsRepository: TransactionRepositoryProtocol, Sendable {
     private let source: CardTransactionsDataSource
 

@@ -8,9 +8,9 @@ import Observation
 import ServiceProtocols
 import Transactions
 
-/// The composition root (architecture.md §11.1–§11.3, tasks.md Day 14):
-/// selects live vs. demo mode once at init, owns the app-level state
-/// machine, and exposes concrete models for the environment.
+/// The composition root: selects live vs. demo mode once at init, owns
+/// the app-level state machine, and exposes concrete models for the
+/// environment.
 ///
 /// Graph construction itself lives in `AppDependenciesFactory`
 /// (`AppContainer+Dependencies.swift`, demo variant DEBUG-only), so this
@@ -37,11 +37,11 @@ public final class AppContainer {
     /// here and in `resetDemo()`.
     var dependencies: AppDependencies?
 
-    // MARK: - Session (computed pass-through, §11.3)
+    // MARK: - Session (computed pass-through)
 
     /// The session status as a computed pass-through. `ContentView` reacts
     /// to changes through `.onChange(of: sessionStatus)` — SwiftUI tracks
-    /// the concrete `@Observable` session through this read (§11.3).
+    /// the concrete `@Observable` session through this read.
     public var sessionStatus: SessionStatus {
         dependencies?.session.sessionStatus ?? .disconnected
     }
@@ -140,7 +140,7 @@ public final class AppContainer {
     }
 
     /// Maps a session-status change to the app state (called from
-    /// `.onChange(of: sessionStatus)` in `ContentView`, §11.3).
+    /// `.onChange(of: sessionStatus)` in `ContentView`).
     public func handleSessionStatusChange(_ status: SessionStatus) {
         switch status {
         case .connecting:
@@ -167,9 +167,9 @@ public final class AppContainer {
     #if DEBUG
         /// Resets the demo to its default state: rebuilds the in-memory
         /// store graph, clears navigation, and reconnects. Never touches
-        /// network/Keychain/disk (architecture.md §11.2). Async so the
-        /// rebuild + reconnect happen on the caller's task rather than an
-        /// unstructured one (no racing reconnects).
+        /// network/Keychain/disk. Async so the rebuild + reconnect happen on
+        /// the caller's task rather than an unstructured one (no racing
+        /// reconnects).
         public func resetDemo() async {
             guard mode == .demo else { return }
             cardDetailModels.removeAll()
@@ -185,7 +185,7 @@ public final class AppContainer {
 
     #if DEBUG
         /// Drives the container into a specific state for previews (the
-        /// `#Preview`-only entry point, architecture.md §9.5).
+        /// `#Preview`-only entry point).
         public func configurePreview(state: AppState) {
             appState = state
         }

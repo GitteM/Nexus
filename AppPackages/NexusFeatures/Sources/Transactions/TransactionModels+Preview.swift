@@ -2,14 +2,13 @@
     import Entities
     import Mocks
 
-    /// Shared-mock factories for the transaction screens (architecture.md
-    /// §9.5, tasks.md Day 13).
+    /// Shared-mock factories for the transaction screens.
     ///
     /// Every factory builds the *real* models over the shared `Mock*`
     /// repository doubles; `load()` fires from the views' `.task` when a
     /// preview appears, exactly as in the running app. Release builds
-    /// compile this file to nothing (the `Mocks` module is empty outside
-    /// DEBUG, Day 8).
+    /// compile this file to nothing: the `Mocks` module is empty outside
+    /// DEBUG.
     public extension TransactionHistoryModel {
         /// Default demo content for one card: seeded balance + the standard
         /// transaction set (the credit-card mock feed; other cards preview
@@ -55,7 +54,7 @@
         }
 
         /// The demo transaction set keyed by card; only the mock credit
-        /// card carries activity in v1.0 demo data.
+        /// card carries activity in demo data.
         private static func seededTransactions(for cardID: String) -> [Transaction] {
             cardID == Card.mockCreditCard.id ? Transaction.mockDefaults : []
         }

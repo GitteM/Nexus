@@ -1,9 +1,8 @@
 #if DEBUG
     import SwiftUI
 
-    /// Preview factories for the composition root (architecture.md §9.5,
-    /// tasks.md Day 14): every app-level state renders the real `ContentView`
-    /// over a demo container.
+    /// Preview factories for the composition root: every app-level state
+    /// renders the real `ContentView` over a demo container.
     extension AppContainer {
         /// A demo-mode container whose shell is in the given state.
         static func preview(state: AppState) -> AppContainer {

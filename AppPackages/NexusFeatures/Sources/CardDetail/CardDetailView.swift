@@ -4,12 +4,12 @@ import Navigation
 import SharedUI
 import SwiftUI
 
-/// The card detail screen (architecture.md §9.3, tasks.md Day 12).
+/// The card detail screen.
 ///
 /// A thin switch over the model's `viewState`: loading and error surfaces
 /// come from SharedUI and the loaded screen delegates to
 /// `CardDetailContentView`. The model comes from the environment — the
-/// composition root injects it (§11.3), it is never created in a view —
+/// composition root injects it, it is never created in a view —
 /// and one-shot work is view-triggered: `.task` fires `load()` on every
 /// appear (idempotent once the card is on screen).
 public struct CardDetailView: View {
@@ -41,7 +41,7 @@ public struct CardDetailView: View {
     }
 }
 
-/// The loaded card detail (tasks.md Day 12): the card front with its live
+/// The loaded card detail: the card front with its live
 /// status, the card-control actions (freeze/unfreeze, report lost or
 /// stolen, request replacement) and the per-period spending-limit rows —
 /// each section a list of actions that mutate the model. Confirmation
@@ -227,8 +227,8 @@ private struct CardDetailContentView: View {
         }
     }
 
-    /// Day 13 (M6): the per-card account-activity entry. Pushes the
-    /// transaction history screen (which carries the live balance header).
+    /// The per-card account-activity entry: pushes the transaction history
+    /// screen (which carries the live balance header).
     private func activitySection(for card: Card) -> some View {
         section(Strings.CardDetail.activitySection) {
             Button {
@@ -345,8 +345,8 @@ private struct CardDetailContentView: View {
         )
     }
 
-    /// Alert copy reuses the `AppError` surfaces: the headline first, the
-    /// recovery guidance below (ErrorView order, §5).
+    /// Alert copy reuses the `AppError` surfaces, matching `ErrorView`'s
+    /// order: the headline first, the recovery guidance below.
     private func alertMessage(for error: AppError) -> String {
         var parts: [String] = []
         if let description = error.errorDescription {
@@ -448,10 +448,10 @@ private struct StatusPill: View {
 }
 
 /// A compact physical-card front for the detail header, sharing the art
-/// vocabulary (`CardArtwork`) with the dashboard carousel (architecture.md
-/// §9.4). Only display-safe data is drawn: the last four digits, never a
-/// PAN. Purely decorative — the card detail's live status is announced by
-/// the `StatusPill` the header overlays on this art.
+/// vocabulary (`CardArtwork`) with the dashboard carousel. Only
+/// display-safe data is drawn: the last four digits, never a PAN. Purely
+/// decorative — the card detail's live status is announced by the
+/// `StatusPill` the header overlays on this art.
 private struct DetailCardFront: View {
     private let card: Card
 

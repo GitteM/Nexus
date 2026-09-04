@@ -1,7 +1,6 @@
 import Foundation
 
-/// The stable accessibility-identifier contract for the dashboard screens
-/// (architecture.md §9.4).
+/// The stable accessibility-identifier contract for the dashboard screens.
 ///
 /// Views set `.accessibilityIdentifier` from this namespace and the UI tests
 /// (`NexusUITests`) reference the same helpers — never literal strings in

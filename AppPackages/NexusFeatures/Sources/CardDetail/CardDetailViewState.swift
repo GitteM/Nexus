@@ -1,10 +1,9 @@
 import Entities
 import Foundation
 
-/// The card detail screen's explicit UI state (architecture.md §9.1–§9.2,
-/// tasks.md Day 12).
+/// The card detail screen's explicit UI state.
 ///
-/// Views switch on this enum directly (§9.3): `.loading` while the initial
+/// Views switch on this enum directly: `.loading` while the initial
 /// fetch runs, `.loaded` when the card is on screen, and `.error` when the
 /// fetch failed (including the card not being found). `AppError` is
 /// `Equatable`, so the whole enum is testable — model tests assert exact

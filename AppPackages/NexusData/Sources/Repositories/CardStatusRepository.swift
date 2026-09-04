@@ -2,19 +2,18 @@ import DataSources
 import Entities
 import RepositoryProtocols
 
-/// Domain-facing implementation of `CardStatusRepositoryProtocol`
-/// (architecture.md §6.3, tasks.md Day 7): a thin wrapper over the
-/// `CardStateDataSource` actor that adds boundary validation and owns the
-/// error contract models rely on.
+/// Domain-facing implementation of `CardStatusRepositoryProtocol`: a thin
+/// wrapper over the `CardStateDataSource` actor that adds boundary
+/// validation and owns the error contract models rely on.
 ///
 /// The data source keeps the per-id cache, parses `card.events.{cardId}`
-/// frames, and owns the live stream (architecture.md §6.1); this repository
+/// frames, and owns the live stream; this repository
 /// adds no business rules — it validates the `cardId` every method takes
 /// (so an empty id fails fast with `AppError.validationError` instead of
 /// reading an empty channel) and rethrows the source's `AppError`s
 /// untouched. A non-`AppError` escaping the source would be a Data-layer
 /// bug; it is mapped defensively to `AppError.unknown` so the boundary
-/// still speaks one error type (architecture.md §5).
+/// still speaks one error type.
 public struct CardStatusRepository: CardStatusRepositoryProtocol, Sendable {
     private let source: CardStateDataSource
 
@@ -30,7 +29,7 @@ public struct CardStatusRepository: CardStatusRepositoryProtocol, Sendable {
     }
 
     /// Subscribes to one card's status updates; the stream yields the
-    /// current cached state first, then live updates (architecture.md §4.2).
+    /// current cached state first, then live updates.
     public func subscribeToCardStatus(cardId: String) async throws -> AsyncStream<CardState> {
         try Self.validate(cardId)
         do {

@@ -1,7 +1,7 @@
 import Design
 import SwiftUI
 
-/// Shared view affordances (architecture.md §9.4, tasks.md Day 9).
+/// Shared view affordances.
 public extension View {
     /// Makes the whole view the tap target of an action — the standard row
     /// affordance for list items that navigate or toggle.

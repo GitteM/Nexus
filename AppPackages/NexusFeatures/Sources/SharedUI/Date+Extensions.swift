@@ -1,7 +1,6 @@
 import Foundation
 
-/// Shared date formatting used across screens (architecture.md §9.4,
-/// tasks.md Day 9).
+/// Shared date formatting used across screens.
 ///
 /// Wrappers exist so transaction history, balances and card screens format
 /// dates identically. Locale/time zone default to the user's settings but

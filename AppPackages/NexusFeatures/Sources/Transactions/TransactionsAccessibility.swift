@@ -2,7 +2,7 @@ import Entities
 import Foundation
 
 /// The stable accessibility-identifier contract for the transaction
-/// history and detail screens (architecture.md §9.4, tasks.md Day 13).
+/// history and detail screens.
 ///
 /// Views set `.accessibilityIdentifier` from this namespace and the UI
 /// tests (`NexusUITests`) reference the same helpers — never literal

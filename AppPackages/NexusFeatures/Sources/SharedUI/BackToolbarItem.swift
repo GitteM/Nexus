@@ -1,13 +1,12 @@
 import Design
 import SwiftUI
 
-/// Consistent back button for pushed screens (architecture.md §9.4, tasks.md
-/// Day 9).
+/// Consistent back button for pushed screens.
 ///
 /// Consumers hide the system back button
 /// (`.navigationBarBackButtonHidden(true)`) and place this in
 /// `.topBarLeading`; the action typically calls
-/// `router.navigateBack()` (§8).
+/// `router.navigateBack()`.
 public struct BackToolbarItem: View {
     private let action: () -> Void
 

@@ -1,10 +1,10 @@
 import Foundation
 
 /// The app/backend channel namespace, defined once here so the session
-/// facade, the data sources, and the demo event generator (tasks.md Day 8)
-/// all speak the same names (architecture.md §11.4).
+/// facade, the data sources, and the demo event generator all speak the
+/// same names.
 ///
-/// The contract as of M2:
+/// The contract:
 /// - `card.events.{cardId}` — server→client: live per-card updates
 ///   (status/balance/transaction/limit payloads). `CardStateDataSource`
 ///   parses the status-shaped payloads on it.
@@ -14,12 +14,11 @@ import Foundation
 ///   by `CardActionDataSource`. The payload is the JSON encoding of a
 ///   `CardCommand` (`cardId`, `type`, plus `amount` and `period` only for
 ///   `.setSpendingLimit`). The backend acknowledges by pushing the new state
-///   on `card.events.{cardId}` (architecture.md §11.4: "the resulting state
-///   arrives through the live event streams").
+///   on `card.events.{cardId}` — the resulting state arrives through the
+///   live event streams.
 ///
-/// The namespace is what the backend mirrors; when the §11.4 REST endpoints
-/// land (tasks.md Day 7), the repository layer reuses these names for the
-/// matching wire contract.
+/// The namespace is what the backend mirrors; when the REST endpoints land,
+/// the repository layer reuses these names for the matching wire contract.
 public enum EventChannels {
     /// Server→client channel carrying one card's live updates.
     public static func cardEvents(cardId: String) -> String {

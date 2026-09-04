@@ -1,7 +1,7 @@
 import Design
 import SwiftUI
 
-/// Centered, full-area loading state (architecture.md §9.4, tasks.md Day 9).
+/// Centered, full-area loading state.
 ///
 /// Screen and app views show this while a model is in `.loading`.
 public struct LoadingView: View {

@@ -1,12 +1,11 @@
 import Entities
 
-/// Manages the customer's managed cards (architecture.md §4.2).
+/// Manages the customer's managed cards.
 ///
 /// One-shot calls are `async throws` and surface `AppError` — there is no
-/// `Result` at this boundary (architecture.md §12.1). Live per-card updates
-/// do not flow through this protocol: status changes arrive on the
-/// `card.events.{cardId}` channel via `CardStatusRepositoryProtocol`
-/// subscriptions (architecture.md §11.4).
+/// `Result` at this boundary. Live per-card updates do not flow through this
+/// protocol: status changes arrive on the `card.events.{cardId}` channel via
+/// `CardStatusRepositoryProtocol` subscriptions.
 public protocol CardRepositoryProtocol: Sendable {
     /// Lists all managed cards.
     func getCards() async throws -> [Card]

@@ -2,17 +2,16 @@ import Entities
 import Foundation
 import SwiftData
 
-/// SwiftData-backed durable store for the managed card list
-/// (architecture.md §6.4, tasks.md Day 7).
+/// SwiftData-backed durable store for the managed card list.
 ///
 /// This is the **store**, not the model-facing adapter: it maps `StoredCard`
 /// records to and from domain `Card` structs and owns the `ModelContainer`.
 /// Business rules on top (offer validation, duplicate rejection, operation
 /// context) live in `Repositories.CardRepository`, which holds this store
-/// (architecture.md §6.3: repositories are thin and hold a store).
+/// (repositories are thin and hold a store).
 ///
 /// `@Model` types never leave NexusData and never cross the repository
-/// boundary (architecture.md §6.4): `StoredCard` is `internal`, the
+/// boundary: `StoredCard` is `internal`, the
 /// container can only be created through `makeContainer` (which keeps the
 /// schema under NexusData's control), and every public method speaks domain
 /// structs.
@@ -25,15 +24,15 @@ public struct SwiftDataCardRepository: Sendable {
 
     /// Builds the app's `ModelContainer` for the card schema.
     ///
-    /// This is the composition root's entry point (architecture.md §11.2);
-    /// tests and previews pass `storedInMemoryOnly: true`. The schema is
+    /// This is the composition root's entry point; tests and previews pass
+    /// `storedInMemoryOnly: true`. The schema is
     /// private to NexusData — no caller outside `Persistence` can construct
     /// a container that references `StoredCard`.
     ///
     /// - Parameter storedInMemoryOnly: `true` backs the store in memory only
     ///   (tests, previews); `false` (the default) persists on disk. Demo mode
-    ///   never constructs this store at all — demo state is in-memory mocks
-    ///   (ROADMAP.md §5: persistence is a live-mode concern).
+    ///   never constructs this store at all — demo state is in-memory mocks,
+    ///   as persistence is a live-mode concern.
     public static func makeContainer(
         storedInMemoryOnly: Bool = false,
     ) throws -> ModelContainer {

@@ -2,13 +2,12 @@ import Design
 import Entities
 import SwiftUI
 
-/// Compact badge showing the current session state (architecture.md §9.4,
-/// tasks.md Day 9).
+/// Compact badge showing the current session state.
 ///
-/// Renders `SessionStatus.displayName` / `.icon` (Domain-owned copy, §4.1)
+/// Renders `SessionStatus.displayName` / `.icon` (domain-owned copy)
 /// tinted by status: connected → green, connecting → amber, error → red,
 /// disconnected → neutral. `AppContainer` places it when the session status
-/// changes (§11.2).
+/// changes.
 public struct SessionStatusIndicator: View {
     private let status: SessionStatus
 

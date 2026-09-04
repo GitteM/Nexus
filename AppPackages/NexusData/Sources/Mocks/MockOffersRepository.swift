@@ -3,8 +3,7 @@
     import RepositoryProtocols
 
     /// In-memory `CardOffersRepositoryProtocol` double shared by previews,
-    /// model tests, and demo mode (architecture.md §9.5, §11.2; tasks.md
-    /// Day 8).
+    /// model tests, and demo mode.
     ///
     /// The mock stands in for the `card.offers` snapshot source: it holds
     /// the current offer list and fans full-list replacements out to every

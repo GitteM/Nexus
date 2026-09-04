@@ -2,20 +2,20 @@ import Entities
 import Foundation
 import Security
 
-/// Keychain access for credentials (architecture.md §6.4, tasks.md Day 7).
+/// Keychain access for credentials.
 ///
 /// **The only place credentials may live.** Card numbers, CVV, and auth
 /// tokens are never persisted in plaintext to SwiftData, caches, configs, or
-/// logs (architecture.md §6.4, §7.2) — auth tokens go here, in the system
-/// Keychain, as generic-password items scoped to `service` + `account`.
+/// logs — auth tokens go here, in the system Keychain, as generic-password
+/// items scoped to `service` + `account`.
 ///
 /// Security posture:
 /// - Items are stored with `kSecAttrAccessibleWhenUnlockedThisDeviceOnly`:
 ///   readable only while the device is unlocked, never migrated to iCloud or
 ///   a backup. The app reads credentials on launch while the device is
-///   unlocked, so this is sufficient for the v1.0 session token.
+///   unlocked, so this is sufficient for the session token.
 /// - No value is ever logged or embedded in an `AppError` message — failures
-///   carry the OSStatus code only (display-safe, architecture.md §7.2).
+///   carry the OSStatus code only (display-safe).
 /// - Reads return raw `Data`; callers decode their own token format.
 ///
 /// The `SecItem*` calls themselves are confined behind

@@ -3,8 +3,7 @@
     import Entities
     import Foundation
 
-    /// Produces the synthetic `BankingEvent` stream for demo mode
-    /// (architecture.md §11.2, §12.3 #6; tasks.md Day 8).
+    /// Produces the synthetic `BankingEvent` stream for demo mode.
     ///
     /// The demo must feel alive, not static: events are emitted on a timer so
     /// the app exercises the real `AsyncStream → model → view` pipeline —
@@ -17,7 +16,7 @@
     /// shape belongs to (`CardState`, the `card.offers` `OffersSnapshotDTO`
     /// envelope), so the demo exercises the identical `parseEvent` /
     /// `JSONDecoder` AppError path live frames use — synthetic payloads can
-    /// never drift from the SDK's shapes (architecture.md §12.3 #6).
+    /// never drift from the SDK's shapes.
     ///
     /// The generator is a deterministic cycle: `nextEvent()` walks `events`
     /// in order and wraps around at the end, so a demo plan repeats until the
@@ -58,9 +57,9 @@
     }
 
     public extension MockEventGenerator {
-        /// The standard demo plan (architecture.md §11.2): one full
-        /// `card.offers` snapshot followed by one status frame per
-        /// `CardState.mockDefaults` card, cycling at the given interval.
+        /// The standard demo plan: one full `card.offers` snapshot
+        /// followed by one status frame per `CardState.mockDefaults` card,
+        /// cycling at the given interval.
         static func demoDefaults(interval: Duration = .seconds(5)) -> MockEventGenerator {
             MockEventGenerator(events: demoEvents(), interval: interval)
         }

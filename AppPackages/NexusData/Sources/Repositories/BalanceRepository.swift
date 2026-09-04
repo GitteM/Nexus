@@ -2,18 +2,17 @@ import DataSources
 import Entities
 import RepositoryProtocols
 
-/// Domain-facing implementation of `BalanceRepositoryProtocol`
-/// (architecture.md §6.3, tasks.md Day 13): a thin wrapper over the
-/// `CardBalanceDataSource` actor that adds boundary validation and owns the
-/// error contract models rely on.
+/// Domain-facing implementation of `BalanceRepositoryProtocol`: a thin
+/// wrapper over the `CardBalanceDataSource` actor that adds boundary
+/// validation and owns the error contract models rely on.
 ///
 /// The data source keeps the per-card balance cache, parses
-/// `card.events.{cardId}` frames, and owns the live stream (§6.1); this
+/// `card.events.{cardId}` frames, and owns the live stream; this
 /// repository adds no business rules — it validates the `cardId` every
 /// method takes (so an empty id fails fast with
 /// `AppError.validationError`) and rethrows the source's `AppError`s
 /// untouched. A non-`AppError` escaping the source would be a Data-layer
-/// bug; it is mapped defensively to `AppError.unknown` (architecture.md §5).
+/// bug; it is mapped defensively to `AppError.unknown`.
 public struct BalanceRepository: BalanceRepositoryProtocol, Sendable {
     private let source: CardBalanceDataSource
 
@@ -29,7 +28,7 @@ public struct BalanceRepository: BalanceRepositoryProtocol, Sendable {
     }
 
     /// Subscribes to one card's balance updates; the stream yields the
-    /// current cached value first, then live updates (§4.2).
+    /// current cached value first, then live updates.
     public func subscribeToBalance(cardId: String) async throws -> AsyncStream<Balance> {
         try Self.validate(cardId)
         do {

@@ -36,9 +36,8 @@ public struct Card: Codable, Sendable, Equatable, Identifiable {
 
 public extension Card {
     /// A copy of this card with a new lifecycle status — the model's way to
-    /// fold live `CardState` updates back into the managed-card list
-    /// (architecture.md §9.1: subscriptions "also update card.status")
-    /// without reconstructing the whole entity at the call site.
+    /// fold live `CardState` updates back into the managed-card list without
+    /// reconstructing the whole entity at the call site.
     func withStatus(_ status: CardStatus) -> Card {
         Card(
             id: id,

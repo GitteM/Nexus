@@ -1,9 +1,9 @@
 import Entities
 import Foundation
 
-/// The date window a transaction-history filter applies to (tasks.md
-/// Day 13). Presets relative to "now" — the model passes an explicit `now`
-/// so the pure filter stays testable.
+/// The date window a transaction-history filter applies to. Presets
+/// relative to "now" — the model passes an explicit `now` so the pure
+/// filter stays testable.
 public enum TransactionDateRange: String, CaseIterable, Sendable, Equatable {
     case all
     case last7Days
@@ -29,13 +29,13 @@ public extension TransactionDateRange {
     }
 }
 
-/// The active search/filter state of the transaction history screen
-/// (tasks.md Day 13): free-text search plus filters by category, status,
-/// date window, and amount magnitude.
+/// The active search/filter state of the transaction history screen:
+/// free-text search plus filters by category, status, date window, and
+/// amount magnitude.
 ///
 /// `TransactionHistoryModel` publishes one query; the pure filtering rule
-/// lives here so it is unit-testable without the model (architecture.md
-/// §9.1: no business rules in views).
+/// lives here so it is unit-testable without the model (no business rules
+/// in views).
 public struct TransactionQuery: Equatable, Sendable {
     /// Free-text search across merchant name and transaction id.
     public var searchText: String

@@ -1,15 +1,15 @@
 import Foundation
 
-/// Single source of UI copy (architecture.md §9.4, tasks.md Day 9).
+/// Single source of UI copy.
 ///
 /// Every user-facing string that shared components and screens render goes
 /// through `String(localized:)` here — never a literal at a call site. Real
-/// translations land later (v1.0 ships English only); this enum is the
+/// translations land later (English only for now); this enum is the
 /// localization seam.
 ///
 /// Copy that describes a *domain* value stays on the domain type
 /// (`SessionStatus.displayName`, `CardStatus.displayName`, `AppError`
-/// surfaces, §4.1/§5) so the label travels with the value; `Strings` owns
+/// surfaces) so the label travels with the value; `Strings` owns
 /// app- and component-level copy.
 public enum Strings {
     public enum Common {
@@ -145,7 +145,7 @@ public enum Strings {
         public static let errorTitle = String(localized: "Something went wrong")
         public static let errorMessage = String(localized: "Nexus couldn't start. Please try again.")
 
-        /// Demo-only reset action (Day 14 composition root).
+        /// Demo-only reset action.
         public static let resetDemo = String(localized: "Reset demo")
     }
 

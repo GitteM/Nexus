@@ -2,7 +2,7 @@ import Foundation
 
 #if DEBUG
     /// Factory methods for every `AppError` case — tests and previews construct
-    /// errors without stringly code (architecture.md §5).
+    /// errors without stringly code.
     ///
     /// Every factory takes representative payloads with defaults, so callers can
     /// write `AppErrorTestFactory.cardNotFound()` for the canonical instance or

@@ -3,10 +3,9 @@
     import RepositoryProtocols
 
     /// In-memory `BalanceRepositoryProtocol` double shared by previews,
-    /// model tests, and demo mode (architecture.md §9.5, §11.2; tasks.md
-    /// Day 13).
+    /// model tests, and demo mode.
     ///
-    /// Mirrors the live contract (architecture.md §4.2, §6.1):
+    /// Mirrors the live contract:
     /// - `getBalance` answers the latest known balance, or `nil` when none
     ///   is known for the card.
     /// - `subscribeToBalance` yields the current balance first, then every

@@ -1,9 +1,8 @@
 import Foundation
 
-/// User preferences, persisted via SwiftData (architecture.md §4.1, §6.4).
+/// User preferences, persisted via SwiftData.
 ///
-/// Deliberately minimal — add a field only when a rule needs it
-/// (architecture.md §12.3).
+/// Deliberately minimal — add a field only when a rule needs it.
 public struct Settings: Codable, Sendable, Equatable {
     public var notificationsEnabled: Bool
     public var hapticsEnabled: Bool

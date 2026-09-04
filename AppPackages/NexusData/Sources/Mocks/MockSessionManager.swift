@@ -4,21 +4,20 @@
     import ServiceProtocols
 
     /// In-memory `SessionManagerProtocol` double shared by previews, tests,
-    /// and demo mode (architecture.md §9.5, §11.2; tasks.md Day 8).
+    /// and demo mode.
     ///
     /// Demo mode substitutes this session for the real transport at the
-    /// composition root (§11.2): it connects instantly, fans out the events
-    /// `MockEventGenerator` produces on the documented channels
-    /// (architecture.md §11.4), and records outgoing sends — no network, no
-    /// Keychain, no disk.
+    /// composition root: it connects instantly, fans out the events
+    /// `MockEventGenerator` produces on the documented channels, and records
+    /// outgoing sends — no network, no Keychain, no disk.
     ///
-    /// Lifecycle mirrors the live manager (architecture.md §6.2) closely
-    /// enough for the demo and for tests:
+    /// Lifecycle mirrors the live manager closely enough for the demo and
+    /// for tests:
     /// - `connect()` moves `.disconnected`/`.error → .connecting → .connected`
     ///   and throws `connectError` (status `.error`) when the knob is set.
     /// - `disconnect()` stops emission and finishes every active stream —
     ///   teardown semantics identical to a transport drop; models
-    ///   re-subscribe on their next reload (architecture.md §9.1).
+    ///   re-subscribe on their next reload.
     /// - `events(for:)` registers the caller immediately, connected or not.
     ///   Events published while a stream is registered reach it; the mock has
     ///   no socket to gate delivery on, so publish order is whatever the
@@ -29,7 +28,7 @@
     /// `@MainActor` + `@Observable` mirror `APISessionManager` so the demo's
     /// `sessionStatus` reaches views through the same pass-through as live;
     /// the conformance is `@preconcurrency` because the protocol inherits
-    /// `Sendable` (§12.3 #8 pattern).
+    /// `Sendable`.
     @MainActor
     @Observable
     public final class MockSessionManager: @preconcurrency SessionManagerProtocol {
@@ -103,7 +102,7 @@
         /// stream; ending it (consumer cancellation or deinit) unregisters
         /// exactly that subscriber.
         public func events(for channel: String) -> AsyncStream<BankingEvent> {
-            assert(!channel.isEmpty, "events(for:) requires a non-empty channel (architecture.md §11.4)")
+            assert(!channel.isEmpty, "events(for:) requires a non-empty channel")
             let (stream, continuation) = AsyncStream<BankingEvent>.makeStream()
             let id = nextSubscriberID
             nextSubscriberID += 1

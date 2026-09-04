@@ -1,8 +1,7 @@
 import Foundation
 
-/// Reads build-configuration values that flow xcconfig → Info.plist → Bundle
-/// (architecture.md §7.1). No secrets live here; credentials are held in the
-/// Keychain at runtime.
+/// Reads build-configuration values that flow xcconfig → Info.plist → Bundle.
+/// No secrets live here; credentials are held in the Keychain at runtime.
 public extension Bundle {
     static let apiBaseURL: URL = {
         guard let string = Bundle.main.infoDictionary?["API_BASE_URL"] as? String,

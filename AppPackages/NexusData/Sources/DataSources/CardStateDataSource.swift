@@ -4,11 +4,10 @@ import ServiceProtocols
 import Session
 
 /// Live card-status source: the actor that owns the per-card status event
-/// stream and an in-memory per-id cache (architecture.md §6.1, tasks.md
-/// Day 6).
+/// stream and an in-memory per-id cache.
 ///
-/// `CardStatusRepositoryProtocol` (Day 7) is a thin validation/error wrapper
-/// over this actor. It subscribes on `card.events.{cardId}` and parses only
+/// `CardStatusRepositoryProtocol` is a thin validation/error wrapper over
+/// this actor. It subscribes on `card.events.{cardId}` and parses only
 /// the status-shaped payloads on that channel — balance/transaction/limit
 /// frames decode as `CardState` failures and are skipped, keeping one
 /// source of truth per card while other data sources parse their own kinds
@@ -19,9 +18,8 @@ import Session
 ///   setup failure (invalid card id) before any stream is handed out.
 /// - The stream yields the current cached state first, then live updates —
 ///   so a re-subscribe after a disconnect/reload renders the last known
-///   state immediately (architecture.md §9.1: models re-subscribe on
-///   reload). The seed is buffered before the stream is returned, so the
-///   first element is deterministic.
+///   state immediately: models re-subscribe on reload. The seed is buffered
+///   before the stream is returned, so the first element is deterministic.
 /// - Delivery is the happens-before edge for the cache: a frame is written
 ///   to the per-id cache *before* it is yielded, so once a state has been
 ///   observed on a subscription, `getCardStatus` answers it. (An event
@@ -31,15 +29,15 @@ import Session
 ///   network round-trip; `nil` means no state is known yet.
 /// - The per-id cache is bounded (`cacheLimit`, default 50 entries, LRU
 ///   eviction) so a long-lived source never grows without bound — the same
-///   50-item budget the §6.4 `CacheManager` applies to ephemeral live
-///   state. Evicted entries simply read as "not known" until the next
-///   status frame arrives.
+///   50-item budget `CacheManager` applies to ephemeral live state. Evicted
+///   entries simply read as "not known" until the next status frame
+///   arrives.
 public actor CardStateDataSource {
     private let eventSubscriptionManager: any EventSubscriptionManagerProtocol
     private let logger: any LoggerProtocol
     private let decoder = JSONDecoder()
 
-    /// Default cap for the per-id cache (architecture.md §6.4: 50 items).
+    /// Default cap for the per-id cache (50 items).
     public static let defaultCacheLimit = 50
 
     private let cacheLimit: Int
@@ -119,7 +117,7 @@ public actor CardStateDataSource {
         // The session facade is `@MainActor` (its `events(for:)` is a sync
         // protocol requirement), so registration hops to the main actor
         // before touching it — actor-isolated callers cannot invoke the
-        // main-actor witness directly (architecture.md §12.3 #8).
+        // main-actor witness directly.
         let eventManager = eventSubscriptionManager
         let source = await MainActor.run {
             eventManager.events(for: channel)
@@ -159,8 +157,7 @@ public actor CardStateDataSource {
 
     // MARK: - Parsing
 
-    /// Normalizes one wire payload into a typed `CardState`
-    /// (architecture.md §6.1: `parseEvent`).
+    /// Normalizes one wire payload into a typed `CardState`.
     ///
     /// Any payload that is not a status frame (other entity kinds on the
     /// shared per-card channel, malformed JSON, unknown statuses) is logged

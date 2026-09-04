@@ -3,13 +3,12 @@
     import RepositoryProtocols
 
     /// In-memory `CardStatusRepositoryProtocol` double shared by previews,
-    /// model tests, and demo mode (architecture.md §9.5, §11.2; tasks.md
-    /// Day 8).
+    /// model tests, and demo mode.
     ///
     /// The mock stands in for the live per-card status source: it holds the
     /// known `CardState` per card id and fans status updates out to the
     /// subscribers of that card's channel. Contract mirrors the live
-    /// repository (architecture.md §4.2, §6.1):
+    /// repository:
     /// - `getCardStatus` answers the latest known state, or `nil` when none
     ///   is known for the card.
     /// - `subscribeToCardStatus` yields the current state first, then every

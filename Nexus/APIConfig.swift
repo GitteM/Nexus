@@ -1,7 +1,6 @@
 import Foundation
 
-/// Build configuration access for the app target (architecture.md §7.1,
-/// tasks.md Day 14).
+/// Build configuration access for the app target.
 ///
 /// Reads the `API_ENVIRONMENT` / `API_BASE_URL` values from Info.plist
 /// (injected from `Debug.xcconfig` / `Release.xcconfig`). Debug builds run

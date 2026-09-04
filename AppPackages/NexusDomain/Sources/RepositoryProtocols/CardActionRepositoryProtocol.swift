@@ -1,6 +1,6 @@
 import Entities
 
-/// Executes outgoing card actions (architecture.md §4.2).
+/// Executes outgoing card actions.
 ///
 /// Covers freeze/unfreeze, report lost/stolen, replacement requests, and
 /// spending-limit changes — all expressed as `CardCommand` values. The

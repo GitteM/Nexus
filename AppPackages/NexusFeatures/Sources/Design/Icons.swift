@@ -1,10 +1,9 @@
-/// Central catalog of SF Symbol names used by shared UI (architecture.md
-/// §9.4, tasks.md Day 9).
+/// Central catalog of SF Symbol names used by shared UI.
 ///
 /// Components look up symbols here instead of spelling out names at each
 /// call site. Status icons that belong to domain concepts (`CardStatus.icon`,
-/// `SessionStatus.icon`) stay on the domain enums (§4.1) — this catalog holds
-/// the generic UI vocabulary: retry, offline, warnings, chevrons, etc.
+/// `SessionStatus.icon`) stay on the domain enums — this catalog holds the
+/// generic UI vocabulary: retry, offline, warnings, chevrons, etc.
 public enum Icons {
     /// Generic back/left chevron for the shared `BackToolbarItem`.
     public static let back = "chevron.left"
@@ -45,6 +44,6 @@ public enum Icons {
     /// Filter menus (transaction history).
     public static let filter = "line.3.horizontal.decrease.circle"
 
-    /// Reset demo state (Day 14 composition root).
+    /// Reset demo state.
     public static let resetDemo = "arrow.counterclockwise"
 }

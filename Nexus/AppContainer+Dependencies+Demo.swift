@@ -10,10 +10,10 @@
     import Transactions
 
     extension AppDependenciesFactory {
-        /// Demo mode: the shared in-memory mock store graph (architecture.md
-        /// §9.5, §11.2). Same repositories/models the screens always use —
-        /// only the transport/persistence edges are faked, and none of it
-        /// touches the network, the Keychain, or disk.
+        /// Demo mode: the shared in-memory mock store graph. Same
+        /// repositories/models the screens always use — only the
+        /// transport/persistence edges are faked, and none of it touches
+        /// the network, the Keychain, or disk.
         @MainActor
         static func demo(logger _: LoggingService) -> AppDependencies {
             let cardRepository = MockCardRepository(seed: Card.mockDefaults)

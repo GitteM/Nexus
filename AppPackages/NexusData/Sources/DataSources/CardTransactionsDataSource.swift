@@ -4,14 +4,12 @@ import ServiceProtocols
 import Session
 
 /// Live transaction-feed source: the actor that owns each card's
-/// transaction event stream and its per-card, newest-first list
-/// (architecture.md §6.1, tasks.md Day 13).
+/// transaction event stream and its per-card, newest-first list.
 ///
 /// `TransactionRepositoryProtocol` (thin validation/error wrapper) exposes
 /// this actor. It subscribes on `card.events.{cardId}` and parses only the
 /// transaction-shaped payloads on that channel — status/balance/limit
-/// frames decode as `Transaction` failures and are skipped (the
-/// `CardStateDataSource` contract, §6.1).
+/// frames decode as `Transaction` failures and are skipped.
 ///
 /// Contract notes (mirror `CardStateDataSource` / `CardOffersDataSource`):
 /// - A returned stream means "subscribed": setup failure throws before any
@@ -77,8 +75,7 @@ public actor CardTransactionsDataSource {
         let channel = EventChannels.cardEvents(cardId: cardId)
         let eventManager = eventSubscriptionManager
         // The session facade is `@MainActor` (its `events(for:)` is a sync
-        // protocol requirement), so registration hops to the main actor
-        // (architecture.md §12.3 #8).
+        // protocol requirement), so registration hops to the main actor.
         let source = await MainActor.run {
             eventManager.events(for: channel)
         }
@@ -105,7 +102,7 @@ public actor CardTransactionsDataSource {
 
     // MARK: - Parsing
 
-    /// Normalizes one wire payload into a `Transaction` (§6.1 `parseEvent`).
+    /// Normalizes one wire payload into a `Transaction`.
     ///
     /// Any payload that is not a transaction frame (other entity kinds on
     /// the shared per-card channel, malformed JSON) is logged and skipped —

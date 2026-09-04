@@ -4,9 +4,8 @@ import Navigation
 import SharedUI
 import SwiftUI
 
-/// The per-card transaction history screen (architecture.md §9.3, tasks.md
-/// Day 13): a live balance header plus the searchable, filterable
-/// transaction feed.
+/// The per-card transaction history screen: a live balance header plus
+/// the searchable, filterable transaction feed.
 ///
 /// A thin switch over the model's `viewState`; the loaded screen owns the
 /// search field (`.searchable`), the toolbar Filter button (opening the
