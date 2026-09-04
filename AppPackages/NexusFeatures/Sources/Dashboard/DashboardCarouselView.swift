@@ -18,6 +18,7 @@ import SwiftUI
 /// because the pager itself already announces position.
 struct DashboardCarouselView: View {
     private let cards: [Card]
+    private let onSelectCard: ((Card) -> Void)?
 
     @State private var selection: String?
     /// The pager keeps the physical-card aspect ratio (ISO/IEC 7810 ID-1:
@@ -33,8 +34,9 @@ struct DashboardCarouselView: View {
     private let pageDotSize: CGFloat = 7
     private let selectedPageDotWidth: CGFloat = 20
 
-    init(cards: [Card]) {
+    init(cards: [Card], onSelectCard: ((Card) -> Void)? = nil) {
         self.cards = cards
+        self.onSelectCard = onSelectCard
         _selection = State(initialValue: cards.first?.id)
     }
 
@@ -51,6 +53,7 @@ struct DashboardCarouselView: View {
                         pageIndex: index,
                         pageCount: cards.count,
                         onSelectPage: selectPage,
+                        onSelectCard: { [card] in onSelectCard?(card) },
                     )
                     .tag(card.id)
                 }
@@ -107,12 +110,20 @@ private struct CardFrontView: View {
     private let pageIndex: Int
     private let pageCount: Int
     private let onSelectPage: (Int) -> Void
+    private let onSelectCard: () -> Void
 
-    init(card: Card, pageIndex: Int, pageCount: Int, onSelectPage: @escaping (Int) -> Void) {
+    init(
+        card: Card,
+        pageIndex: Int,
+        pageCount: Int,
+        onSelectPage: @escaping (Int) -> Void,
+        onSelectCard: @escaping () -> Void,
+    ) {
         self.card = card
         self.pageIndex = pageIndex
         self.pageCount = pageCount
         self.onSelectPage = onSelectPage
+        self.onSelectCard = onSelectCard
     }
 
     var body: some View {
@@ -169,10 +180,21 @@ private struct CardFrontView: View {
             in: RoundedRectangle(cornerRadius: 20, style: .continuous),
         )
         .padding(.horizontal, Spacing.lg)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            onSelectCard()
+        }
         .accessibilityElement(children: .combine)
         .accessibilityLabel(accessibilityLabel)
         .accessibilityValue(Strings.Dashboard.cardPage(pageIndex + 1, of: pageCount))
         .accessibilityAdjustableAction(adjust)
+        // The front is also the entry to the card's detail screen: VoiceOver
+        // announces it as a button whose double-tap (activate) opens it,
+        // while swipe up/down still pages through the carousel.
+        .accessibilityAddTraits(.isButton)
+        .accessibilityAction {
+            onSelectCard()
+        }
         .accessibilityIdentifier(DashboardAccessibility.card(card.id))
     }
 

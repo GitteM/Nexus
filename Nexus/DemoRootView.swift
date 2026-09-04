@@ -1,19 +1,33 @@
 #if DEBUG
+    import CardDetail
     import Dashboard
     import Entities
     import Mocks
+    import Navigation
     import SwiftUI
 
     /// Demo bootstrap for the dashboard UI tests and demos (tasks.md Day
-    /// 11, architecture.md §10, §11.2).
+    /// 11–12, architecture.md §10, §11.2).
     ///
     /// Interim app-target root until `AppContainer` lands on Day 14: it
     /// parses the `-demoMode` launch argument (and the `API_ENVIRONMENT =
-    /// demo` Debug config) and, when demo, builds the *real* `DashboardView`
-    /// over the shared mock repositories. `-demoState=loading` /
-    /// `-demoState=error` drive the mock failure knobs so UI tests can
-    /// assert loading, error, and ready states render (§10). Day 14 folds
-    /// this into `AppContainer`'s demo branch — this file is deleted there.
+    /// demo` Debug config) and, when demo, builds the *real* screens over
+    /// the shared mock repositories. `-demoState=loading` /
+    /// `-demoState=error` drive the card-fetch failure knobs and
+    /// `-demoActionState=error` drives the card-action failure knob so UI
+    /// tests can assert loading, error, and ready states render (§10). Day
+    /// 14 folds this into `AppContainer`'s demo branch — this file is
+    /// deleted there.
+    ///
+    /// Day 12 additions (M5): the mock graph lives for the whole demo
+    /// session (`DemoGraph`), so state written by one screen is visible to
+    /// the next — freezing a card in detail persists to the shared status
+    /// store and the dashboard reflects it on return; `MockCommandCoordinator`
+    /// plays the backend echo (a command's follow-up state lands back on the
+    /// live channels, appspec §2.2). The navigation stack binds the shared
+    /// `Router`, and the route → view mapping (architecture.md §8) composes
+    /// `CardDetailView` per destination with a model minted over the same
+    /// graph.
     ///
     /// Release builds compile this file to nothing (`#if DEBUG`) and
     /// `NexusApp` falls back to the placeholder, so `-demoMode` is ignored
@@ -27,16 +41,24 @@
             case error
         }
 
+        /// Launch-argument state for the card-action failure knob (Day 12).
+        enum DemoActionState: String {
+            case ready
+            case error
+        }
+
         /// What the UI-test knobs mean for the mock graph.
         struct LaunchOptions {
             let isDemo: Bool
             let state: DemoState
+            let actionState: DemoActionState
 
             init(arguments: [String], environment: String?) {
                 isDemo = arguments.contains("-demoMode") || environment == "demo"
                 // Accepts both "-demoState error" (separate elements) and
                 // "-demoState=error" (one element), like launch args do.
                 state = Self.parseState(arguments: arguments)
+                actionState = Self.parseActionState(arguments: arguments)
             }
 
             private static func parseState(arguments: [String]) -> DemoState {
@@ -54,6 +76,21 @@
                 return .ready
             }
 
+            private static func parseActionState(arguments: [String]) -> DemoActionState {
+                if let index = arguments.firstIndex(of: "-demoActionState"),
+                   arguments.indices.contains(index + 1),
+                   let state = DemoActionState(rawValue: arguments[index + 1])
+                {
+                    return state
+                }
+                if let prefixed = arguments.first(where: { $0.hasPrefix("-demoActionState=") }),
+                   let state = DemoActionState(rawValue: String(prefixed.dropFirst("-demoActionState=".count)))
+                {
+                    return state
+                }
+                return .ready
+            }
+
             /// The options of this process, read once per root creation.
             static var current: LaunchOptions {
                 LaunchOptions(
@@ -64,29 +101,64 @@
         }
 
         private let options: LaunchOptions
-        private let model: DashboardModel
+        @State private var graph: DemoGraph?
+        @State private var router = Router()
 
         init(options: LaunchOptions = .current) {
             self.options = options
-            model = Self.makeModel(state: options.state)
+            _graph = State(initialValue: options.isDemo ? DemoGraph(options: options) : nil)
         }
 
         var body: some View {
-            if options.isDemo {
-                NavigationStack {
+            if options.isDemo, let graph {
+                NavigationStack(path: $router.routes) {
                     DashboardView()
-                        .environment(model)
+                        .environment(graph.dashboardModel)
+                        .navigationDestination(for: Route.self) { route in
+                            destination(route, in: graph)
+                        }
                 }
+                .environment(router)
             } else {
                 Text("Nexus")
             }
         }
 
-        /// The demo graph: shared mocks, tuned per `-demoState` (the ready
-        /// default seeds the standard demo content).
-        private static func makeModel(state: DemoState) -> DashboardModel {
-            let cardRepository = MockCardRepository(seed: Card.mockDefaults)
-            switch state {
+        /// The route → view mapping (architecture.md §8). The only place
+        /// that knows both routes and views; Day 14's `AppContainer` takes
+        /// this over.
+        @ViewBuilder
+        private func destination(_ route: Route, in graph: DemoGraph) -> some View {
+            switch route {
+            case let .cardDetail(cardID):
+                CardDetailView()
+                    .environment(graph.makeDetailModel(cardID: cardID))
+            }
+        }
+    }
+
+    /// The demo's shared mock graph (architecture.md §9.5, §11.2): one set
+    /// of store-backed mock repositories for the whole session, so state
+    /// written by any screen is visible to every other screen and survives
+    /// navigation. Holds the `-demoState` / `-demoActionState` knob wiring
+    /// and installs the `MockCommandCoordinator` backend echo.
+    @MainActor
+    private final class DemoGraph {
+        let cardRepository: MockCardRepository
+        let offersRepository: MockOffersRepository
+        let statusRepository: MockStatusRepository
+        let actionRepository: MockActionRepository
+        let dashboardModel: DashboardModel
+        /// The backend echo stays alive for the demo session — the
+        /// coordinator's hook holds it weakly, so the graph owns it.
+        private let coordinator: MockCommandCoordinator
+
+        init(options: DemoRootView.LaunchOptions) {
+            cardRepository = MockCardRepository(seed: Card.mockDefaults)
+            offersRepository = MockOffersRepository(seed: CardOffer.mockDefaults)
+            statusRepository = MockStatusRepository(seed: CardState.mockDefaults)
+            actionRepository = MockActionRepository()
+            switch options.state {
             case .ready:
                 break
             case .loading:
@@ -97,10 +169,38 @@
                 // default `.apiConnectionFailed` surface.
                 cardRepository.shouldThrowError = true
             }
-            return DashboardModel(
+            if options.actionState == .error {
+                // Card actions fail with a freeze-shaped rejection; the card
+                // stays unchanged and the detail screen surfaces the error.
+                actionRepository.shouldThrowError = true
+                actionRepository.thrownError = .cardActionFailed(
+                    action: "Freeze",
+                    details: "The freeze was rejected.",
+                )
+            }
+            dashboardModel = DashboardModel(
                 cardRepository: cardRepository,
-                offersRepository: MockOffersRepository(seed: CardOffer.mockDefaults),
-                statusRepository: MockStatusRepository(seed: CardState.mockDefaults),
+                offersRepository: offersRepository,
+                statusRepository: statusRepository,
+            )
+            coordinator = MockCommandCoordinator(
+                actionRepository: actionRepository,
+                cardRepository: cardRepository,
+                statusRepository: statusRepository,
+                offersRepository: offersRepository,
+            )
+            coordinator.start()
+        }
+
+        /// Mints one detail model over the shared graph for a pushed
+        /// destination (composition-root responsibility; Day 14 moves this
+        /// into `AppContainer`).
+        func makeDetailModel(cardID: String) -> CardDetailModel {
+            CardDetailModel(
+                cardID: cardID,
+                cardRepository: cardRepository,
+                statusRepository: statusRepository,
+                actionRepository: actionRepository,
             )
         }
     }
