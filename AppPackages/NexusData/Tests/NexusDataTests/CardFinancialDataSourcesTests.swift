@@ -3,10 +3,10 @@ import Entities
 import Foundation
 import Testing
 
-/// Day 13 tests for the balance and transaction-feed sources
-/// (architecture.md §6.1): per-kind parse on the shared per-card channel,
-/// cache/feed seed semantics, live delivery, and malformed-payload
-/// skipping. Mirrors `CardStateDataSourceTests` conventions.
+/// Tests for the balance and transaction-feed sources: per-kind parse on
+/// the shared per-card channel, cache/feed seed semantics, live delivery,
+/// and malformed-payload skipping. Mirrors `CardStateDataSourceTests`
+/// conventions.
 @Suite("Card balance + transaction sources")
 @MainActor
 struct CardFinancialDataSourcesTests {

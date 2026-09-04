@@ -22,8 +22,8 @@ let package = Package(
     targets: [
         // Design tokens (colors, spacing, icons, copy) live in their own
         // target so any UI consumer can adopt them without pulling in
-        // components (architecture.md §3, §9.4). Depends on nothing but the
-        // platform SDKs — the single place platform-resolved values live.
+        // components. Depends on nothing but the platform SDKs — the single
+        // place platform-resolved values live.
         .target(name: "Design"),
         .target(
             name: "SharedUI",
@@ -54,7 +54,7 @@ let package = Package(
             ],
         ),
         // Per-card account activity: balance header and the transaction
-        // history + details screens (architecture.md §9, tasks.md Day 13).
+        // history + details screens.
         .target(
             name: "Transactions",
             dependencies: [
@@ -75,7 +75,7 @@ let package = Package(
                 "SharedUI",
                 "Transactions",
                 // Mock repositories power the model tests' loading/error
-                // knobs and call counts (architecture.md §9.5).
+                // knobs and call counts.
                 .product(name: "Mocks", package: "NexusData"),
             ],
         ),

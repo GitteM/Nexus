@@ -2,7 +2,7 @@ import Entities
 import Foundation
 @testable import Session
 
-/// Fake "SDK client" for the session manager tests (tasks.md Day 5):
+/// Fake "SDK client" for the session manager tests:
 /// connect/disconnect, event bridging, and reconnect behavior.
 ///
 /// Test hooks drive the manager from the outside: `inject(_:)` feeds inbound
@@ -12,8 +12,8 @@ import Foundation
 ///
 /// Threading model: the whole fake — including every continuation it parks
 /// and resumes — is confined to the main actor, mirroring the production
-/// transport and the manager (architecture.md §6.2 accepts main-actor hops at
-/// banking-feed rates). `inject`, `closeFromServer`, `allowConnect`, and
+/// transport and the manager, which accepts main-actor hops at banking-feed
+/// rates. `inject`, `closeFromServer`, `allowConnect`, and
 /// `disconnect` are test hooks and must be called from a `@MainActor` test;
 /// continuations are only ever resumed on the main actor, so no
 /// `@unchecked Sendable` is needed.

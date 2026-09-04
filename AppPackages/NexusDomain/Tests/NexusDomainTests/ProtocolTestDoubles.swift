@@ -3,16 +3,15 @@ import Foundation
 import RepositoryProtocols
 import ServiceProtocols
 
-// Minimal in-target conformers proving the Day 4 protocol shapes compile
-// and mock cleanly.
+// Minimal in-target conformers proving the protocol shapes compile and
+// mock cleanly.
 //
-// The shared, seeded `#if DEBUG` mocks live in `NexusData/Mocks`
-// (architecture.md §9.5, tasks.md Day 8); these doubles exist only so the
-// NexusDomain test target can exercise the protocols without leaving the
-// package. Each double is created per test, so mutable state never crosses
-// concurrency domains. The repository protocols are `Sendable` (§4.2), so
-// the doubles are main-actor classes (implicitly Sendable), matching the
-// `@MainActor` mock repositories.
+// The shared, seeded `#if DEBUG` mocks live in `NexusData/Mocks`; these
+// doubles exist only so the NexusDomain test target can exercise the
+// protocols without leaving the package. Each double is created per test,
+// so mutable state never crosses concurrency domains. The repository
+// protocols are `Sendable`, so the doubles are main-actor classes
+// (implicitly Sendable), matching the `@MainActor` mock repositories.
 
 // MARK: - Repository doubles
 

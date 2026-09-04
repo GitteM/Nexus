@@ -2,8 +2,8 @@ import Entities
 @testable import Nexus
 import Testing
 
-/// Composition-root integration tests (architecture.md §11.2, tasks.md
-/// Day 14): both modes construct, the demo connects to `.ready`, reset
+/// Composition-root integration tests: both modes construct, the demo
+/// connects to `.ready`, reset
 /// restores the demo, and the live mode reports the missing-backend
 /// configuration gap instead of building a session to nowhere.
 @Suite("AppContainer")
@@ -45,7 +45,7 @@ struct AppContainerTests {
 
     @Test func `live container without a backend reports the configuration gap`() async {
         // baseURL nil means "read the (empty) config" — no backend exists
-        // in current builds (architecture.md §7.1, §11.4).
+        // in current builds.
         let container = AppContainer(mode: .live, baseURL: nil)
 
         await container.start()

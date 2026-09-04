@@ -2,8 +2,8 @@ import Foundation
 import SharedUI
 import Testing
 
-/// `Date+Extensions` formatting wrappers (architecture.md §9.4, tasks.md
-/// Day 9). Locale/time zone are pinned so expectations are deterministic.
+/// `Date+Extensions` formatting wrappers. Locale/time zone are pinned so
+/// expectations are deterministic.
 @Suite("Date formatting helpers")
 struct DateExtensionsTests {
     /// 2026-01-12 12:00:00 UTC — mid-day so no calendar-day boundary issues.

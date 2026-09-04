@@ -3,10 +3,9 @@ import Entities
 import Mocks
 import Testing
 
-/// Day 8 tests for `MockEventGenerator` (architecture.md §11.2, §12.3 #6):
-/// the demo's synthetic events must decode through the same `parseEvent` /
-/// `JSONDecoder` AppError path live frames use, and the plan must be a
-/// deterministic cycle.
+/// Tests for `MockEventGenerator`: the demo's synthetic events must decode
+/// through the same `parseEvent` / `JSONDecoder` AppError path live frames
+/// use, and the plan must be a deterministic cycle.
 @Suite("MockEventGenerator")
 @MainActor
 struct MockEventGeneratorTests {

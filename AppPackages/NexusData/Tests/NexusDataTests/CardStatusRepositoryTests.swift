@@ -5,8 +5,8 @@ import Repositories
 import Testing
 
 /// Tests for the thin `CardStatusRepository` over the real
-/// `CardStateDataSource` driven by the fake session facade (tasks.md Day 7:
-/// repository validation and error wrapping).
+/// `CardStateDataSource` driven by the fake session facade: repository
+/// validation and error wrapping.
 @Suite("CardStatusRepository")
 @MainActor
 struct CardStatusRepositoryTests {

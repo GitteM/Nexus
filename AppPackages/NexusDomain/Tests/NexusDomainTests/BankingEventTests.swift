@@ -32,8 +32,7 @@ struct BankingEventTests {
     // MARK: - Mock payloads decode into typed entities
 
     /// The demo wire shapes must decode through the same path live events
-    /// will (architecture.md §12.3): `parseEvent` feeds these payloads into
-    /// the entity `JSONDecoder`s.
+    /// will: `parseEvent` feeds these payloads into the entity `JSONDecoder`s.
     @Test func `card status event payload decodes to CardState`() throws {
         let state = try JSONDecoder().decode(
             CardState.self,

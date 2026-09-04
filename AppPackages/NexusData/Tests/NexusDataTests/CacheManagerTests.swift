@@ -2,9 +2,8 @@ import Foundation
 import Persistence
 import Testing
 
-/// Integration tests over the real `CacheManager` (tasks.md Day 7: "integration
-/// tests over real `CacheManager` + repository") — no mocks, real actor and
-/// real backing `NSCache`.
+/// Integration tests over the real `CacheManager` — no mocks, real actor
+/// and real backing `NSCache`.
 ///
 /// Deterministic policy (TTL expiry, the item cap) is actor-enforced, so the
 /// tests assert exact behavior; the `NSCache` byte budget is a best-effort

@@ -24,7 +24,7 @@ struct LoggerProtocolTests {
         #expect(logger.entries.map(\.level) == allLevels)
     }
 
-    /// The five severities the taxonomy must expose (architecture.md §4.3).
+    /// The five severities the taxonomy must expose.
     private var allLevels: [LogLevel] {
         [.debug, .info, .notice, .error, .fault]
     }

@@ -5,11 +5,11 @@ import Mocks
 import RepositoryProtocols
 import Testing
 
-/// `CardDetailModel` orchestration (architecture.md §9.1, tasks.md Day 12):
-/// load transitions, the card-control transition matrix (freeze/unfreeze /
-/// lost / stolen / replacement / spending limits), optimistic action
-/// application with stream reconciliation, and the failure paths that must
-/// leave the card unchanged.
+/// `CardDetailModel` orchestration: load transitions, the card-control
+/// transition matrix (freeze/unfreeze / lost / stolen / replacement /
+/// spending limits), optimistic action application with stream
+/// reconciliation, and the failure paths that must leave the card
+/// unchanged.
 ///
 /// The model and the tests share the main actor, so a poll helper yields
 /// between assertions to let the spawned subscription task and stream

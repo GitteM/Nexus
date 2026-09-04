@@ -4,9 +4,9 @@ import Mocks
 import Testing
 import Transactions
 
-/// Pure filtering rule tests (tasks.md Day 13): search/filter across
-/// merchant text, category, status, date window, and amount magnitude.
-/// Deterministic `now` keeps the date-window cases stable.
+/// Pure filtering rule tests: search/filter across merchant text, category,
+/// status, date window, and amount magnitude. Deterministic `now` keeps the
+/// date-window cases stable.
 @Suite("Transaction query filtering")
 struct TransactionFilterTests {
     private let transactions = Transaction.mockDefaults
@@ -93,9 +93,9 @@ struct TransactionFilterTests {
     }
 }
 
-/// `TransactionHistoryModel` orchestration (tasks.md Day 13): load
-/// transitions, the live balance/feed subscriptions, and the query
-/// mutations whose results the views render.
+/// `TransactionHistoryModel` orchestration: load transitions, the live
+/// balance/feed subscriptions, and the query mutations whose results the
+/// views render.
 @Suite("Transaction history model")
 @MainActor
 struct TransactionHistoryModelTests {
@@ -256,8 +256,8 @@ struct TransactionHistoryModelTests {
     }
 }
 
-/// `TransactionDetailModel` behavior (tasks.md Day 13): snapshot fetch by
-/// id, stale-link handling, and failure mapping.
+/// `TransactionDetailModel` behavior: snapshot fetch by id, stale-link
+/// handling, and failure mapping.
 @Suite("Transaction detail model")
 @MainActor
 struct TransactionDetailModelTests {

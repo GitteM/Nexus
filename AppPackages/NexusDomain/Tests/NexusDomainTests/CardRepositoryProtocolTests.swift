@@ -9,8 +9,8 @@ struct CardRepositoryProtocolTests {
     // MARK: - Shape
 
     /// Pins the one-shot shape: `async throws` with no `Result` at the
-    /// boundary (architecture.md §4.2, §12.1). If a signature regresses to
-    /// `Result`, these assignments stop compiling.
+    /// boundary. If a signature regresses to `Result`, these assignments
+    /// stop compiling.
     @Test func `methods are async throws and never return Result`() {
         let repository: CardRepositoryProtocol = TestCardRepository()
         let _: () async throws -> [Card] = repository.getCards

@@ -3,14 +3,13 @@ import os
 import ServiceProtocols
 import Testing
 
-/// Day 8 tests for the OSLog-backed `LoggingService` (architecture.md §7.2).
+/// Tests for the OSLog-backed `LoggingService`.
 ///
 /// Asserting that a message physically reached the unified log is not
 /// meaningful in a unit test; what matters is the mapping contract — every
-/// Domain `LogLevel` maps to exactly the `OSLogType` the architecture names.
+/// Domain `LogLevel` maps to exactly the `OSLogType` that contract names.
 /// Message content (display-safe only) is a caller contract covered at the
-/// call sites, not here (architecture.md §7.2: never log card numbers, CVV,
-/// or tokens).
+/// call sites, not here: never log card numbers, CVV, or tokens.
 @Suite("LoggingService")
 struct LoggingServiceTests {
     /// Parameterized over every `LogLevel`: the mapping must land on the

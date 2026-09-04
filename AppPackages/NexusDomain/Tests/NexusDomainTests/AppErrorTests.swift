@@ -4,8 +4,7 @@ import Testing
 
 @Suite("AppError")
 struct AppErrorTests {
-    /// One error per case, built through the DEBUG-only test factory
-    /// (architecture.md §5).
+    /// One error per case, built through the DEBUG-only test factory.
     private var allErrors: [AppError] {
         [
             AppErrorTestFactory.apiConnectionFailed(),
@@ -211,7 +210,7 @@ struct AppErrorTests {
 
     @Test func `unknown compares underlying errors by presence only`() {
         // `Error?` payloads have no stable equality contract — compare
-        // presence only (architecture.md §5).
+        // presence only.
         #expect(AppError.unknown(underlying: nil) == AppError.unknown(underlying: nil))
         #expect(
             AppError.unknown(underlying: NSError(domain: "a", code: 1))

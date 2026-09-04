@@ -2,7 +2,7 @@ import Foundation
 import Persistence
 import Testing
 
-/// Real-Keychain integration suite (tasks.md Day 7).
+/// Real-Keychain integration suite.
 ///
 /// Runs only where the process holds a Keychain entitlement: standalone iOS
 /// test runners (SPM package tests in the workspace TestPlan) are not signed

@@ -218,7 +218,7 @@ struct CardStateDataSourceTests {
         #expect(await nextState(stream) == .mockActiveState)
         #expect(session.subscribedChannelCount == 1)
 
-        // Model teardown (architecture.md §9.1): the model cancels its
+        // Model teardown: the model cancels its
         // per-card subscription task while it awaits the next frame.
         // Cancelling a consumer terminates its AsyncStream, which fires the
         // data source's `onTermination` and cancels the producer task; the
@@ -256,8 +256,8 @@ struct CardStateDataSourceTests {
         let second = try await source.subscribeToCardStatus(cardId: "card-credit-001")
 
         // The facade fans one frame out to every subscriber of the channel
-        // (architecture.md §9.1: several models can watch one card), and each
-        // subscription has its own stream and producer task.
+        // (several models can watch one card), and each subscription has
+        // its own stream and producer task.
         try session.inject(statusEvent(cardId: "card-credit-001", status: .frozen))
         #expect(await nextState(first) == CardState(cardId: "card-credit-001", status: .frozen))
         #expect(await nextState(second) == CardState(cardId: "card-credit-001", status: .frozen))

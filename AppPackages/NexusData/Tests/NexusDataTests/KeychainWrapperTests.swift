@@ -91,7 +91,7 @@ final class FakeKeychainSession: KeychainSessionProtocol {
 }
 
 /// Logic tests for `KeychainWrapper` over the fake session — they run on
-/// every platform, including the iOS simulator gate (tasks.md Day 7).
+/// every platform, including the iOS simulator gate.
 @Suite("KeychainWrapper")
 struct KeychainWrapperTests {
     private func makeWrapper() -> (KeychainWrapper, FakeKeychainSession) {

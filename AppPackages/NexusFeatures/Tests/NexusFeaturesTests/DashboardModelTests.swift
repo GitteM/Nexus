@@ -5,9 +5,9 @@ import Mocks
 import RepositoryProtocols
 import Testing
 
-/// `DashboardModel` orchestration (architecture.md §9.1, tasks.md Day 10):
-/// state transitions, load idempotence, repository call counts, the
-/// loading/error knobs, and the per-card live subscriptions the model owns.
+/// `DashboardModel` orchestration: state transitions, load idempotence,
+/// repository call counts, the loading/error knobs, and the per-card live
+/// subscriptions the model owns.
 ///
 /// The model and the tests share the main actor, so a poll helper yields
 /// between assertions to let spawned subscription tasks and stream

@@ -4,7 +4,7 @@ import Foundation
 import SwiftData
 import Testing
 
-/// Integration tests over the real SwiftData stack (tasks.md Day 7):
+/// Integration tests over the real SwiftData stack:
 /// `StoredCard` @Model records through a real in-memory `ModelContainer`,
 /// the hand-written `StoredCardModelActor`, and `SwiftDataCardRepository`.
 ///
