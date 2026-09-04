@@ -120,11 +120,11 @@
 
 ### Day 13 — Balances & transactions (M6)
 
-- [ ] Balance display (current/available/credit limit) with live updates from the event stream (features.md — Real-Time Balances).
-- [ ] `TransactionHistoryModel`: recent + pending transactions; search/filter by date range, category, amount, status (features.md — Search & Filter).
-- [ ] Transaction details view: merchant info, location, transaction ID (features.md — Transaction Details).
-- [ ] Tests: filter/search logic; live balance updates; UI test for history + filter.
-- **Verify:** Balances and transactions green; live events update state without polling.
+- [x] Balance display (current/available/credit limit) with live updates from the event stream (features.md — Real-Time Balances).
+- [x] `TransactionHistoryModel`: recent + pending transactions; search/filter by date range, category, amount, status (features.md — Search & Filter).
+- [x] Transaction details view: merchant info, location, transaction ID (features.md — Transaction Details).
+- [x] Tests: filter/search logic; live balance updates; UI test for history + filter.
+- **Verify:** Balances and transactions green; live events update state without polling. — done: full workspace TestPlan green on iPhone 17 (Domain 161 tests/20 suites, Data 179/20 — incl. new balance/transaction source tests — Features 86/9 — incl. new filter/history/detail suites — 1 app smoke, 8 UI tests: 4 Dashboard + 2 CardDetail + 2 new `TransactionsUITests`), zero build warnings, `swiftformat` clean. Notes for review: account activity is per-card — Card Detail's new “Transactions” row pushes the history screen, which carries the live balance header above the feed (entry-point decision recorded in appspec §2.3); new `Transactions` NexusFeatures target + `Transactions` product wired into the app and UI-test targets (pbxproj); `BalanceRepositoryProtocol`/`TransactionRepositoryProtocol` + `CardBalanceDataSource`/`CardTransactionsDataSource` (per-kind parse on `card.events.{id}`, feed dedupes by id, bounded at 100) + repositories + mocks; search/filter semantics (search text, category/status/date presets, amount magnitude) live in the pure `TransactionQuery` rule; the transaction detail is a snapshot view with a `missing` state for stale links; appspec §2.3 records all M6 decisions.
 
 ### Day 14 — Composition root + demo mode (M7)
 

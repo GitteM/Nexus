@@ -13,6 +13,7 @@ let package = Package(
         .library(name: "Navigation", targets: ["Navigation"]),
         .library(name: "Dashboard", targets: ["Dashboard"]),
         .library(name: "CardDetail", targets: ["CardDetail"]),
+        .library(name: "Transactions", targets: ["Transactions"]),
     ],
     dependencies: [
         .package(path: "../NexusDomain"),
@@ -52,6 +53,19 @@ let package = Package(
                 .product(name: "RepositoryProtocols", package: "NexusDomain"),
             ],
         ),
+        // Per-card account activity: balance header and the transaction
+        // history + details screens (architecture.md §9, tasks.md Day 13).
+        .target(
+            name: "Transactions",
+            dependencies: [
+                "Design",
+                "Navigation",
+                "SharedUI",
+                .product(name: "Entities", package: "NexusDomain"),
+                .product(name: "Mocks", package: "NexusData"),
+                .product(name: "RepositoryProtocols", package: "NexusDomain"),
+            ],
+        ),
         .testTarget(
             name: "NexusFeaturesTests",
             dependencies: [
@@ -59,6 +73,7 @@ let package = Package(
                 "Dashboard",
                 "Navigation",
                 "SharedUI",
+                "Transactions",
                 // Mock repositories power the model tests' loading/error
                 // knobs and call counts (architecture.md §9.5).
                 .product(name: "Mocks", package: "NexusData"),

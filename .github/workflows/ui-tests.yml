@@ -1,17 +1,15 @@
-name: CI
+name: UI Tests
 
 on:
-  push:
-    branches: [main]
-  pull_request:
+  workflow_dispatch:
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
+  group: ui-tests-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build-and-test:
-    name: Build & Test (Xcode 26.6, iOS Simulator)
+  ui-tests:
+    name: UI Tests (Xcode 26.6, iOS Simulator)
     runs-on: macos-26
     timeout-minutes: 25
     env:
@@ -29,13 +27,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: DerivedData
-          key: deriveddata-${{ runner.os }}-${{ hashFiles('Nexus.xcodeproj/project.pbxproj', 'Nexus.xcodeproj/xcshareddata/xcschemes/Nexus.xcscheme', 'Nexus.xcworkspace/contents.xcworkspacedata', 'TestPlan.xctestplan', 'Configs/*.xcconfig', 'AppPackages/**/Package.swift') }}
+          key: deriveddata-ui-${{ runner.os }}-${{ hashFiles('Nexus.xcodeproj/project.pbxproj', 'Nexus.xcodeproj/xcshareddata/xcschemes/Nexus.xcscheme', 'Nexus.xcworkspace/contents.xcworkspacedata', 'TestPlan.xctestplan', 'Configs/*.xcconfig', 'AppPackages/**/Package.swift') }}
           restore-keys: |
-            deriveddata-${{ runner.os }}-
+            deriveddata-ui-${{ runner.os }}-
 
-      # Compiling never needs a concrete device, so build against the
-      # generic simulator destination. A named device ("iPhone 17") would
-      # fail here whenever the runner image's device set differs.
       - name: Build for testing
         run: >
           xcodebuild build-for-testing
@@ -44,9 +39,6 @@ jobs:
           -destination 'generic/platform=iOS Simulator'
           -derivedDataPath DerivedData
 
-      # test-without-building cannot target the generic destination: it must
-      # launch on a bootable simulator. Pick the first available iPhone on
-      # the runner so the test step survives device-name drift too.
       - name: Find available iPhone simulator
         id: simulator
         run: |
@@ -58,18 +50,25 @@ jobs:
           echo "Simulator: $DEVICE"
           echo "device=$DEVICE" >> "$GITHUB_OUTPUT"
 
-      # UI tests are NOT part of the PR gate: on free-tier macOS runners the
-      # earliest UI launches on a cold simulator drop gestures even when the
-      # accessibility tree is ready (same code passes locally on a warm
-      # simulator and later in the same run — many consecutive failures with
-      # every test-side mitigation in place). Run the UI suite via the
-      # on-demand "UI Tests" workflow, or locally on a warm simulator
-      # before merging (AGENTS.md §5.6).
-      - name: Test (workspace TestPlan — unit & integration)
+      # Cold-simulator first-launch gestures are flaky on free-tier runners
+      # (see ci.yml). Prewarm: boot fully, then launch/terminate the app once
+      # before the real runs, and retry failed tests once in-place.
+      - name: Prewarm simulator
+        run: |
+          DEVICE="${{ steps.simulator.outputs.device }}"
+          xcrun simctl boot "$DEVICE" 2>/dev/null || true
+          xcrun simctl bootstatus "$DEVICE" -b
+          xcrun simctl install "$DEVICE" "DerivedData/Build/Products/Debug-iphonesimulator/Nexus.app"
+          xcrun simctl launch "$DEVICE" com.nexusbank.app
+          sleep 8
+          xcrun simctl terminate "$DEVICE" com.nexusbank.app || true
+
+      - name: Test (full workspace TestPlan incl. UI)
         run: >
           xcodebuild test-without-building
           -workspace Nexus.xcworkspace
           -scheme Nexus
           -destination 'platform=iOS Simulator,name=${{ steps.simulator.outputs.device }}'
           -derivedDataPath DerivedData
-          -skip-testing:NexusUITests
+          -retry-tests-on-failure
+          -test-iterations 2

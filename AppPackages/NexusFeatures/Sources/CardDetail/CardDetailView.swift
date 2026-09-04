@@ -1,5 +1,6 @@
 import Design
 import Entities
+import Navigation
 import SharedUI
 import SwiftUI
 
@@ -48,6 +49,7 @@ public struct CardDetailView: View {
 /// state; haptics ride the model's success/failure signals.
 private struct CardDetailContentView: View {
     private let model: CardDetailModel
+    @Environment(Router.self) private var router
 
     init(model: CardDetailModel) {
         self.model = model
@@ -71,6 +73,7 @@ private struct CardDetailContentView: View {
                         .padding(.horizontal, Spacing.lg)
                     }
                     limitsSection(for: card)
+                    activitySection(for: card)
                 }
             }
             .padding(.vertical, Spacing.xl)
@@ -221,6 +224,31 @@ private struct CardDetailContentView: View {
             ForEach(SpendingLimitPeriod.allCases, id: \.self) { period in
                 limitRow(for: period)
             }
+        }
+    }
+
+    /// Day 13 (M6): the per-card account-activity entry. Pushes the
+    /// transaction history screen (which carries the live balance header).
+    private func activitySection(for card: Card) -> some View {
+        section(Strings.CardDetail.activitySection) {
+            Button {
+                router.navigateTo(.transactionHistory(cardID: card.id))
+            } label: {
+                HStack {
+                    Text(Strings.CardDetail.transactionsRow)
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(ColorPalette.label)
+                    Spacer()
+                    Image(systemName: Icons.chevronRight)
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(ColorPalette.secondaryLabel)
+                }
+                .padding(.horizontal, Spacing.lg)
+                .padding(.vertical, Spacing.sm)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier(CardDetailAccessibility.transactions)
         }
     }
 
@@ -568,25 +596,30 @@ private struct LimitDraft: Identifiable {
     #Preview("Active card") {
         CardDetailView()
             .environment(CardDetailModel.preview(cardID: Card.mockCreditCard.id))
+            .environment(Router())
     }
 
     #Preview("Frozen card") {
         CardDetailView()
             .environment(CardDetailModel.preview(cardID: Card.mockFrozenCard.id))
+            .environment(Router())
     }
 
     #Preview("Lost card — replacement available") {
         CardDetailView()
             .environment(CardDetailModel.preview(cardID: Card.mockLostCard.id))
+            .environment(Router())
     }
 
     #Preview("Loading") {
         CardDetailView()
             .environment(CardDetailModel.loadingPreview(cardID: Card.mockCreditCard.id))
+            .environment(Router())
     }
 
     #Preview("Error") {
         CardDetailView()
             .environment(CardDetailModel.errorPreview(cardID: Card.mockCreditCard.id))
+            .environment(Router())
     }
 #endif

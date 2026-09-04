@@ -74,6 +74,8 @@ public enum Strings {
         public static let limitsSection = String(localized: "Spending limits")
         public static let currentLimit = String(localized: "Current limit")
         public static let notSet = String(localized: "Not set")
+        public static let activitySection = String(localized: "Account activity")
+        public static let transactionsRow = String(localized: "Transactions")
 
         /// Title of the per-period set-limit sheet: "Set Daily limit".
         public static func setLimitTitle(period: String) -> String {
@@ -85,6 +87,46 @@ public enum Strings {
 
         /// Title of the alert shown when a card action fails.
         public static let actionFailedTitle = String(localized: "Couldn't Update Card")
+    }
+
+    public enum Transactions {
+        public static let title = String(localized: "Transactions")
+        public static let loadingMessage = String(localized: "Loading transactions")
+        public static let balanceSection = String(localized: "Balance")
+        public static let available = String(localized: "Available")
+        public static let creditLimit = String(localized: "Credit limit")
+        public static let searchPlaceholder = String(localized: "Search by merchant")
+        public static let filterButton = String(localized: "Filter")
+        public static let filtersSheetTitle = String(localized: "Filter transactions")
+        public static let resetFilters = String(localized: "Reset")
+        public static let filtersActiveTitle = String(localized: "Filters active")
+        public static let edit = String(localized: "Edit")
+
+        /// "Showing 3 of 9" — the banner line under the active-filters title.
+        public static func showingCount(_ shown: Int, of total: Int) -> String {
+            String(localized: "Showing \(shown) of \(total)")
+        }
+
+        public static let filterCategory = String(localized: "Category")
+        public static let filterStatus = String(localized: "Status")
+        public static let filterDate = String(localized: "Date")
+        public static let allCategories = String(localized: "All categories")
+        public static let allStatuses = String(localized: "All statuses")
+        public static let allDates = String(localized: "All time")
+        public static let last7Days = String(localized: "Last 7 days")
+        public static let last30Days = String(localized: "Last 30 days")
+        public static let last90Days = String(localized: "Last 90 days")
+        public static let emptyTitle = String(localized: "No transactions yet")
+        public static let emptyMessage = String(localized: "Transactions for this card will appear here.")
+        public static let noResultsTitle = String(localized: "No matching transactions")
+        public static let noResultsMessage = String(localized: "Try clearing a filter or searching for something else.")
+        public static let pending = String(localized: "Pending")
+        public static let merchant = String(localized: "Merchant")
+        public static let location = String(localized: "Location")
+        public static let category = String(localized: "Category")
+        public static let status = String(localized: "Status")
+        public static let date = String(localized: "Date")
+        public static let transactionID = String(localized: "Transaction ID")
     }
 
     public enum Navigation {

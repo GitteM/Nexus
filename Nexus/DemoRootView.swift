@@ -5,6 +5,7 @@
     import Mocks
     import Navigation
     import SwiftUI
+    import Transactions
 
     /// Demo bootstrap for the dashboard UI tests and demos (tasks.md Day
     /// 11–12, architecture.md §10, §11.2).
@@ -52,6 +53,10 @@
             let isDemo: Bool
             let state: DemoState
             let actionState: DemoActionState
+            /// When set, the demo root starts with this card's detail pushed
+            /// (`-demoOpenCard=<id>`) — UI tests deep-link straight to the
+            /// screen instead of tapping through the cold dashboard.
+            let openCardID: String?
 
             init(arguments: [String], environment: String?) {
                 isDemo = arguments.contains("-demoMode") || environment == "demo"
@@ -59,6 +64,19 @@
                 // "-demoState=error" (one element), like launch args do.
                 state = Self.parseState(arguments: arguments)
                 actionState = Self.parseActionState(arguments: arguments)
+                openCardID = Self.parseOpenCardID(arguments: arguments)
+            }
+
+            private static func parseOpenCardID(arguments: [String]) -> String? {
+                if let index = arguments.firstIndex(of: "-demoOpenCard"),
+                   arguments.indices.contains(index + 1)
+                {
+                    return arguments[index + 1]
+                }
+                if let prefixed = arguments.first(where: { $0.hasPrefix("-demoOpenCard=") }) {
+                    return String(prefixed.dropFirst("-demoOpenCard=".count))
+                }
+                return nil
             }
 
             private static func parseState(arguments: [String]) -> DemoState {
@@ -102,11 +120,16 @@
 
         private let options: LaunchOptions
         @State private var graph: DemoGraph?
-        @State private var router = Router()
+        @State private var router: Router
 
         init(options: LaunchOptions = .current) {
             self.options = options
             _graph = State(initialValue: options.isDemo ? DemoGraph(options: options) : nil)
+            // Deep-link support: start with the requested card's detail
+            // already pushed (UI tests skip cold-launch taps, which are
+            // flaky on fresh CI simulators).
+            let initialRoutes = options.openCardID.map { [Route.cardDetail(cardID: $0)] } ?? []
+            _router = State(initialValue: Router(routes: initialRoutes))
         }
 
         var body: some View {
@@ -133,6 +156,12 @@
             case let .cardDetail(cardID):
                 CardDetailView()
                     .environment(graph.makeDetailModel(cardID: cardID))
+            case let .transactionHistory(cardID):
+                TransactionHistoryView()
+                    .environment(graph.makeHistoryModel(cardID: cardID))
+            case let .transactionDetail(cardID, transactionID):
+                TransactionDetailView()
+                    .environment(graph.makeDetailModel(cardID: cardID, transactionID: transactionID))
             }
         }
     }
@@ -148,6 +177,8 @@
         let offersRepository: MockOffersRepository
         let statusRepository: MockStatusRepository
         let actionRepository: MockActionRepository
+        let balanceRepository: MockBalanceRepository
+        let transactionRepository: MockTransactionRepository
         let dashboardModel: DashboardModel
         /// The backend echo stays alive for the demo session — the
         /// coordinator's hook holds it weakly, so the graph owns it.
@@ -158,6 +189,10 @@
             offersRepository = MockOffersRepository(seed: CardOffer.mockDefaults)
             statusRepository = MockStatusRepository(seed: CardState.mockDefaults)
             actionRepository = MockActionRepository()
+            balanceRepository = MockBalanceRepository(seed: Balance.mockDefaults)
+            transactionRepository = MockTransactionRepository(
+                seed: [Card.mockCreditCard.id: Transaction.mockDefaults],
+            )
             switch options.state {
             case .ready:
                 break
@@ -201,6 +236,26 @@
                 cardRepository: cardRepository,
                 statusRepository: statusRepository,
                 actionRepository: actionRepository,
+            )
+        }
+
+        /// Mints the per-card account-activity model (Day 13): the live
+        /// balance and the transaction feed share the demo store graph, so
+        /// pushes made in tests/demo are visible to every screen.
+        func makeHistoryModel(cardID: String) -> TransactionHistoryModel {
+            TransactionHistoryModel(
+                cardID: cardID,
+                balanceRepository: balanceRepository,
+                transactionRepository: transactionRepository,
+            )
+        }
+
+        /// Mints the transaction detail model over the same shared feed.
+        func makeDetailModel(cardID: String, transactionID: String) -> TransactionDetailModel {
+            TransactionDetailModel(
+                cardID: cardID,
+                transactionID: transactionID,
+                transactionRepository: transactionRepository,
             )
         }
     }

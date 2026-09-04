@@ -38,4 +38,7 @@ public enum CardDetailAccessibility {
     public static func limitRow(_ period: SpendingLimitPeriod) -> String {
         "cardDetail.limit.\(period.rawValue)"
     }
+
+    /// The "Transactions" activity row (Day 13 entry to account activity).
+    public static let transactions = "cardDetail.transactions"
 }
