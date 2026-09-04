@@ -180,6 +180,16 @@ public final class AppContainer {
             dashboardModel = dependencies?.dashboardModel
             appState = .initializing
             await start()
+
+            // The dashboard's initial load is normally fired by the view's
+            // `.task` when it appears. The shell teardown/remount around a
+            // reset does not reliably re-fire that task for the replacement
+            // model, so drive the fresh model to its settled state here
+            // instead of depending on view lifecycle. Idempotent: if the
+            // view's `.task` also fires, `load()` is a no-op once loaded.
+            if let dashboardModel {
+                await dashboardModel.load()
+            }
         }
     #endif
 

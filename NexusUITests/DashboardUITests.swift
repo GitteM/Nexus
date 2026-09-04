@@ -1,4 +1,5 @@
 import Dashboard
+import Design
 import Entities
 import XCTest
 
@@ -103,5 +104,26 @@ final class DashboardUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["We couldn't reach the server."].waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["Retry"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.descendants(matching: .any)[DashboardAccessibility.carousel].exists)
+    }
+
+    /// Regression: tapping the demo "Reset demo" toolbar button replaces the
+    /// dashboard model, and the replacement must settle back on loaded
+    /// content. It used to strand the dashboard on "Loading your cards"
+    /// with no way forward.
+    @MainActor
+    func testResetDemoReturnsDashboardToLoadedContent() {
+        let app = launchApp(state: .ready)
+
+        let card = app.descendants(matching: .any)[DashboardAccessibility.card(Card.mockCreditCard.id)]
+        XCTAssertTrue(card.waitForExistence(timeout: 10))
+
+        let resetButton = app.buttons[Strings.App.resetDemo]
+        XCTAssertTrue(resetButton.waitForExistence(timeout: 5))
+        XCTAssertTrue(UITestInteraction.tapWhenReady(resetButton))
+
+        // The dashboard must come back to loaded content — not stay on the
+        // loading surface after the model swap.
+        XCTAssertTrue(card.waitForExistence(timeout: 10))
+        XCTAssertFalse(app.staticTexts["Loading your cards"].exists)
     }
 }
