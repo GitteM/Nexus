@@ -121,6 +121,7 @@ public enum Strings {
         public static let noResultsTitle = String(localized: "No matching transactions")
         public static let noResultsMessage = String(localized: "Try clearing a filter or searching for something else.")
         public static let pending = String(localized: "Pending")
+        public static let refund = String(localized: "Refund")
         public static let merchant = String(localized: "Merchant")
         public static let location = String(localized: "Location")
         public static let category = String(localized: "Category")
