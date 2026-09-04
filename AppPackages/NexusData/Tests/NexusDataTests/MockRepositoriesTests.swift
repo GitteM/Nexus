@@ -3,10 +3,10 @@ import Mocks
 import RepositoryProtocols
 import Testing
 
-/// Day 8 tests for the shared mock repositories (architecture.md §9.5,
-/// §11.2): seed behavior, contract fidelity, failure knobs, and call counts.
+/// Tests for the shared mock repositories: seed behavior, contract
+/// fidelity, failure knobs, and call counts.
 ///
-/// Model tests (Day 10+) drive loading/error states through
+/// Model tests drive loading/error states through
 /// `shouldNeverComplete`/`shouldThrowError` and assert orchestration through
 /// the call counts; these tests pin the mock contract itself so the models
 /// can rely on it.

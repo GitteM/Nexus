@@ -2,19 +2,18 @@ import Dashboard
 import Entities
 import XCTest
 
-/// Dashboard UI suite (tasks.md Day 11, architecture.md §10): launches the
-/// app with `-demoMode` and asserts the ready, loading, and error states
-/// render on the real view layer.
+/// Dashboard UI suite: launches the app with `-demoMode` and asserts the
+/// ready, loading, and error states render on the real view layer.
 ///
 /// The demo root (`Nexus/DemoRootView.swift`) parses the `-demoState` knob
 /// and builds the dashboard over the shared mock repositories, so these
 /// tests exercise the same orchestration code previews and demo mode run —
-/// only the transport/persistence edges are faked (§9.5). Replaces the
-/// Day 1 launch smoke test, which only proved the runner installed.
+/// only the transport/persistence edges are faked. Replaces the launch
+/// smoke test, which only proved the runner installed.
 ///
 /// Accessibility identifiers come from the shared `DashboardAccessibility`
 /// namespace (and entity ids from the domain mocks), never from literals —
-/// the views set exactly what these tests query (architecture.md §9.4).
+/// the views set exactly what these tests query.
 final class DashboardUITests: XCTestCase {
     /// The `-demoState` values the demo root understands — mirrors
     /// `DemoRootView.DemoState` (Nexus/DemoRootView.swift).

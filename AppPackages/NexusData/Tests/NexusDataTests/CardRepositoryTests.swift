@@ -4,10 +4,10 @@ import Persistence
 import Repositories
 import Testing
 
-/// Integration tests for `CardRepository` over the real SwiftData store
-/// (tasks.md Day 7: repository validation/error wrapping + integration over
-/// the real store). Every test builds a real in-memory
-/// `ModelContainer`/`SwiftDataCardRepository` — no mocks.
+/// Integration tests for `CardRepository` over the real SwiftData store:
+/// repository validation and error wrapping over the real store. Every test
+/// builds a real in-memory `ModelContainer`/`SwiftDataCardRepository` —
+/// no mocks.
 @Suite("CardRepository")
 struct CardRepositoryTests {
     private func makeRepository() throws -> CardRepository {
@@ -42,7 +42,7 @@ struct CardRepositoryTests {
         #expect(card.status == .active)
         #expect(card.spendingLimit == nil)
         // Provisional mapping: issuance-only fields are empty until the
-        // §11.4 REST contract lands (see CardRepository documentation).
+        // REST contract lands (see CardRepository documentation).
         #expect(card.lastFourDigits.isEmpty)
         #expect(card.cardholderName.isEmpty)
         #expect(try await repository.getCards() == [card])

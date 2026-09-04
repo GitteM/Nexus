@@ -2,8 +2,8 @@ import Dashboard
 import Entities
 import Testing
 
-/// `DashboardViewState` semantics (architecture.md §9.2, tasks.md Day 10):
-/// equality across cases/payloads and the error projections the view uses.
+/// `DashboardViewState` semantics: equality across cases/payloads and the
+/// error projections the view uses.
 @Suite("Dashboard view state")
 struct DashboardViewStateTests {
     @Test func `non error states carry no error surfaces`() {

@@ -33,7 +33,7 @@ final class RecordingLogger: LoggerProtocol {
     }
 }
 
-/// Fake session facade for data source tests (tasks.md Day 6): the data
+/// Fake session facade for data source tests: the data
 /// sources receive `EventSubscriptionManagerProtocol` and never see the SDK,
 /// so tests drive the source with a controllable stand-in.
 ///

@@ -9,7 +9,7 @@ struct CardActionRepositoryProtocolTests {
     // MARK: - Shape
 
     /// Pins the one-shot shape: `async throws` with no `Result` at the
-    /// boundary (architecture.md §4.2, §12.1).
+    /// boundary.
     @Test func `execute is async throws and never returns Result`() {
         let repository: CardActionRepositoryProtocol = TestCardActionRepository()
         let _: (CardCommand) async throws -> Void = repository.execute

@@ -5,7 +5,7 @@ import Repositories
 import Testing
 
 /// Tests for the thin `CardActionRepository` over the real
-/// `CardActionDataSource` driven by the fake session facade (tasks.md Day 7).
+/// `CardActionDataSource` driven by the fake session facade.
 @Suite("CardActionRepository")
 @MainActor
 struct CardActionRepositoryTests {

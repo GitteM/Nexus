@@ -5,8 +5,7 @@ import ServiceProtocols
 import Session
 import Testing
 
-/// Day 8 tests for the in-memory `MockSessionManager` demo session
-/// (architecture.md §6.2 semantics, §11.2 demo mode).
+/// Tests for the in-memory `MockSessionManager` demo session.
 @Suite("MockSessionManager", .serialized)
 @MainActor
 struct MockSessionManagerTests {
@@ -159,7 +158,7 @@ struct MockSessionManagerTests {
 
     // MARK: - Demo pipeline through the real data-source parse path
 
-    /// The Day 8 verify: demo events decode through the same `parseEvent`
+    /// Demo events decode through the same `parseEvent`
     /// path as live data. This test wires the real composition the container
     /// will use in demo mode — `MockSessionManager` behind the production
     /// `EventSubscriptionManager` facade feeding a real `CardStateDataSource`

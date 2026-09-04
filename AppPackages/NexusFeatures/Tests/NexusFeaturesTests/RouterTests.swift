@@ -1,7 +1,7 @@
 import Navigation
 import Testing
 
-/// Router stack behavior (architecture.md §8, tasks.md Day 9).
+/// Router stack behavior.
 @Suite("Router navigation stack")
 @MainActor
 struct RouterTests {
@@ -65,7 +65,7 @@ struct RouterTests {
     }
 }
 
-/// `Route` equality semantics (architecture.md §8).
+/// `Route` equality semantics.
 @Suite("Route value semantics")
 @MainActor
 struct RouteTests {

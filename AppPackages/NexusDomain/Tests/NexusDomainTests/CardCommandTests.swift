@@ -93,7 +93,7 @@ struct CardCommandTests {
 
     @Test func `unknown type raw value decodes to unknown instead of throwing`() throws {
         // Deliberate deviation from CardType/CardStatus: a new backend action
-        // must not break decoding (architecture.md §12.3).
+        // must not break decoding.
         let decoded = try JSONDecoder().decode(CardCommandType.self, from: Data(#""block""#.utf8))
         #expect(decoded == .unknown)
     }

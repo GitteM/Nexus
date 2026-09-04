@@ -3,21 +3,20 @@ import Dashboard
 import Entities
 import XCTest
 
-/// Card detail + controls UI suite (tasks.md Day 12, architecture.md §10):
-/// launches the app with `-demoMode` and drives the freeze round trip and
-/// its failure knob through the real view layer.
+/// Card detail + controls UI suite: launches the app with `-demoMode` and
+/// drives the freeze round trip and its failure knob through the real view
+/// layer.
 ///
 /// The demo root (`Nexus/DemoRootView.swift`) shares one mock store graph
 /// for the session and installs the `MockCommandCoordinator` backend echo,
 /// so a freeze in detail persists to the status store and the dashboard
-/// reflects it on return — the acceptance path appspec §2.2 pins. The
-/// `-demoActionState=error` knob makes the action repository throw, so the
-/// failure path leaves the card unchanged.
+/// reflects it on return. The `-demoActionState=error` knob makes the
+/// action repository throw, so the failure path leaves the card unchanged.
 ///
 /// Accessibility identifiers come from the shared `DashboardAccessibility`
 /// / `CardDetailAccessibility` namespaces and entity ids from the domain
-/// mocks, never from literals (architecture.md §9.4); dialog buttons are
-/// matched by copy because system alerts expose no identifier contract.
+/// mocks, never from literals; dialog buttons are matched by copy because
+/// system alerts expose no identifier contract.
 final class CardDetailUITests: XCTestCase {
     /// The `-demoState` values the demo root understands — mirrors
     /// `DemoRootView.DemoState` (Nexus/DemoRootView.swift).
@@ -55,7 +54,7 @@ final class CardDetailUITests: XCTestCase {
         return app
     }
 
-    /// Freeze/unfreeze round trip (appspec §2.2): the control reflects the
+    /// Freeze/unfreeze round trip: the control reflects the
     /// stream-confirmed status; navigating away and back keeps the state
     /// (the shared repository store persists it), and the dashboard chip
     /// reconciles through its own live subscription. The detail screen is
@@ -105,9 +104,9 @@ final class CardDetailUITests: XCTestCase {
         XCTAssertTrue(statusAfterReload.label.contains("Frozen"), "label was: \(statusAfterReload.label)")
     }
 
-    /// Failure knob (appspec §2.2): the `-demoActionState=error` launch
-    /// argument makes the action repository throw, so the freeze surfaces
-    /// the error alert and the card stays active.
+    /// Failure knob: the `-demoActionState=error` launch argument makes the
+    /// action repository throw, so the freeze surfaces the error alert and
+    /// the card stays active.
     @MainActor
     func testFreezeFailureLeavesTheCardActive() {
         let app = launchApp(actionState: .error, openCardID: Card.mockCreditCard.id)
