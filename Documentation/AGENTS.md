@@ -96,12 +96,11 @@ type(scope): subject        # feat | fix | docs | style | refactor | perf |
 4. Commits conventional + atomic; branch pushed; PR opened.
 5. Docs updated where relevant (Non-negotiables #5 in `.codewhale/instructions.md`).
 6. CI mirrors local (Xcode 26.6, iPhone 17 simulator, iOS 26.5 SDK).
-   **UI gate:** the per-PR CI gate runs the unit + integration suites only.
-   The UI suite runs on demand via the "UI Tests" workflow (Actions →
-   Run workflow) or locally on a warm simulator — cold first-launch
-   gestures on free-tier macOS runners are unreliable even with identical
-   code green locally (history: tasks.md Day 13), so UI failures there are
-   not treated as regressions unless they reproduce locally.
+   The per-PR CI gate runs the **full workspace TestPlan, UI suite
+   included** (a failed test is retried once in-place). If free-tier
+   cold-runner UI flakes appear, reproduce locally on a warm simulator
+   before treating them as regressions; the on-demand "UI Tests" workflow
+   remains available for extra confidence runs.
 
 **Docs-only changes** (markdown/config prose): skip the test suite, but state
 that you did, and confirm nothing but docs changed.
