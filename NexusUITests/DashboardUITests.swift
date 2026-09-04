@@ -78,7 +78,7 @@ final class DashboardUITests: XCTestCase {
 
         let addButton = app.buttons[DashboardAccessibility.addOffer(CardOffer.mockCashbackOffer.id)]
         XCTAssertTrue(addButton.waitForExistence(timeout: 10))
-        addButton.tap()
+        XCTAssertTrue(UITestInteraction.tapWhenReady(addButton))
 
         XCTAssertTrue(addButton.waitForNonExistence(timeout: 10))
         // The other offers are untouched.

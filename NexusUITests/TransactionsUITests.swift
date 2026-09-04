@@ -34,14 +34,14 @@ final class TransactionsUITests: XCTestCase {
 
         let firstCard = app.descendants(matching: .any)[DashboardAccessibility.card(Card.mockCreditCard.id)]
         XCTAssertTrue(firstCard.waitForExistence(timeout: 10))
-        firstCard.tap()
+        XCTAssertTrue(UITestInteraction.tapWhenReady(firstCard))
 
         let transactionsRow = app.buttons[CardDetailAccessibility.transactions]
         XCTAssertTrue(transactionsRow.waitForExistence(timeout: 20))
         if !transactionsRow.isHittable {
             app.swipeUp()
         }
-        transactionsRow.tap()
+        XCTAssertTrue(UITestInteraction.tapWhenReady(transactionsRow))
 
         XCTAssertTrue(
             app.descendants(matching: .any)[TransactionsAccessibility.historyScreen]
@@ -72,7 +72,7 @@ final class TransactionsUITests: XCTestCase {
         XCTAssertTrue(row.label.contains("Cafe Central"), "label was: \(row.label)")
 
         // Tapping the row opens the detail screen with the transaction id.
-        row.tap()
+        XCTAssertTrue(UITestInteraction.tapWhenReady(row))
         XCTAssertTrue(
             app.descendants(matching: .any)[TransactionsAccessibility.detailScreen]
                 .waitForExistence(timeout: 20),
@@ -100,7 +100,7 @@ final class TransactionsUITests: XCTestCase {
 
         let searchField = app.searchFields.firstMatch
         XCTAssertTrue(searchField.waitForExistence(timeout: 10))
-        searchField.tap()
+        XCTAssertTrue(UITestInteraction.tapWhenReady(searchField))
         searchField.typeText("Cafe")
 
         XCTAssertTrue(coffeeRow.waitForExistence(timeout: 10))
@@ -122,7 +122,7 @@ final class TransactionsUITests: XCTestCase {
         // Reset restores the whole feed and removes the banner.
         let reset = app.buttons[TransactionsAccessibility.filteredBannerReset]
         XCTAssertTrue(reset.waitForExistence(timeout: 10))
-        reset.tap()
+        XCTAssertTrue(UITestInteraction.tapWhenReady(reset))
         XCTAssertTrue(banner.waitForNonExistence(timeout: 10))
         XCTAssertTrue(groceriesRow.waitForExistence(timeout: 10))
         XCTAssertTrue(coffeeRow.exists)
