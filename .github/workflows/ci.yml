@@ -58,6 +58,21 @@ jobs:
           echo "Simulator: $DEVICE"
           echo "device=$DEVICE" >> "$GITHUB_OUTPUT"
 
+      # UI tests have proven flaky only on the *first* launches of a fresh
+      # runner: the earliest tests tap into a cold SpringBoard/app that drops
+      # gestures even when the accessibility tree is ready. Prewarm the
+      # device: boot it fully, then launch and terminate the app once so the
+      # real test launches run against a warm environment.
+      - name: Prewarm simulator before UI tests
+        run: |
+          DEVICE="${{ steps.simulator.outputs.device }}"
+          xcrun simctl boot "$DEVICE" 2>/dev/null || true
+          xcrun simctl bootstatus "$DEVICE" -b
+          xcrun simctl install "$DEVICE" "DerivedData/Build/Products/Debug-iphonesimulator/Nexus.app"
+          xcrun simctl launch "$DEVICE" com.nexusbank.app
+          sleep 8
+          xcrun simctl terminate "$DEVICE" com.nexusbank.app || true
+
       # UI tests execute on a fresh runner each time; the first UI class on
       # a cold simulator occasionally flakes on launch/tap timing (the same
       # tests pass consistently on a warm simulator, locally and later in
