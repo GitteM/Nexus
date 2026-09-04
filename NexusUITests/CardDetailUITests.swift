@@ -34,48 +34,42 @@ final class CardDetailUITests: XCTestCase {
 
     /// `XCUIApplication` is main-actor-isolated, so the helper must be too.
     @MainActor
-    private func launchApp(actionState: DemoActionState = .ready) -> XCUIApplication {
+    private func launchApp(
+        actionState: DemoActionState = .ready,
+        openCardID: String? = nil,
+    ) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments += [
             "-demoMode",
             "-demoState=\(DemoState.ready.rawValue)",
             "-demoActionState=\(actionState.rawValue)",
         ]
+        if let openCardID {
+            // Deep-link: the demo root starts with the card's detail pushed,
+            // so these tests never tap through the cold dashboard (fresh CI
+            // simulators can drop the very first tap — the app is rendered
+            // but hit-testing is not settled).
+            app.launchArguments += ["-demoOpenCard=\(openCardID)"]
+        }
         app.launch()
         return app
-    }
-
-    /// Opens the first managed card (mock credit card, ending 4821) from
-    /// the dashboard carousel.
-    @MainActor
-    private func openFirstCard(in app: XCUIApplication) {
-        let carousel = app.descendants(matching: .any)[DashboardAccessibility.carousel]
-        XCTAssertTrue(carousel.waitForExistence(timeout: 20))
-
-        let firstCard = app.descendants(matching: .any)[DashboardAccessibility.card(Card.mockCreditCard.id)]
-        XCTAssertTrue(firstCard.waitForExistence(timeout: 10))
-        // The first UI test on a cold runner can tap before the freshly
-        // launched process's hit-testing has settled, even when the element
-        // already reports hittable — the tap is then silently dropped and
-        // the pushed screen never appears. A short settle makes the
-        // first-launch tap deterministic.
-        RunLoop.current.run(until: Date().addingTimeInterval(1.0))
-        XCTAssertTrue(UITestInteraction.tapWhenReady(firstCard))
-
-        XCTAssertTrue(
-            app.descendants(matching: .any)[CardDetailAccessibility.screen]
-                .waitForExistence(timeout: 20),
-        )
     }
 
     /// Freeze/unfreeze round trip (appspec §2.2): the control reflects the
     /// stream-confirmed status; navigating away and back keeps the state
     /// (the shared repository store persists it), and the dashboard chip
-    /// reconciles through its own live subscription.
+    /// reconciles through its own live subscription. The detail screen is
+    /// opened via the demo deep link; only the *warm* back-navigation tap
+    /// comes from the test.
     @MainActor
     func testFreezeRoundTripReflectsOnDetailAndDashboard() {
-        let app = launchApp()
-        openFirstCard(in: app)
+        let app = launchApp(openCardID: Card.mockCreditCard.id)
+
+        // The deep link lands on the card detail.
+        XCTAssertTrue(
+            app.descendants(matching: .any)[CardDetailAccessibility.screen]
+                .waitForExistence(timeout: 20),
+        )
 
         // Active card offers the freeze control.
         let freezeButton = app.buttons[CardDetailAccessibility.freeze]
@@ -116,8 +110,13 @@ final class CardDetailUITests: XCTestCase {
     /// the error alert and the card stays active.
     @MainActor
     func testFreezeFailureLeavesTheCardActive() {
-        let app = launchApp(actionState: .error)
-        openFirstCard(in: app)
+        let app = launchApp(actionState: .error, openCardID: Card.mockCreditCard.id)
+
+        // The deep link lands on the card detail.
+        XCTAssertTrue(
+            app.descendants(matching: .any)[CardDetailAccessibility.screen]
+                .waitForExistence(timeout: 20),
+        )
 
         let status = app.descendants(matching: .any)[CardDetailAccessibility.status]
         XCTAssertTrue(status.label.contains("Active"), "label was: \(status.label)")

@@ -53,6 +53,10 @@
             let isDemo: Bool
             let state: DemoState
             let actionState: DemoActionState
+            /// When set, the demo root starts with this card's detail pushed
+            /// (`-demoOpenCard=<id>`) — UI tests deep-link straight to the
+            /// screen instead of tapping through the cold dashboard.
+            let openCardID: String?
 
             init(arguments: [String], environment: String?) {
                 isDemo = arguments.contains("-demoMode") || environment == "demo"
@@ -60,6 +64,19 @@
                 // "-demoState=error" (one element), like launch args do.
                 state = Self.parseState(arguments: arguments)
                 actionState = Self.parseActionState(arguments: arguments)
+                openCardID = Self.parseOpenCardID(arguments: arguments)
+            }
+
+            private static func parseOpenCardID(arguments: [String]) -> String? {
+                if let index = arguments.firstIndex(of: "-demoOpenCard"),
+                   arguments.indices.contains(index + 1)
+                {
+                    return arguments[index + 1]
+                }
+                if let prefixed = arguments.first(where: { $0.hasPrefix("-demoOpenCard=") }) {
+                    return String(prefixed.dropFirst("-demoOpenCard=".count))
+                }
+                return nil
             }
 
             private static func parseState(arguments: [String]) -> DemoState {
@@ -103,11 +120,16 @@
 
         private let options: LaunchOptions
         @State private var graph: DemoGraph?
-        @State private var router = Router()
+        @State private var router: Router
 
         init(options: LaunchOptions = .current) {
             self.options = options
             _graph = State(initialValue: options.isDemo ? DemoGraph(options: options) : nil)
+            // Deep-link support: start with the requested card's detail
+            // already pushed (UI tests skip cold-launch taps, which are
+            // flaky on fresh CI simulators).
+            let initialRoutes = options.openCardID.map { [Route.cardDetail(cardID: $0)] } ?? []
+            _router = State(initialValue: Router(routes: initialRoutes))
         }
 
         var body: some View {
