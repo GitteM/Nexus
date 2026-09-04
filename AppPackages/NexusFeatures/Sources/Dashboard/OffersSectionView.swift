@@ -63,6 +63,27 @@ private struct OfferCardView: View {
         model.offersBeingAdded.contains(offer.id)
     }
 
+    private var addButton: some View {
+        Button {
+            Task { await model.addOffer(offer) }
+        } label: {
+            Label(Strings.Common.add, systemImage: Icons.add)
+                .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.borderedProminent)
+        .tint(ColorPalette.brand)
+        .disabled(isAdding)
+        .overlay {
+            if isAdding {
+                ProgressView()
+                    .controlSize(.small)
+                    .tint(ColorPalette.brand)
+            }
+        }
+        .accessibilityLabel(Strings.Dashboard.addOffer(offer.title))
+        .accessibilityIdentifier(DashboardAccessibility.addOffer(offer.id))
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
             ZStack {
@@ -103,30 +124,20 @@ private struct OfferCardView: View {
             }
 
             if isManaged {
-                Label(Strings.Common.added, systemImage: Icons.added)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(ColorPalette.success)
-                    .accessibilityLabel(Strings.Dashboard.addOffer(offer.title))
-                    .accessibilityIdentifier(DashboardAccessibility.addedOffer(offer.id))
+                // A hidden copy of the Add button reserves identical
+                // geometry, so a managed card keeps the addable card's
+                // height — the "Added" label fills the same slot.
+                ZStack {
+                    addButton
+                        .hidden()
+                    Label(Strings.Common.added, systemImage: Icons.added)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(ColorPalette.success)
+                        .accessibilityLabel(Strings.Dashboard.addOffer(offer.title))
+                        .accessibilityIdentifier(DashboardAccessibility.addedOffer(offer.id))
+                }
             } else {
-                Button {
-                    Task { await model.addOffer(offer) }
-                } label: {
-                    Label(Strings.Common.add, systemImage: Icons.add)
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(ColorPalette.brand)
-                .disabled(isAdding)
-                .overlay {
-                    if isAdding {
-                        ProgressView()
-                            .controlSize(.small)
-                            .tint(ColorPalette.brand)
-                    }
-                }
-                .accessibilityLabel(Strings.Dashboard.addOffer(offer.title))
-                .accessibilityIdentifier(DashboardAccessibility.addOffer(offer.id))
+                addButton
             }
         }
         .padding(Spacing.md)
