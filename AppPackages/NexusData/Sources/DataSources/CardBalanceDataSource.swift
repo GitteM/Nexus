@@ -36,6 +36,11 @@ public actor CardBalanceDataSource {
     /// Latest decoded balance per card id.
     private var balancesByCardId: [String: Balance] = [:]
 
+    /// Card ids most-recently-used first; bounds the cache to `cacheLimit`
+    /// entries (deterministic LRU eviction on insert when the cap is
+    /// exceeded — the `CardStateDataSource` convention).
+    private var cacheRecency: [String] = []
+
     /// - Parameters:
     ///   - eventSubscriptionManager: The session facade data sources receive.
     ///   - logger: Receives `.error` messages for skipped malformed payloads.
@@ -54,9 +59,14 @@ public actor CardBalanceDataSource {
     // MARK: - One-shot
 
     /// The latest known balance for one card, or `nil` when no balance has
-    /// arrived on the wire yet (cache read — no network round-trip).
+    /// arrived on the wire yet (cache read — no network round-trip). A read
+    /// bumps the card's recency (LRU).
     public func getBalance(cardId: String) async -> Balance? {
-        balancesByCardId[cardId]
+        guard let balance = balancesByCardId[cardId] else {
+            return nil
+        }
+        touch(cardId)
+        return balance
     }
 
     // MARK: - Subscription
@@ -145,12 +155,20 @@ public actor CardBalanceDataSource {
         continuation.yield(balance)
     }
 
-    /// Writes or refreshes one card's balance, evicting an arbitrary entry
-    /// when the cache is over its limit.
+    /// Writes or refreshes one card's balance under LRU order, evicting the
+    /// least-recently-used entry when the cache is over its limit.
     private func cache(_ balance: Balance) {
         balancesByCardId[balance.cardId] = balance
-        while balancesByCardId.count > cacheLimit, let evicted = balancesByCardId.first {
-            balancesByCardId.removeValue(forKey: evicted.key)
+        touch(balance.cardId)
+        while cacheRecency.count > cacheLimit {
+            let evicted = cacheRecency.removeLast()
+            balancesByCardId.removeValue(forKey: evicted)
         }
+    }
+
+    /// Marks `cardId` as most-recently-used.
+    private func touch(_ cardId: String) {
+        cacheRecency.removeAll { $0 == cardId }
+        cacheRecency.insert(cardId, at: 0)
     }
 }
