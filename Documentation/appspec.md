@@ -108,8 +108,8 @@ in sync in the M4 PR.
   dashboard→detail navigation, the card-control flows, and the freeze UI
   round trip.
 - **In scope:** freeze/unfreeze, report lost/stolen, request replacement,
-  spending-limit display and set. **Not in scope:** PIN management (M10),
-  Apple Pay (M12), virtual cards (M14).
+  spending-limit display and set. **Not in scope:** PIN management,
+  Apple Pay, virtual cards (deferred — §2.5–§2.7).
 - **Vocabulary (pinned by Domain — do not change lightly):** statuses
   `CardStatus {active, frozen, expired, lost}`; commands `CardCommandType
   {freeze, unfreeze, reportLost, reportStolen, requestReplacement,
@@ -130,7 +130,8 @@ in sync in the M4 PR.
    (`pendingAction` disables every control while set). A failure surfaces a
    transient `actionError` alert and the card is unchanged; `viewState`
    stays `.loaded`. Settled: unfreeze needs no extra auth in v1.0
-   (sensitive-action biometric gating arrives with M10 — revisit then).
+   (sensitive-action biometric gating is deferred with security — §2.5;
+   revisit then).
 2. *Report lost / stolen* — from Card Detail → a confirm dialog offers the
    two options → the card reaches `lost`. **Settled:** there is no separate
    `stolen` status — `reportLost` and `reportStolen` are distinct commands
@@ -229,7 +230,7 @@ with the same id in place (pending → cleared) and is bounded
 (`defaultFeedLimit = 100`, oldest dropped). Demo mocks seed the credit
 card (balance + the 9-transaction mock set) and expose `publish` for live
 updates; no balance/transaction command echo exists in v1.0 (nothing
-changes them until Payments, M9).
+changes them — payment flows are deferred, §2.4).
 
 **Search & filter semantics (settled, pinned by `TransactionQuery`
 unit tests):** free-text search over merchant and transaction id
@@ -273,38 +274,43 @@ namespace, previews); Route cases + app-target AppContainer wiring; `Strings`
 /`Icons` additions; `CardDetail` entry row.
 
 ### 2.4 Payments
-- **Status:** not yet specified — fill at M9 (Days 16–17).
-- **Scope pointer:** features.md §Payments; tasks.md Days 16–17.
-- **Open decisions to record here at M9:** minimum/full/custom validation
-  rules, confirmation + receipt content, insufficient-funds handling.
+- **Status:** deferred — not in the active plan; retained for reference
+  (tasks.md/ROADMAP.md now stop at v1.0, Day 15).
+- **Scope pointer:** features.md §Payments.
+- **Open decisions to record here if reactivated:** minimum/full/custom
+  validation rules, confirmation + receipt content, insufficient-funds
+  handling.
 
 ### 2.5 Security — biometrics, app lock, timeout, PIN
-- **Status:** not yet specified — fill at M10 (Days 18–20).
-- **Scope pointer:** features.md §Security; tasks.md Days 18–20.
-- **Open decisions to record here at M10:** PIN length/retry policy, timeout
-  duration (features.md says "e.g. 2 minutes"), which actions require
-  biometric re-approval (see §2.2 🔶 above), lock behavior on backgrounding.
+- **Status:** deferred — not in the active plan; retained for reference
+  (tasks.md/ROADMAP.md now stop at v1.0, Day 15).
+- **Scope pointer:** features.md §Security.
+- **Open decisions to record here if reactivated:** PIN length/retry
+  policy, timeout duration (features.md says "e.g. 2 minutes"), which
+  actions require biometric re-approval (see §2.2 🔶 above), lock behavior
+  on backgrounding.
 - **Data-handling constraints** (do not duplicate here — architecture.md
   §13 Step 8 owns them): Keychain-only credentials, no plaintext card
   data/tokens in logs, caches, or configs.
 
 ### 2.6 iOS Integrations — Apple Pay, Wallet extension
-- **Status:** not yet specified — fill at M12 (Days 22–23).
-- **Scope pointer:** features.md §iOS-Specific Integrations; tasks.md Days
-  22–23 (adds the `NexusWalletExtension` target — update architecture.md §3
-  then).
+- **Status:** deferred — not in the active plan; retained for reference
+  (tasks.md/ROADMAP.md now stop at v1.0, Day 15).
+- **Scope pointer:** features.md §iOS-Specific Integrations. If reactivated,
+  this adds the `NexusWalletExtension` target — update architecture.md §3
+  then.
 
 ### 2.7 Alerts & Insights
-- **Status:** not yet specified — fill at M13–M15 (Days 24–26).
-- **Scope pointer:** features.md §Controls & Alerts, §Insights & Tools;
-  tasks.md Days 24–26.
-- **Open decisions to record here at M13:** alert thresholds ("large
+- **Status:** deferred — not in the active plan; retained for reference
+  (tasks.md/ROADMAP.md now stop at v1.0, Day 15).
+- **Scope pointer:** features.md §Controls & Alerts, §Insights & Tools.
+- **Open decisions to record here if reactivated:** alert thresholds ("large
   purchase" = what amount?), low-balance rule, alert center behavior.
 
 ### 2.8 UX/UI — appearance, haptics, accessibility
 - **Status:** not yet specified — cross-cutting; fill per feature, first
   pass at M4.
-- **Scope pointer:** features.md §UX/UI; tasks.md Days 11, 15, 27.
+- **Scope pointer:** features.md §UX/UI; tasks.md Days 11, 15.
 - **Constraints owned elsewhere:** architecture.md §9.4 (design tokens,
   strings), §13 Step 8 (a11y invariants).
 
