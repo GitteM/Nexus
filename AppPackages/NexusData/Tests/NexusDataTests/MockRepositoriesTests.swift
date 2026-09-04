@@ -258,4 +258,184 @@ struct MockRepositoriesTests {
         #expect(MockOffersRepository().offers == CardOffer.mockDefaults)
         #expect(MockStatusRepository().statesByCardId["card-credit-001"] == CardState.mockActiveState)
     }
+
+    // MARK: - MockCardRepository.updateCard
+
+    @Test
+    func `updateCard replaces a stored card and counts the call`() {
+        let mock = MockCardRepository(seed: Card.mockDefaults)
+        let updated = Card.mockFrozenCard.withStatus(.lost)
+
+        mock.updateCard(updated)
+
+        #expect(mock.cards.first { $0.id == updated.id } == updated)
+        #expect(mock.updateCardCallCount == 1)
+        // Every other card is untouched.
+        #expect(mock.cards.count == Card.mockDefaults.count)
+    }
+
+    @Test
+    func `updateCard is a no-op for an unknown id`() {
+        let mock = MockCardRepository(seed: Card.mockDefaults)
+        let unknown = Card(
+            id: "card-unknown",
+            cardholderName: "Nobody",
+            lastFourDigits: "0000",
+            type: .credit,
+            status: .active,
+            currency: "EUR",
+            spendingLimit: nil,
+        )
+
+        mock.updateCard(unknown)
+
+        #expect(mock.cards == Card.mockDefaults)
+        #expect(mock.updateCardCallCount == 1)
+    }
+
+    // MARK: - MockActionRepository.onExecute
+
+    @Test
+    func `onExecute fires after a successful execute with the command`() async throws {
+        let mock = MockActionRepository()
+        var observed: [CardCommand] = []
+        mock.onExecute = { command in
+            observed.append(command)
+        }
+
+        let freeze = CardCommand.freeze(cardId: "card-credit-001")
+        try await mock.execute(freeze)
+        try await mock.execute(.unfreeze(cardId: "card-credit-001"))
+
+        #expect(observed == [freeze, .unfreeze(cardId: "card-credit-001")])
+        #expect(mock.executeCallCount == 2)
+    }
+
+    @Test
+    func `onExecute does not fire when execute throws`() async {
+        let mock = MockActionRepository()
+        var observed: [CardCommand] = []
+        mock.onExecute = { command in
+            observed.append(command)
+        }
+        mock.shouldThrowError = true
+
+        await #expect(throws: AppError.cardActionFailed(action: "cardAction")) {
+            try await mock.execute(.freeze(cardId: "card-credit-001"))
+        }
+
+        #expect(observed.isEmpty)
+    }
+
+    // MARK: - MockCommandCoordinator
+
+    @Test
+    func `coordinator echoes freeze onto the store and the status channel`() async throws {
+        let graph = makeCoordinatorGraph()
+
+        try await graph.action.execute(CardCommand.freeze(cardId: Card.mockCreditCard.id))
+
+        // The store keeps the new state (reloads read it)…
+        #expect(graph.card.cards.first { $0.id == Card.mockCreditCard.id }?.status == .frozen)
+        // …and the status channel published it (subscriptions reconcile).
+        #expect(graph.status.statesByCardId[Card.mockCreditCard.id]?.status == .frozen)
+    }
+
+    @Test
+    func `coordinator echoes unfreeze and lost reports onto the status channel`() async throws {
+        let graph = makeCoordinatorGraph()
+
+        try await graph.action.execute(.unfreeze(cardId: Card.mockFrozenCard.id))
+        #expect(graph.status.statesByCardId[Card.mockFrozenCard.id]?.status == .active)
+        #expect(graph.card.cards.first { $0.id == Card.mockFrozenCard.id }?.status == .active)
+
+        try await graph.action.execute(CardCommand(cardId: Card.mockCreditCard.id, type: .reportLost))
+        #expect(graph.status.statesByCardId[Card.mockCreditCard.id]?.status == .lost)
+
+        try await graph.action.execute(CardCommand(cardId: Card.mockDebitCard.id, type: .reportStolen))
+        #expect(graph.status.statesByCardId[Card.mockDebitCard.id]?.status == .lost)
+    }
+
+    @Test
+    func `coordinator persists a set spending limit onto the stored card`() async throws {
+        let graph = makeCoordinatorGraph()
+
+        try await graph.action.execute(
+            CardCommand.setSpendingLimit(cardId: Card.mockCreditCard.id, period: .daily, amount: 250),
+        )
+
+        #expect(graph.card.cards.first { $0.id == Card.mockCreditCard.id }?.spendingLimit == 250)
+        // The status channel is untouched by a limit change.
+        #expect(graph.status.statesByCardId[Card.mockCreditCard.id]?.status == .active)
+    }
+
+    @Test
+    func `coordinator mints a replacement offer for a lost card`() async throws {
+        let graph = makeCoordinatorGraph()
+
+        try await graph.action.execute(CardCommand(cardId: Card.mockLostCard.id, type: .requestReplacement))
+
+        let replacement = graph.offers.offers.first { $0.id == "offer-replacement-\(Card.mockLostCard.id)" }
+        #expect(replacement != nil)
+        #expect(replacement?.type == Card.mockLostCard.type)
+        #expect(replacement?.currency == Card.mockLostCard.currency)
+        // The lost card stays lost; the existing offers stay listed.
+        #expect(graph.status.statesByCardId[Card.mockLostCard.id]?.status == .lost)
+        #expect(graph.offers.offers.count == CardOffer.mockDefaults.count + 1)
+
+        // A second request is a no-op — the offer already exists.
+        try await graph.action.execute(CardCommand(cardId: Card.mockLostCard.id, type: .requestReplacement))
+        #expect(graph.offers.offers.count == CardOffer.mockDefaults.count + 1)
+    }
+
+    @Test
+    func `coordinator ignores commands for unknown cards and unknown types`() async throws {
+        let graph = makeCoordinatorGraph()
+
+        try await graph.action.execute(CardCommand(cardId: "card-unknown", type: .freeze))
+        try await graph.action.execute(CardCommand(cardId: Card.mockCreditCard.id, type: .unknown))
+
+        #expect(graph.status.publishedStates.isEmpty)
+        #expect(graph.card.updateCardCallCount == 0)
+    }
+
+    @Test
+    func `a failing command never echoes through the coordinator`() async {
+        let graph = makeCoordinatorGraph()
+        graph.action.shouldThrowError = true
+
+        await #expect(throws: AppError.cardActionFailed(action: "cardAction")) {
+            try await graph.action.execute(CardCommand.freeze(cardId: Card.mockCreditCard.id))
+        }
+
+        #expect(graph.status.publishedStates.isEmpty)
+        #expect(graph.card.cards.first { $0.id == Card.mockCreditCard.id }?.status == .active)
+    }
+
+    // MARK: - Coordinator graph helper
+
+    /// Builds the store graph with the coordinator installed. The tuple
+    /// holds the coordinator so it stays alive for the test's scope — the
+    /// hook holds it weakly, so the *owner* (here, the test; in demo mode,
+    /// `DemoGraph`) must retain it.
+    private func makeCoordinatorGraph() -> (
+        action: MockActionRepository,
+        card: MockCardRepository,
+        status: MockStatusRepository,
+        offers: MockOffersRepository,
+        coordinator: MockCommandCoordinator,
+    ) {
+        let card = MockCardRepository(seed: Card.mockDefaults)
+        let status = MockStatusRepository(seed: CardState.mockDefaults)
+        let offers = MockOffersRepository(seed: CardOffer.mockDefaults)
+        let action = MockActionRepository()
+        let coordinator = MockCommandCoordinator(
+            actionRepository: action,
+            cardRepository: card,
+            statusRepository: status,
+            offersRepository: offers,
+        )
+        coordinator.start()
+        return (action, card, status, offers, coordinator)
+    }
 }

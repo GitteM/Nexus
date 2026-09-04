@@ -40,6 +40,7 @@
         public private(set) var getCardsCallCount = 0
         public private(set) var addCardCallCount = 0
         public private(set) var removeCardCallCount = 0
+        public private(set) var updateCardCallCount = 0
         /// Offers passed to `addCard`, oldest first.
         public private(set) var addedOffers: [CardOffer] = []
         /// Card ids passed to `removeCard`, oldest first.
@@ -72,6 +73,20 @@
             removedCardIds.append(cardId)
             try await checkFailureMode()
             cards.removeAll { $0.id == cardId }
+        }
+
+        /// Replaces the stored card with `card` (matched by id) so later
+        /// reads reflect the change — the demo's way to persist a command
+        /// result (e.g. a new spending limit) into the repository store
+        /// (appspec §2.2: "execute() applies the change so later reads
+        /// reflect it"). No-op for an unknown id, mirroring `removeCard`'s
+        /// idempotence.
+        public func updateCard(_ card: Card) {
+            updateCardCallCount += 1
+            guard let index = cards.firstIndex(where: { $0.id == card.id }) else {
+                return
+            }
+            cards[index] = card
         }
 
         /// The provisional local record for an accepted offer — mirrors
