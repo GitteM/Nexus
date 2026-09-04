@@ -127,12 +127,16 @@ private struct CardDetailContentView: View {
     // MARK: - Card header
 
     private func header(for card: Card) -> some View {
-        VStack(alignment: .leading, spacing: Spacing.md) {
+        // The card art is decorative to VoiceOver; the on-card status pill is
+        // the meaning-bearing element (mirroring the dashboard carousel's
+        // on-card chip) and is overlaid bottom-trailing so assistive tech
+        // reads the status without the surrounding art.
+        ZStack(alignment: .bottomTrailing) {
             DetailCardFront(card: card)
-                .padding(.horizontal, Spacing.lg)
-            StatusLine(status: card.status)
-                .padding(.horizontal, Spacing.lg)
+            StatusPill(status: card.status)
+                .padding(Spacing.md)
         }
+        .padding(.horizontal, Spacing.lg)
     }
 
     // MARK: - Controls
@@ -387,12 +391,12 @@ private struct ActionButton: View {
     }
 }
 
-/// The status announcement line below the card front — one VoiceOver
-/// element (UI tests assert the freeze round trip against
-/// `CardDetailAccessibility.status`). Its label prefixes the status name
-/// with "Status:" so the spoken element carries its meaning in isolation
-/// rather than announcing a bare "Active"/"Frozen".
-private struct StatusLine: View {
+/// The status pill drawn on the card art — one VoiceOver element (UI tests
+/// assert the freeze round trip against `CardDetailAccessibility.status`).
+/// Its label prefixes the status name with "Status:" so the spoken element
+/// carries its meaning in isolation rather than announcing a bare
+/// "Active"/"Frozen".
+private struct StatusPill: View {
     private let status: CardStatus
 
     init(status: CardStatus) {
@@ -402,14 +406,13 @@ private struct StatusLine: View {
     var body: some View {
         HStack(spacing: Spacing.xs) {
             Image(systemName: status.icon)
-                .accessibilityHidden(true)
             Text(status.displayName)
         }
-        .font(.subheadline.weight(.medium))
-        .foregroundStyle(ColorPalette.label)
+        .font(.caption.weight(.semibold))
+        .foregroundStyle(CardArtwork.foreground)
         .padding(.horizontal, Spacing.sm + 2)
         .padding(.vertical, Spacing.xs)
-        .background(ColorPalette.separator.opacity(0.6), in: Capsule())
+        .background(CardArtwork.foreground.opacity(0.18), in: Capsule())
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Status: \(status.displayName)")
         .accessibilityIdentifier(CardDetailAccessibility.status)
@@ -419,7 +422,8 @@ private struct StatusLine: View {
 /// A compact physical-card front for the detail header, sharing the art
 /// vocabulary (`CardArtwork`) with the dashboard carousel (architecture.md
 /// §9.4). Only display-safe data is drawn: the last four digits, never a
-/// PAN.
+/// PAN. Purely decorative — the card detail's live status is announced by
+/// the `StatusPill` the header overlays on this art.
 private struct DetailCardFront: View {
     private let card: Card
 
@@ -458,12 +462,12 @@ private struct DetailCardFront: View {
         .padding(Spacing.lg)
         .dynamicTypeSize(...DynamicTypeSize.accessibility1)
         .frame(maxWidth: .infinity)
-        .aspectRatio(1.586, contentMode: .fit)
         .foregroundStyle(CardArtwork.foreground)
         .background(
             CardArtwork.gradient(for: card.type),
             in: RoundedRectangle(cornerRadius: 20, style: .continuous),
         )
+        .aspectRatio(1.586, contentMode: .fit)
         .accessibilityHidden(true)
     }
 
