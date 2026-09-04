@@ -126,7 +126,7 @@ final class CardDetailUITests: XCTestCase {
         // The AppError headline surfaces (the demo's thrown error copy; the
         // alert body is one multiline element, so match by CONTAINS).
         let alertHeadline = app.alerts.staticTexts.element(
-            matching: NSPredicate(format: "label CONTAINS %@", "The 'Freeze' action failed.")
+            matching: NSPredicate(format: "label CONTAINS %@", "The 'Freeze' action failed."),
         )
         XCTAssertTrue(alertHeadline.waitForExistence(timeout: 10))
         // …dismissing keeps the card active and the controls usable.
