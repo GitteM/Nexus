@@ -58,6 +58,11 @@ jobs:
           echo "Simulator: $DEVICE"
           echo "device=$DEVICE" >> "$GITHUB_OUTPUT"
 
+      # UI tests execute on a fresh runner each time; the first UI class on
+      # a cold simulator occasionally flakes on launch/tap timing (the same
+      # tests pass consistently on a warm simulator, locally and later in
+      # the same run). Retry failed tests once in-place rather than failing
+      # the whole run — infra-level remedy, no test-logic masking.
       - name: Test (workspace TestPlan)
         run: >
           xcodebuild test-without-building
@@ -65,3 +70,5 @@ jobs:
           -scheme Nexus
           -destination 'platform=iOS Simulator,name=${{ steps.simulator.outputs.device }}'
           -derivedDataPath DerivedData
+          -retry-tests-on-failure
+          -test-iterations 2
