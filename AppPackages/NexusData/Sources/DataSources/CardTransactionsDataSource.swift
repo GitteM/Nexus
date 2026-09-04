@@ -95,7 +95,7 @@ public actor CardTransactionsDataSource {
                     guard let self else {
                         break
                     }
-                    await self.process(event, cardId: cardId, continuation: continuation)
+                    await process(event, cardId: cardId, continuation: continuation)
                 }
                 continuation.finish()
             }
