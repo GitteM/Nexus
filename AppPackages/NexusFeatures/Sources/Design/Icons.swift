@@ -38,4 +38,10 @@ public enum Icons {
 
     /// Unfreeze a frozen card (card detail).
     public static let unfreeze = "snowflake"
+
+    /// Search (transaction history).
+    public static let search = "magnifyingglass"
+
+    /// Filter menus (transaction history).
+    public static let filter = "line.3.horizontal.decrease.circle"
 }

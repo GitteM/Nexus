@@ -15,4 +15,10 @@ import Foundation
 public enum Route: Hashable, Sendable {
     /// The card detail screen for one managed card.
     case cardDetail(cardID: String)
+
+    /// The per-card transaction history (balance header + searchable feed).
+    case transactionHistory(cardID: String)
+
+    /// The detail screen for one transaction.
+    case transactionDetail(cardID: String, transactionID: String)
 }
