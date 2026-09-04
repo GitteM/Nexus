@@ -177,7 +177,7 @@ private struct CardDetailContentView: View {
         case .frozen:
             ActionButton(
                 title: Strings.CardDetail.unfreeze,
-                systemImage: "snowflake",
+                systemImage: Icons.unfreeze,
                 identifier: CardDetailAccessibility.unfreeze,
                 isPending: model.pendingAction == .unfreeze,
                 disabled: model.isExecuting,
@@ -388,8 +388,10 @@ private struct ActionButton: View {
 }
 
 /// The status announcement line below the card front — one VoiceOver
-/// element whose label names the status (UI tests assert the freeze round
-/// trip against `CardDetailAccessibility.status`).
+/// element (UI tests assert the freeze round trip against
+/// `CardDetailAccessibility.status`). Its label prefixes the status name
+/// with "Status:" so the spoken element carries its meaning in isolation
+/// rather than announcing a bare "Active"/"Frozen".
 private struct StatusLine: View {
     private let status: CardStatus
 

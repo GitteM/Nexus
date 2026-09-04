@@ -16,25 +16,3 @@ public enum CardDetailViewState: Equatable {
     case loaded
     case error(AppError)
 }
-
-public extension CardDetailViewState {
-    /// The `AppError` behind `.error`, or `nil` for every other state.
-    var error: AppError? {
-        if case let .error(error) = self {
-            return error
-        }
-        return nil
-    }
-
-    /// User-facing headline for the `.error` state, forwarded from the
-    /// error's own surface (§5); `nil` unless the state is `.error`.
-    var errorMessage: String? {
-        error?.errorDescription
-    }
-
-    /// Recovery guidance for the `.error` state, forwarded from the error's
-    /// own surface (§5); `nil` unless the state is `.error`.
-    var recoverySuggestion: String? {
-        error?.recoverySuggestion
-    }
-}
