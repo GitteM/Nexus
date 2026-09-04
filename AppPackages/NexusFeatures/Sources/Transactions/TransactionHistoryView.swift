@@ -74,14 +74,14 @@ private struct HistoryContent: View {
 
     var body: some View {
         List {
-            if !model.query.isDefault, !model.transactions.isEmpty {
-                Section {
-                    filteredBanner
-                }
-            }
             if let balance = model.balance {
                 Section(Strings.Transactions.balanceSection) {
                     BalanceHeaderView(balance: balance)
+                }
+            }
+            if !model.query.isDefault, !model.transactions.isEmpty {
+                Section {
+                    filteredBanner
                 }
             }
             if model.transactions.isEmpty {
@@ -129,36 +129,49 @@ private struct HistoryContent: View {
     }
 
     /// The clear in-list signal that the visible history is a filtered
-    /// subset: an icon, the result count, and the active-filter summary
-    /// (search text, category, status, date window). Tapping reopens the
-    /// filter sheet; the toolbar button and the dot stay as secondary
-    /// affordances.
+    /// subset, placed directly under the balance: the result count plus the
+    /// active-filter summary, with one-tap Edit (reopens the filter sheet)
+    /// and Reset (clears every filter) actions.
     private var filteredBanner: some View {
-        Button {
-            showFilters = true
-        } label: {
-            HStack(spacing: Spacing.sm) {
-                Image(systemName: Icons.filter)
+        HStack(spacing: Spacing.sm) {
+            Image(systemName: Icons.filter)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(ColorPalette.brand)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(Strings.Transactions.filtersActiveTitle)
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(ColorPalette.brand)
-                    .accessibilityHidden(true)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(Strings.Transactions.filtersActiveTitle)
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(ColorPalette.label)
-                    Text(bannerDetail)
-                        .font(.footnote)
-                        .foregroundStyle(ColorPalette.secondaryLabel)
-                }
-                Spacer(minLength: Spacing.sm)
+                    .foregroundStyle(ColorPalette.label)
+                Text(bannerDetail)
+                    .font(.footnote)
+                    .foregroundStyle(ColorPalette.secondaryLabel)
+            }
+            Spacer(minLength: Spacing.md)
+            Button {
+                showFilters = true
+            } label: {
                 Text(Strings.Transactions.edit)
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(ColorPalette.brand)
             }
-            .padding(.vertical, Spacing.xs)
-            .contentShape(Rectangle())
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+            .tint(ColorPalette.brand)
+            .accessibilityIdentifier(TransactionsAccessibility.filteredBannerEdit)
+            Button {
+                // Reset clears the filters outright — it never presents the
+                // sheet (only the Edit action does).
+                model.clearFilters()
+            } label: {
+                Text(Strings.Transactions.resetFilters)
+                    .font(.subheadline.weight(.semibold))
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+            .tint(ColorPalette.secondaryLabel)
+            .accessibilityIdentifier(TransactionsAccessibility.filteredBannerReset)
         }
-        .buttonStyle(.plain)
+        .padding(.vertical, Spacing.xs)
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier(TransactionsAccessibility.filteredBanner)
     }
 
@@ -232,7 +245,10 @@ private struct FilterSheetView: View {
                 if !model.query.isDefault {
                     Section {
                         Button(Strings.Transactions.resetFilters) {
+                            // Clearing from the sheet also dismisses it: the
+                            // user asked to reset, not to keep editing.
                             model.clearFilters()
+                            dismiss()
                         }
                         .foregroundStyle(ColorPalette.brand)
                     }

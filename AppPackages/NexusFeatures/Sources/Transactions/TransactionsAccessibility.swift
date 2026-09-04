@@ -21,6 +21,12 @@ public enum TransactionsAccessibility {
     /// The in-list banner shown while history is filtered.
     public static let filteredBanner = "transactions.filteredBanner"
 
+    /// The banner's Edit action (reopens the filter sheet).
+    public static let filteredBannerEdit = "transactions.filteredBanner.edit"
+
+    /// The banner's Reset action (clears every filter).
+    public static let filteredBannerReset = "transactions.filteredBanner.reset"
+
     /// One transaction row in the history list.
     public static func transactionRow(_ transactionID: String) -> String {
         "transactions.row.\(transactionID)"

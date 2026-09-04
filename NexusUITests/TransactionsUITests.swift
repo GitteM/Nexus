@@ -108,13 +108,23 @@ final class TransactionsUITests: XCTestCase {
 
         // The filtered state is announced in-list: a banner with the result
         // count and the active filter (copy matched literally — Design is
-        // not linked into the UI test target).
+        // not linked into the UI test target). The banner container exposes
+        // its text as child elements, so assert on those.
         let banner = app.descendants(matching: .any)[TransactionsAccessibility.filteredBanner]
         XCTAssertTrue(banner.waitForExistence(timeout: 5))
-        XCTAssertTrue(banner.label.contains("Filters active"), "label was: \(banner.label)")
-        XCTAssertTrue(
-            banner.label.contains("Showing 1 of \(Transaction.mockDefaults.count)"),
-            "label was: \(banner.label)",
-        )
+        let filtersActive = app.staticTexts["Filters active"]
+        XCTAssertTrue(filtersActive.waitForExistence(timeout: 5))
+        let showingCount = app.staticTexts.matching(
+            NSPredicate(format: "label CONTAINS %@", "Showing 1 of \(Transaction.mockDefaults.count)"),
+        ).firstMatch
+        XCTAssertTrue(showingCount.exists, "count line was missing")
+
+        // Reset restores the whole feed and removes the banner.
+        let reset = app.buttons[TransactionsAccessibility.filteredBannerReset]
+        XCTAssertTrue(reset.waitForExistence(timeout: 5))
+        reset.tap()
+        XCTAssertTrue(banner.waitForNonExistence(timeout: 5))
+        XCTAssertTrue(groceriesRow.waitForExistence(timeout: 5))
+        XCTAssertTrue(coffeeRow.exists)
     }
 }
