@@ -82,4 +82,5 @@ playground.xcworkspace
 
 # Codewhale agent runtime state (never commit)
 .codewhale/state/
+.codewhale/harness/
 .codewhale/workflow-runs.jsonl
