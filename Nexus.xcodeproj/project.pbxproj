@@ -10,6 +10,8 @@
 		00000000000000000000003A /* Entities in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000026 /* Entities */; };
 		00000000000000000000003B /* Dashboard in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000031 /* Dashboard */; };
 		D12C0000000000000000000A /* CardDetail in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000032 /* CardDetail */; };
+		D12C0000000000000000000C /* Transactions in Frameworks */ = {isa = PBXBuildFile; productRef = 00000000000000000000003C /* Transactions */; };
+		D12C0000000000000000000D /* Transactions in Frameworks */ = {isa = PBXBuildFile; productRef = 00000000000000000000003C /* Transactions */; };
 		EC893DEC30470C7E001AAE0F /* Entities in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000026 /* Entities */; };
 		EC893DED30470C7E001AAE0F /* RepositoryProtocols in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000027 /* RepositoryProtocols */; };
 		EC893DEE30470C7E001AAE0F /* ServiceProtocols in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000028 /* ServiceProtocols */; };
@@ -88,6 +90,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EC893DF830470C7E001AAE0F /* CardDetail in Frameworks */,
+				D12C0000000000000000000C /* Transactions in Frameworks */,
 				EC893DF730470C7E001AAE0F /* Dashboard in Frameworks */,
 				EC893DF630470C7E001AAE0F /* Navigation in Frameworks */,
 				EC893DF530470C7E001AAE0F /* SharedUI in Frameworks */,
@@ -130,6 +133,7 @@
 				00000000000000000000003A /* Entities in Frameworks */,
 				00000000000000000000003B /* Dashboard in Frameworks */,
 				D12C0000000000000000000A /* CardDetail in Frameworks */,
+				D12C0000000000000000000D /* Transactions in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -200,6 +204,7 @@
 				000000000000000000000030 /* Navigation */,
 				000000000000000000000031 /* Dashboard */,
 				000000000000000000000032 /* CardDetail */,
+				00000000000000000000003C /* Transactions */,
 			);
 			productName = Nexus;
 			productReference = 000000000000000000000005 /* Nexus.app */;
@@ -262,6 +267,7 @@
 				000000000000000000000026 /* Entities */,
 				000000000000000000000031 /* Dashboard */,
 				000000000000000000000032 /* CardDetail */,
+				00000000000000000000003C /* Transactions */,
 			);
 			productName = NexusUITests;
 			productReference = 000000000000000000000007 /* NexusUITests.xctest */;
@@ -727,6 +733,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 000000000000000000000025 /* XCLocalSwiftPackageReference "AppPackages/NexusFeatures" */;
 			productName = CardDetail;
+		};
+		00000000000000000000003C /* Transactions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 000000000000000000000025 /* XCLocalSwiftPackageReference "AppPackages/NexusFeatures" */;
+			productName = Transactions;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
