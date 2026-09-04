@@ -76,6 +76,9 @@ private struct OfferCardView: View {
             }
             .frame(height: artHeight)
             .frame(maxWidth: .infinity)
+            // `CardArtwork.gradient` is a plain fill — the rounded corners
+            // come from this shape, matching the card's own radius.
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: Spacing.xs) {
