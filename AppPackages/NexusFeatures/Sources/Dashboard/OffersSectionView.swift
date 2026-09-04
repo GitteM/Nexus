@@ -129,9 +129,26 @@ private struct OfferCardView: View {
 }
 
 #if DEBUG
+    /// Loads the section's model before showing it. `DashboardView` owns the
+    /// `load()` call in its `.task` (architecture.md §9.1); a section preview
+    /// has no such parent, so without this `offeredCards` stays empty and the
+    /// row renders nothing.
+    private struct OffersSectionPreview: View {
+        private let model: DashboardModel
+
+        init(model: DashboardModel) {
+            self.model = model
+        }
+
+        var body: some View {
+            OffersSectionView(model: model)
+                .background(ColorPalette.background)
+                .task { await model.load() }
+        }
+    }
+
     #Preview("Offers — addable") {
-        OffersSectionView(model: DashboardModel.preview())
-            .background(ColorPalette.background)
+        OffersSectionPreview(model: DashboardModel.preview())
     }
 
     #Preview("Offers — added state") {
@@ -152,13 +169,11 @@ private struct OfferCardView: View {
             offersRepository: MockOffersRepository(seed: CardOffer.mockDefaults),
             statusRepository: MockStatusRepository(seed: CardState.mockDefaults),
         )
-        return OffersSectionView(model: model)
-            .background(ColorPalette.background)
+        return OffersSectionPreview(model: model)
     }
 
     #Preview("Offers — dark") {
-        OffersSectionView(model: DashboardModel.preview())
-            .background(ColorPalette.background)
+        OffersSectionPreview(model: DashboardModel.preview())
             .preferredColorScheme(.dark)
     }
 #endif
