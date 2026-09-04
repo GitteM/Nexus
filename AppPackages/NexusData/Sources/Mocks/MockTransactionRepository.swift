@@ -50,6 +50,12 @@
         public func getTransactions(cardId: String) async throws -> [Transaction] {
             getTransactionsCallCount += 1
             try await checkFailureMode()
+            guard !cardId.isEmpty else {
+                throw AppError.validationError(
+                    field: "cardId",
+                    reason: "Card id must not be empty.",
+                )
+            }
             return transactionsByCardId[cardId] ?? []
         }
 

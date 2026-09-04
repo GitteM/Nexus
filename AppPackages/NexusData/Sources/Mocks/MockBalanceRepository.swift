@@ -49,6 +49,12 @@
         public func getBalance(cardId: String) async throws -> Balance? {
             getBalanceCallCount += 1
             try await checkFailureMode()
+            guard !cardId.isEmpty else {
+                throw AppError.validationError(
+                    field: "cardId",
+                    reason: "Card id must not be empty.",
+                )
+            }
             return balancesByCardId[cardId]
         }
 
