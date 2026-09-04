@@ -18,6 +18,9 @@ public enum TransactionsAccessibility {
     /// The toolbar button that opens the filter sheet.
     public static let filterButton = "transactions.filter"
 
+    /// The in-list banner shown while history is filtered.
+    public static let filteredBanner = "transactions.filteredBanner"
+
     /// One transaction row in the history list.
     public static func transactionRow(_ transactionID: String) -> String {
         "transactions.row.\(transactionID)"

@@ -74,6 +74,11 @@ private struct HistoryContent: View {
 
     var body: some View {
         List {
+            if !model.query.isDefault, !model.transactions.isEmpty {
+                Section {
+                    filteredBanner
+                }
+            }
             if let balance = model.balance {
                 Section(Strings.Transactions.balanceSection) {
                     BalanceHeaderView(balance: balance)
@@ -121,6 +126,69 @@ private struct HistoryContent: View {
         .sheet(isPresented: $showFilters) {
             FilterSheetView(model: model)
         }
+    }
+
+    /// The clear in-list signal that the visible history is a filtered
+    /// subset: an icon, the result count, and the active-filter summary
+    /// (search text, category, status, date window). Tapping reopens the
+    /// filter sheet; the toolbar button and the dot stay as secondary
+    /// affordances.
+    private var filteredBanner: some View {
+        Button {
+            showFilters = true
+        } label: {
+            HStack(spacing: Spacing.sm) {
+                Image(systemName: Icons.filter)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(ColorPalette.brand)
+                    .accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(Strings.Transactions.filtersActiveTitle)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(ColorPalette.label)
+                    Text(bannerDetail)
+                        .font(.footnote)
+                        .foregroundStyle(ColorPalette.secondaryLabel)
+                }
+                Spacer(minLength: Spacing.sm)
+                Text(Strings.Transactions.edit)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(ColorPalette.brand)
+            }
+            .padding(.vertical, Spacing.xs)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier(TransactionsAccessibility.filteredBanner)
+    }
+
+    /// "Showing 3 of 9 · Dining, Pending" — count plus the active filters.
+    private var bannerDetail: String {
+        let count = Strings.Transactions.showingCount(
+            model.filteredTransactions.count,
+            of: model.transactions.count,
+        )
+        let summary = activeFilterSummary
+        return summary.isEmpty ? count : "\(count) · \(summary)"
+    }
+
+    /// The human-readable list of active filters, newest first.
+    private var activeFilterSummary: String {
+        var parts: [String] = []
+        let search = model.query.searchText.trimmingCharacters(in: .whitespaces)
+        if !search.isEmpty {
+            parts.append("\u{201C}\(search)\u{201D}")
+        }
+        if let category = model.query.category {
+            parts.append(category.displayName)
+        }
+        if let status = model.query.status {
+            parts.append(status.displayName)
+        }
+        if model.query.dateRange != .all {
+            parts.append(transactionDateLabel(model.query.dateRange))
+        }
+        return parts.joined(separator: ", ")
     }
 
     /// The filter controls, one full-width row per dimension: the menu
@@ -284,12 +352,18 @@ private struct FilterSheetView: View {
     }
 
     private func dateLabel(_ range: TransactionDateRange) -> String {
-        switch range {
-        case .all: Strings.Transactions.allDates
-        case .last7Days: Strings.Transactions.last7Days
-        case .last30Days: Strings.Transactions.last30Days
-        case .last90Days: Strings.Transactions.last90Days
-        }
+        transactionDateLabel(range)
+    }
+}
+
+/// The date-window label for filter UI, shared by the banner summary and
+/// the filter sheet (copy lives in `Strings.Transactions`).
+private func transactionDateLabel(_ range: TransactionDateRange) -> String {
+    switch range {
+    case .all: Strings.Transactions.allDates
+    case .last7Days: Strings.Transactions.last7Days
+    case .last30Days: Strings.Transactions.last30Days
+    case .last90Days: Strings.Transactions.last90Days
     }
 }
 

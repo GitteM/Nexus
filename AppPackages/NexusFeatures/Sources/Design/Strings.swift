@@ -99,6 +99,14 @@ public enum Strings {
         public static let filterButton = String(localized: "Filter")
         public static let filtersSheetTitle = String(localized: "Filter transactions")
         public static let resetFilters = String(localized: "Reset")
+        public static let filtersActiveTitle = String(localized: "Filters active")
+        public static let edit = String(localized: "Edit")
+
+        /// "Showing 3 of 9" — the banner line under the active-filters title.
+        public static func showingCount(_ shown: Int, of total: Int) -> String {
+            String(localized: "Showing \(shown) of \(total)")
+        }
+
         public static let filterCategory = String(localized: "Category")
         public static let filterStatus = String(localized: "Status")
         public static let filterDate = String(localized: "Date")

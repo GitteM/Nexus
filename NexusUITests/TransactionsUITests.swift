@@ -105,5 +105,16 @@ final class TransactionsUITests: XCTestCase {
 
         XCTAssertTrue(coffeeRow.waitForExistence(timeout: 5))
         XCTAssertTrue(groceriesRow.waitForNonExistence(timeout: 5))
+
+        // The filtered state is announced in-list: a banner with the result
+        // count and the active filter (copy matched literally — Design is
+        // not linked into the UI test target).
+        let banner = app.descendants(matching: .any)[TransactionsAccessibility.filteredBanner]
+        XCTAssertTrue(banner.waitForExistence(timeout: 5))
+        XCTAssertTrue(banner.label.contains("Filters active"), "label was: \(banner.label)")
+        XCTAssertTrue(
+            banner.label.contains("Showing 1 of \(Transaction.mockDefaults.count)"),
+            "label was: \(banner.label)",
+        )
     }
 }
