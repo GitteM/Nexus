@@ -36,11 +36,10 @@ struct AppContainerTests {
         await container.start()
         #expect(container.appState == .ready)
 
-        container.resetDemo()
+        await container.resetDemo()
 
-        #expect(container.appState == .initializing)
-        // The rebuild + reconnect task settles quickly (in-memory session).
-        await waitUntil { container.appState == .ready }
+        // resetDemo rebuilds and reconnects before returning.
+        #expect(container.appState == .ready)
         #expect(container.sessionStatus == .connected)
     }
 

@@ -89,14 +89,22 @@ public final class AppContainer {
                     router.routes = [.cardDetail(cardID: openCardID)]
                 }
             #else
-                // Unreachable in release (defaultMode can never return
-                // `.demo`); kept exhaustive for the switch.
-                fatalError("demo mode is DEBUG-only")
+                // Release cannot reach `.demo` via `defaultMode()`; if a
+                // caller forces it anyway, degrade to the live
+                // configuration-gap error state instead of crashing.
+                dependencies = nil
             #endif
         case .live:
             dependencies = AppDependenciesFactory.live(baseURL: baseURL ?? APIConfig.baseURL, logger: logger)
         }
         dashboardModel = dependencies?.dashboardModel
+        if mode == .live, dependencies == nil {
+            logger.log(
+                "Live mode without a backend base URL (API_BASE_URL empty); "
+                    + "start() will report the configuration gap.",
+                level: .notice,
+            )
+        }
     }
 
     // MARK: - Startup & state transitions
@@ -159,8 +167,10 @@ public final class AppContainer {
     #if DEBUG
         /// Resets the demo to its default state: rebuilds the in-memory
         /// store graph, clears navigation, and reconnects. Never touches
-        /// network/Keychain/disk (architecture.md §11.2).
-        public func resetDemo() {
+        /// network/Keychain/disk (architecture.md §11.2). Async so the
+        /// rebuild + reconnect happen on the caller's task rather than an
+        /// unstructured one (no racing reconnects).
+        public func resetDemo() async {
             guard mode == .demo else { return }
             cardDetailModels.removeAll()
             historyModels.removeAll()
@@ -169,9 +179,7 @@ public final class AppContainer {
             dependencies = AppDependenciesFactory.demo(logger: logger)
             dashboardModel = dependencies?.dashboardModel
             appState = .initializing
-            Task {
-                await start()
-            }
+            await start()
         }
     #endif
 

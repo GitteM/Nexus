@@ -29,7 +29,7 @@ struct MainNavigationView: View {
                     ToolbarItem(placement: .topBarLeading) {
                         if container.mode == .demo {
                             Button {
-                                container.resetDemo()
+                                Task { await container.resetDemo() }
                             } label: {
                                 Label(Strings.App.resetDemo, systemImage: Icons.resetDemo)
                             }
