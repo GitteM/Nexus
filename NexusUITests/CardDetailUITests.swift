@@ -54,6 +54,12 @@ final class CardDetailUITests: XCTestCase {
 
         let firstCard = app.descendants(matching: .any)[DashboardAccessibility.card(Card.mockCreditCard.id)]
         XCTAssertTrue(firstCard.waitForExistence(timeout: 10))
+        // The first UI test on a cold runner can tap before the freshly
+        // launched process's hit-testing has settled, even when the element
+        // already reports hittable — the tap is then silently dropped and
+        // the pushed screen never appears. A short settle makes the
+        // first-launch tap deterministic.
+        RunLoop.current.run(until: Date().addingTimeInterval(1.0))
         XCTAssertTrue(UITestInteraction.tapWhenReady(firstCard))
 
         XCTAssertTrue(
