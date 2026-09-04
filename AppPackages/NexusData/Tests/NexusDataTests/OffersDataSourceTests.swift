@@ -99,7 +99,10 @@ struct OffersDataSourceTests {
         let source = OffersDataSource(
             eventSubscriptionManager: session,
             logger: RecordingLogger(),
-            ttl: 5,
+            // Generous TTL: this test only asserts the fresh-snapshot path;
+            // the 0.05 s TTL case above pins expiry. A short TTL here made
+            // the assertion load-dependent on slow runners.
+            ttl: 60,
         )
 
         let stream = await source.subscribeToOffers()

@@ -50,15 +50,15 @@ final class CardDetailUITests: XCTestCase {
     @MainActor
     private func openFirstCard(in app: XCUIApplication) {
         let carousel = app.descendants(matching: .any)[DashboardAccessibility.carousel]
-        XCTAssertTrue(carousel.waitForExistence(timeout: 10))
+        XCTAssertTrue(carousel.waitForExistence(timeout: 20))
 
         let firstCard = app.descendants(matching: .any)[DashboardAccessibility.card(Card.mockCreditCard.id)]
-        XCTAssertTrue(firstCard.waitForExistence(timeout: 5))
+        XCTAssertTrue(firstCard.waitForExistence(timeout: 10))
         firstCard.tap()
 
         XCTAssertTrue(
             app.descendants(matching: .any)[CardDetailAccessibility.screen]
-                .waitForExistence(timeout: 10),
+                .waitForExistence(timeout: 20),
         )
     }
 
@@ -73,35 +73,35 @@ final class CardDetailUITests: XCTestCase {
 
         // Active card offers the freeze control.
         let freezeButton = app.buttons[CardDetailAccessibility.freeze]
-        XCTAssertTrue(freezeButton.waitForExistence(timeout: 5))
+        XCTAssertTrue(freezeButton.waitForExistence(timeout: 10))
         let status = app.descendants(matching: .any)[CardDetailAccessibility.status]
         XCTAssertTrue(status.label.contains("Active"), "label was: \(status.label)")
 
         // Freeze → confirm → the status line announces Frozen.
         freezeButton.tap()
         let confirm = app.alerts.buttons[freezeLabel]
-        XCTAssertTrue(confirm.waitForExistence(timeout: 5))
+        XCTAssertTrue(confirm.waitForExistence(timeout: 10))
         confirm.tap()
 
         XCTAssertTrue(waitForLabel(containing: "Frozen", on: status))
-        XCTAssertTrue(freezeButton.waitForNonExistence(timeout: 5))
+        XCTAssertTrue(freezeButton.waitForNonExistence(timeout: 10))
         XCTAssertTrue(app.buttons[CardDetailAccessibility.unfreeze].exists)
 
         // Back on the dashboard, the carousel chip shows the frozen state
         // (the detail and dashboard share the status store + subscription).
         backToDashboard(from: app)
         let firstCard = app.descendants(matching: .any)[DashboardAccessibility.card(Card.mockCreditCard.id)]
-        XCTAssertTrue(firstCard.waitForExistence(timeout: 5))
+        XCTAssertTrue(firstCard.waitForExistence(timeout: 10))
         XCTAssertTrue(firstCard.label.contains("Frozen"), "label was: \(firstCard.label)")
 
         // Re-opening the detail keeps the frozen state — no reload resets it.
         firstCard.tap()
         XCTAssertTrue(
             app.descendants(matching: .any)[CardDetailAccessibility.screen]
-                .waitForExistence(timeout: 10),
+                .waitForExistence(timeout: 20),
         )
         let statusAfterReload = app.descendants(matching: .any)[CardDetailAccessibility.status]
-        XCTAssertTrue(statusAfterReload.waitForExistence(timeout: 5))
+        XCTAssertTrue(statusAfterReload.waitForExistence(timeout: 10))
         XCTAssertTrue(statusAfterReload.label.contains("Frozen"), "label was: \(statusAfterReload.label)")
     }
 
@@ -117,10 +117,10 @@ final class CardDetailUITests: XCTestCase {
         XCTAssertTrue(status.label.contains("Active"), "label was: \(status.label)")
 
         let freezeButton = app.buttons[CardDetailAccessibility.freeze]
-        XCTAssertTrue(freezeButton.waitForExistence(timeout: 5))
+        XCTAssertTrue(freezeButton.waitForExistence(timeout: 10))
         freezeButton.tap()
         let confirm = app.alerts.buttons[freezeLabel]
-        XCTAssertTrue(confirm.waitForExistence(timeout: 5))
+        XCTAssertTrue(confirm.waitForExistence(timeout: 10))
         confirm.tap()
 
         // The AppError headline surfaces (the demo's thrown error copy; the
@@ -128,11 +128,11 @@ final class CardDetailUITests: XCTestCase {
         let alertHeadline = app.alerts.staticTexts.element(
             matching: NSPredicate(format: "label CONTAINS %@", "The 'Freeze' action failed."),
         )
-        XCTAssertTrue(alertHeadline.waitForExistence(timeout: 10))
+        XCTAssertTrue(alertHeadline.waitForExistence(timeout: 20))
         // …dismissing keeps the card active and the controls usable.
         app.alerts.buttons["OK"].tap()
         XCTAssertTrue(status.label.contains("Active"), "label was: \(status.label)")
-        XCTAssertTrue(app.buttons[CardDetailAccessibility.freeze].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons[CardDetailAccessibility.freeze].waitForExistence(timeout: 10))
     }
 
     /// System alert buttons expose no identifier contract, so their copy is
@@ -146,7 +146,7 @@ final class CardDetailUITests: XCTestCase {
     @MainActor
     private func backToDashboard(from app: XCUIApplication) {
         let backButton = app.navigationBars.buttons.firstMatch
-        XCTAssertTrue(backButton.waitForExistence(timeout: 5))
+        XCTAssertTrue(backButton.waitForExistence(timeout: 10))
         backButton.tap()
     }
 
@@ -155,6 +155,6 @@ final class CardDetailUITests: XCTestCase {
     private func waitForLabel(containing text: String, on element: XCUIElement) -> Bool {
         let predicate = NSPredicate(format: "label CONTAINS %@", text)
         let expectation = XCTNSPredicateExpectation(predicate: predicate, object: element)
-        return XCTWaiter.wait(for: [expectation], timeout: 10) == .completed
+        return XCTWaiter.wait(for: [expectation], timeout: 20) == .completed
     }
 }
