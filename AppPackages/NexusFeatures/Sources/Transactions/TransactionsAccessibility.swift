@@ -15,6 +15,9 @@ public enum TransactionsAccessibility {
     /// The balance summary header on the history screen.
     public static let balanceSummary = "transactions.balance"
 
+    /// The toolbar button that opens the filter sheet.
+    public static let filterButton = "transactions.filter"
+
     /// One transaction row in the history list.
     public static func transactionRow(_ transactionID: String) -> String {
         "transactions.row.\(transactionID)"

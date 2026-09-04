@@ -9,9 +9,9 @@ import SwiftUI
 /// transaction feed.
 ///
 /// A thin switch over the model's `viewState`; the loaded screen owns the
-/// search field (`.searchable`), the category/status/date filter menus, and
-/// the row list. Tapping a row pushes the transaction detail through the
-/// router (the app target maps the route to the view).
+/// search field (`.searchable`), the toolbar Filter button (opening the
+/// filter sheet), and the row list. Tapping a row pushes the transaction
+/// detail through the router (the app target maps the route to the view).
 public struct TransactionHistoryView: View {
     @Environment(TransactionHistoryModel.self) private var model
     @Environment(Router.self) private var router
@@ -54,9 +54,10 @@ public struct TransactionHistoryView: View {
     }
 }
 
-/// The loaded history: balance summary on top, then the filter bar and the
-/// (already filtered) transaction list. Empty states distinguish "no
-/// transactions at all" from "the filters matched nothing".
+/// The loaded history: the live balance summary on top, then the (already
+/// filtered) transaction list. Filters live behind the toolbar Filter
+/// button (`FilterSheetView`); empty states distinguish "no transactions at
+/// all" from "the filters matched nothing".
 private struct HistoryContent: View {
     private let model: TransactionHistoryModel
     private let onSelectTransaction: (Entities.Transaction) -> Void
@@ -69,22 +70,13 @@ private struct HistoryContent: View {
         self.onSelectTransaction = onSelectTransaction
     }
 
+    @State private var showFilters = false
+
     var body: some View {
         List {
             if let balance = model.balance {
                 Section(Strings.Transactions.balanceSection) {
                     BalanceHeaderView(balance: balance)
-                }
-            }
-            Section {
-                categoryRow
-                statusRow
-                dateRow
-                if !model.query.isDefault {
-                    Button(Strings.Transactions.clearFilters) {
-                        model.clearFilters()
-                    }
-                    .foregroundStyle(ColorPalette.brand)
                 }
             }
             if model.transactions.isEmpty {
@@ -106,12 +98,98 @@ private struct HistoryContent: View {
         }
         .listStyle(.insetGrouped)
         .accessibilityIdentifier(TransactionsAccessibility.historyScreen)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showFilters = true
+                } label: {
+                    Label(Strings.Transactions.filterButton, systemImage: Icons.filter)
+                        .overlay(alignment: .topTrailing) {
+                            if !model.query.isDefault {
+                                Circle()
+                                    .fill(ColorPalette.brand)
+                                    .frame(width: 8, height: 8)
+                                    .offset(x: 3, y: -3)
+                            }
+                        }
+                }
+                .accessibilityIdentifier(TransactionsAccessibility.filterButton)
+                .accessibilityLabel(Strings.Transactions.filterButton)
+                .accessibilityValue(model.query.isDefault ? "No filters" : "Filters active")
+            }
+        }
+        .sheet(isPresented: $showFilters) {
+            FilterSheetView(model: model)
+        }
     }
 
     /// The filter controls, one full-width row per dimension: the menu
-    /// label names the dimension and the trailing text shows the active
-    /// selection (All categories / Dining / …). Stacked vertically so long
-    /// selections and Dynamic Type never squash the labels.
+    private var emptyTransactions: some View {
+        EmptyStateView(
+            systemImage: Icons.card,
+            title: Strings.Transactions.emptyTitle,
+            message: Strings.Transactions.emptyMessage,
+        )
+    }
+
+    private var noResults: some View {
+        EmptyStateView(
+            systemImage: Icons.search,
+            title: Strings.Transactions.noResultsTitle,
+            message: Strings.Transactions.noResultsMessage,
+        )
+    }
+}
+
+/// The filter sheet behind the toolbar Filter button: the full filtering
+/// UI (category / status / date rows) plus Reset. Selections apply to the
+/// model immediately — the list behind the sheet updates live — and Done
+/// dismisses.
+private struct FilterSheetView: View {
+    private let model: TransactionHistoryModel
+    @Environment(\.dismiss) private var dismiss
+
+    init(model: TransactionHistoryModel) {
+        self.model = model
+    }
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section {
+                    categoryRow
+                    statusRow
+                    dateRow
+                }
+                if !model.query.isDefault {
+                    Section {
+                        Button(Strings.Transactions.resetFilters) {
+                            model.clearFilters()
+                        }
+                        .foregroundStyle(ColorPalette.brand)
+                    }
+                }
+            }
+            .listStyle(.insetGrouped)
+            .navigationTitle(Strings.Transactions.filtersSheetTitle)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(Strings.Common.done) {
+                        dismiss()
+                    }
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
+    }
+
+    // MARK: - Rows
+
+    /// One full-width row per dimension: the menu label names the dimension
+    /// and the trailing text shows the active selection (All categories /
+    /// Dining / …). Stacked vertically so long selections and Dynamic Type
+    /// never squash the labels.
     private var categoryRow: some View {
         Menu {
             checkedButton(
@@ -175,8 +253,6 @@ private struct HistoryContent: View {
         }
     }
 
-    /// One full-width filter row: dimension name on the left, current
-    /// selection and a chevron on the right.
     private func filterRowLabel(title: String, value: String) -> some View {
         HStack(spacing: Spacing.sm) {
             Text(title)
@@ -214,22 +290,6 @@ private struct HistoryContent: View {
         case .last30Days: Strings.Transactions.last30Days
         case .last90Days: Strings.Transactions.last90Days
         }
-    }
-
-    private var emptyTransactions: some View {
-        EmptyStateView(
-            systemImage: Icons.card,
-            title: Strings.Transactions.emptyTitle,
-            message: Strings.Transactions.emptyMessage,
-        )
-    }
-
-    private var noResults: some View {
-        EmptyStateView(
-            systemImage: Icons.search,
-            title: Strings.Transactions.noResultsTitle,
-            message: Strings.Transactions.noResultsMessage,
-        )
     }
 }
 
