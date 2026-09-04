@@ -187,7 +187,7 @@ public extension Transaction {
         id: "txn-007",
         cardId: "card-credit-001",
         date: Date(timeIntervalSinceReferenceDate: 795_800_000),
-        merchant: "To Avery Jordan",
+        merchant: "To Riley Chen",
         amount: -200.00,
         currency: "EUR",
         category: .transfer,

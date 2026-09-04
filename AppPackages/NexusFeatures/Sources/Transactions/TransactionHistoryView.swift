@@ -448,7 +448,13 @@ struct TransactionRowView: View {
                     .lineLimit(1)
                 HStack(spacing: Spacing.xs) {
                     Text(transaction.date.formatted(date: .abbreviated, time: .omitted))
-                    if transaction.status == .pending {
+                    if transaction.amount > 0 {
+                        // Positive amounts are refunds/credits — label them so
+                        // a green row at a merchant never reads as an error.
+                        Text(Strings.Transactions.refund)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(ColorPalette.brand)
+                    } else if transaction.status == .pending {
                         Text(Strings.Transactions.pending)
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(ColorPalette.warning)
