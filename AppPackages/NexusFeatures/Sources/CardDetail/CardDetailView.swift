@@ -139,19 +139,25 @@ private struct CardDetailContentView: View {
 
     private func controlsSection(for card: Card) -> some View {
         section(Strings.CardDetail.controlsSection) {
-            if card.status == .active || card.status == .frozen {
-                primaryControl(for: card)
+            // The controls are full-width buttons; pad them as one block so
+            // they align with the section header and the padded rows above
+            // and below (the header art and the limit rows).
+            VStack(alignment: .leading, spacing: Spacing.md) {
+                if card.status == .active || card.status == .frozen {
+                    primaryControl(for: card)
+                }
+                if model.canReportIssue {
+                    DestructiveButton(
+                        title: Strings.CardDetail.reportLostOrStolen,
+                        action: { showReportDialog = true },
+                    )
+                    .disabled(model.isExecuting)
+                    .accessibilityIdentifier(CardDetailAccessibility.reportLostOrStolen)
+                } else if card.status == .lost {
+                    lostCardContent(for: card)
+                }
             }
-            if model.canReportIssue {
-                DestructiveButton(
-                    title: Strings.CardDetail.reportLostOrStolen,
-                    action: { showReportDialog = true },
-                )
-                .disabled(model.isExecuting)
-                .accessibilityIdentifier(CardDetailAccessibility.reportLostOrStolen)
-            } else if card.status == .lost {
-                lostCardContent(for: card)
-            }
+            .padding(.horizontal, Spacing.lg)
         }
     }
 
