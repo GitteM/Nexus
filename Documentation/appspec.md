@@ -103,7 +103,10 @@
 in sync in the M4 PR.
 
 ### 2.2 Card Controls — freeze/unfreeze, lost/stolen, replacement, spending limits
-- **Status:** draft — proposed defaults marked 🔶, confirm at M5 (Day 12).
+- **Status:** M5 (Day 12) settled — behaviors below are pinned by code +
+  tests; every 🔶 draft default is resolved as marked. Day 12 ships the
+  dashboard→detail navigation, the card-control flows, and the freeze UI
+  round trip.
 - **In scope:** freeze/unfreeze, report lost/stolen, request replacement,
   spending-limit display and set. **Not in scope:** PIN management (M10),
   Apple Pay (M12), virtual cards (M14).
@@ -119,49 +122,85 @@ in sync in the M4 PR.
 
 **Flows**
 
-1. *Freeze/unfreeze* — from Card Detail, tap the status control → confirm →
-   command in-flight (`loading` state) → confirmed status arrives via the
-   status subscription; on failure show the `error` view state with recovery.
-   🔶 Default: unfreeze requires no extra auth in v1.0 (sensitive-action
-   biometric gating arrives with M10 — revisit then).
-2. *Report lost / stolen* — from Card Detail → report → card reaches `lost`
-   🔶 (there is no separate `stolen` status — decide copy + behavior at M5)
-   → user is offered a replacement.
-3. *Request replacement* — sends `requestReplacement`; the replacement card
-   becomes a managed card (CardOffer → Card path, architecture.md §4.4) and
-   is tracked on the dashboard.
+1. *Freeze/unfreeze* — from Card Detail, tap the status control → confirm
+   dialog → execute. **Settled:** the new status applies immediately on
+   execute success (repository-store rule) and the live subscription
+   reconciles idempotently when the stream frame arrives — no flicker, no
+   double signal; in-flight is bounded to the `execute` call
+   (`pendingAction` disables every control while set). A failure surfaces a
+   transient `actionError` alert and the card is unchanged; `viewState`
+   stays `.loaded`. Settled: unfreeze needs no extra auth in v1.0
+   (sensitive-action biometric gating arrives with M10 — revisit then).
+2. *Report lost / stolen* — from Card Detail → a confirm dialog offers the
+   two options → the card reaches `lost`. **Settled:** there is no separate
+   `stolen` status — `reportLost` and `reportStolen` are distinct commands
+   for the backend record but both land on `lost` (features copy: “Report
+   lost or stolen”). The lost card then offers a replacement.
+3. *Request replacement* — from the lost-card state (once), sends
+   `requestReplacement`; the demo/test backend echo (`MockCommandCoordinator`)
+   mints a replacement `CardOffer` (same type + currency) into the offers
+   store, and the dashboard's offer→card add path (architecture.md §4.4)
+   turns it into a managed card. The old card stays `lost`.
 4. *Spending limits* — per card, choose period `daily | weekly | monthly`
    and amount in the card's currency; save sends `setSpendingLimit`.
-   Dashboard/detail shows current spend vs. limit per period.
+   **Settled:** the screen shows per-period rows (fed by the model's
+   in-session ledger) plus the card-level current limit
+   (`Card.spendingLimit`), which the demo store mirrors so it survives a
+   reload. The wire has no limit-read contract yet — the ledger is
+   session-local and the backend limit stream stays an open item (§11.4).
 
 **Rules**
 
-- 🔶 Transition validity (proposed — enforce in the model, test at M5):
-  `freeze` only when `active`; `unfreeze` only when `frozen`; lost/stolen
-  reporting only when not `expired` and not already `lost`; `expired` is
-  terminal and never appears as a live update (assumption from demo mocks).
-- 🔶 Limit window semantics (calendar day vs. rolling 24 h) and whether
-  authorizations or settlements count — decide at M5 with the backend
-  contract (§11.4).
-- Every action is immediately visible in the repository store (execute()
-  applies the change so later reads reflect it) and confirmed by the event
-  stream — the UI must reconcile both without double-toasting or flicker.
+- Transition validity — **settled and enforced in `CardDetailModel`**, every
+  row of the matrix unit-tested (an invalid transition is a silent no-op and
+  the UI never offers it): `freeze` only when `active`; `unfreeze` only when
+  `frozen`; lost/stolen reporting only when the card is neither `expired`
+  nor already `lost`; `expired` is terminal and never appears as a live
+  update; `requestReplacement` only after `lost` and only once; limit
+  changes only for a working card (`active`/`frozen`) and a positive amount.
+- Limit window semantics (calendar day vs. rolling 24 h) and whether
+  authorizations or settlements count still need the backend contract (§11.4)
+  — recorded as an open item, not a v1.0 demo blocker.
+- Every action is immediately visible (execute success applies the change —
+  repository-store rule) and confirmed by the event stream; the model
+  reconciles both idempotently without double-toasting or flicker. In demo
+  mode and tests the echo is played by `MockCommandCoordinator`
+  (`MockActionRepository.onExecute` → status/limit/offers stores); the real
+  action repository stays send-only and confirmation comes from
+  `card.events.{cardId}` (architecture.md §11.4).
 
-**Acceptance criteria (M5, Day 12)**
+**Acceptance criteria (M5, Day 12) — all met:**
 
-- [ ] Freeze/unfreeze round-trip in `-demoMode`: control reflects the
-      stream-confirmed status; reload keeps the state (repository store).
-- [ ] Invalid transition is impossible from the UI and rejected by the model
-      (unit test per row of the transition matrix).
-- [ ] `AppError.cardActionFailed` renders the error state with a working
-      retry; the card status is unchanged on failure.
-- [ ] Spending-limit set persists across model reload; displayed per period
-      in card currency.
-- [ ] Report lost/stolen + replacement: dashboard tracks the new card; the
-      old one stays `lost`.
-- [ ] UI test (Swift Testing + `-demoMode`) covers the freeze flow and the
-      failure knob (`shouldThrowError` mock).
-- [ ] VoiceOver + Dynamic Type pass on all controls (features.md §UX).
+- [x] Freeze/unfreeze round-trip in `-demoMode`: control reflects the
+      stream-confirmed status; reload keeps the state (repository store) —
+      `CardDetailUITests.testFreezeRoundTripReflectsOnDetailAndDashboard`
+      (freeze on detail, dashboard chip updates, reopen keeps Frozen).
+- [x] Invalid transition is impossible from the UI and rejected by the model
+      (unit test per row of the transition matrix) — `CardDetailModelTests`
+      freeze/unfreeze/report/replacement rows.
+- [x] `AppError.cardActionFailed` renders the error state with a working
+      retry; the card status is unchanged on failure — model tests +
+      `CardDetailUITests.testFreezeFailureLeavesTheCardActive`
+      (`-demoActionState=error` knob).
+- [x] Spending-limit set persists across model reload; displayed per period
+      in card currency — model ledger tests; the demo store's card-level
+      mirror survives reload (session ledger is v1.0-scoped, see above).
+- [x] Report lost/stolen + replacement: dashboard tracks the new card; the
+      old one stays `lost` — coordinator tests (offer minted once, card
+      stays lost) + the existing dashboard add-offer path (Day 11).
+- [x] UI test (Swift Testing + `-demoMode`) covers the freeze flow and the
+      failure knob (`shouldThrowError` mock) — the two `CardDetailUITests`.
+- [x] VoiceOver + Dynamic Type pass on all controls — status/action elements
+      carry labels + identifiers; the full visual Dynamic Type/VoiceOver
+      sweep remains Day 15 human QA (Day 11 convention).
+
+**Implementation map:** `CardDetailModel` (+ `CardDetailViewState`,
+`CardDetailAccessibility`), `CardDetailView`, `Strings.CardDetail`;
+mock/test pairing `MockCommandCoordinator` + `MockActionRepository.onExecute`
+(NexusData/Mocks); dashboard card-tap → `Router` → `.cardDetail(cardID:)`;
+interim demo composition root `Nexus/DemoRootView.swift` (shared
+`DemoGraph` + `Router` + route→view mapping) — Day 14's `AppContainer`
+takes this over and this file is deleted there.
 
 **Rule of record:** Domain vocabulary + `CardActionRepositoryProtocol`
 (code), Day 12 tests (tasks.md), and this section — keep the three in sync

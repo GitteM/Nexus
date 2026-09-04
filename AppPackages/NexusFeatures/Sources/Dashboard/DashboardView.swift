@@ -1,5 +1,6 @@
 import Design
 import Entities
+import Navigation
 import SharedUI
 import SwiftUI
 
@@ -14,6 +15,7 @@ import SwiftUI
 /// `refresh()`.
 public struct DashboardView: View {
     @Environment(DashboardModel.self) private var model
+    @Environment(Router.self) private var router
 
     public init() {}
 
@@ -42,7 +44,9 @@ public struct DashboardView: View {
                 Task { await model.load() }
             }
         case .loaded:
-            DashboardContentView(model: model)
+            DashboardContentView(model: model) { card in
+                router.navigateTo(.cardDetail(cardID: card.id))
+            }
         }
     }
 }
@@ -60,9 +64,11 @@ public struct DashboardView: View {
 /// (features.md §UX, architecture.md §9.3).
 private struct DashboardContentView: View {
     private let model: DashboardModel
+    private let onSelectCard: (Card) -> Void
 
-    init(model: DashboardModel) {
+    init(model: DashboardModel, onSelectCard: @escaping (Card) -> Void) {
         self.model = model
+        self.onSelectCard = onSelectCard
     }
 
     var body: some View {
@@ -70,7 +76,7 @@ private struct DashboardContentView: View {
             VStack(alignment: .leading, spacing: Spacing.section1) {
                 if !model.cards.isEmpty {
                     section(Strings.Dashboard.cardsSection) {
-                        DashboardCarouselView(cards: model.cards)
+                        DashboardCarouselView(cards: model.cards, onSelectCard: onSelectCard)
                     }
                 }
                 if !model.offeredCards.isEmpty {
@@ -141,20 +147,24 @@ private struct DashboardContentView: View {
     #Preview("Loaded") {
         DashboardView()
             .environment(DashboardModel.preview())
+            .environment(Router())
     }
 
     #Preview("Empty") {
         DashboardView()
             .environment(DashboardModel.emptyPreview())
+            .environment(Router())
     }
 
     #Preview("Loading") {
         DashboardView()
             .environment(DashboardModel.loadingPreview())
+            .environment(Router())
     }
 
     #Preview("Error") {
         DashboardView()
             .environment(DashboardModel.errorPreview())
+            .environment(Router())
     }
 #endif

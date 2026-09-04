@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		00000000000000000000003A /* Entities in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000026 /* Entities */; };
+		00000000000000000000003B /* Dashboard in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000031 /* Dashboard */; };
+		D12C0000000000000000000A /* CardDetail in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000032 /* CardDetail */; };
 		EC893DEC30470C7E001AAE0F /* Entities in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000026 /* Entities */; };
 		EC893DED30470C7E001AAE0F /* RepositoryProtocols in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000027 /* RepositoryProtocols */; };
 		EC893DEE30470C7E001AAE0F /* ServiceProtocols in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000028 /* ServiceProtocols */; };
@@ -33,8 +36,6 @@
 		EC893E0330470C7E001AAE0F /* Navigation in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000030 /* Navigation */; };
 		EC893E0430470C7E001AAE0F /* Dashboard in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000031 /* Dashboard */; };
 		EC893E0530470C7E001AAE0F /* CardDetail in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000032 /* CardDetail */; };
-		00000000000000000000003A /* Entities in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000026 /* Entities */; };
-		00000000000000000000003B /* Dashboard in Frameworks */ = {isa = PBXBuildFile; productRef = 000000000000000000000031 /* Dashboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -128,6 +129,7 @@
 			files = (
 				00000000000000000000003A /* Entities in Frameworks */,
 				00000000000000000000003B /* Dashboard in Frameworks */,
+				D12C0000000000000000000A /* CardDetail in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -259,6 +261,7 @@
 			packageProductDependencies = (
 				000000000000000000000026 /* Entities */,
 				000000000000000000000031 /* Dashboard */,
+				000000000000000000000032 /* CardDetail */,
 			);
 			productName = NexusUITests;
 			productReference = 000000000000000000000007 /* NexusUITests.xctest */;

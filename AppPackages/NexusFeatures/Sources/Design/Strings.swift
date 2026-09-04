@@ -45,6 +45,48 @@ public enum Strings {
         public static let addOfferFailedTitle = String(localized: "Couldn't Add Card")
     }
 
+    public enum CardDetail {
+        /// Navigation title for the detail screen, e.g. "Card ••4821".
+        public static func title(lastFour: String) -> String {
+            String(localized: "Card ••\(lastFour)")
+        }
+
+        public static let loadingMessage = String(localized: "Loading your card")
+        public static let controlsSection = String(localized: "Card controls")
+        public static let freeze = String(localized: "Freeze card")
+        public static let unfreeze = String(localized: "Unfreeze card")
+        public static let freezeConfirmTitle = String(localized: "Freeze this card?")
+        public static let freezeConfirmMessage = String(localized: "New purchases and withdrawals will be blocked until you unfreeze.")
+        public static let unfreezeConfirmTitle = String(localized: "Unfreeze this card?")
+        public static let unfreezeConfirmMessage = String(localized: "The card will work again immediately.")
+        public static let reportLostOrStolen = String(localized: "Report lost or stolen")
+        public static let reportLost = String(localized: "Report lost")
+        public static let reportStolen = String(localized: "Report stolen")
+        public static let reportConfirmTitle = String(localized: "Report this card lost or stolen?")
+        public static let reportConfirmMessage = String(localized: "The card will be blocked right away. You can request a replacement next.")
+        public static let lostCardTitle = String(localized: "This card is lost")
+        public static let lostCardMessage = String(localized: "The card is blocked. Request a replacement card.")
+        public static let requestReplacement = String(localized: "Request replacement")
+        public static let requestReplacementConfirmTitle = String(localized: "Request a replacement card?")
+        public static let requestReplacementConfirmMessage = String(localized: "A replacement offer will appear on your Dashboard. The lost card stays blocked.")
+        public static let replacementRequestedTitle = String(localized: "Replacement requested")
+        public static let replacementRequestedMessage = String(localized: "Find your new card offer on the Dashboard and add it.")
+        public static let limitsSection = String(localized: "Spending limits")
+        public static let currentLimit = String(localized: "Current limit")
+        public static let notSet = String(localized: "Not set")
+
+        /// Title of the per-period set-limit sheet: "Set Daily limit".
+        public static func setLimitTitle(period: String) -> String {
+            String(localized: "Set \(period) limit")
+        }
+
+        public static let amountPlaceholder = String(localized: "Amount")
+        public static let save = String(localized: "Save")
+
+        /// Title of the alert shown when a card action fails.
+        public static let actionFailedTitle = String(localized: "Couldn't Update Card")
+    }
+
     public enum Navigation {
         public static let back = String(localized: "Back")
     }

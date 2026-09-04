@@ -111,12 +111,12 @@
 
 ### Day 12 — Card detail & controls (M5)
 
-- [ ] `CardDetailModel`/`CardDetailView` reachable via `router.navigateTo(.cardDetail(cardID:))`.
-- [ ] Freeze/unfreeze via `CardActionRepository` + `CardCommand`; report lost/stolen; request replacement; replacement-request tracking (features.md — Card Controls/Replacement Tracking).
-- [ ] Spending limits: display and set daily/weekly/monthly per card via `CardCommand.setSpendingLimit` (architecture.md §4.1, §11.4).
-- [ ] Live status updates through the `CardStatusRepository` subscription (architecture.md §9.1).
-- [ ] Tests: freeze/unfreeze/lost/replacement state transitions; error paths; UI test for the freeze flow.
-- **Verify:** Control flows green; freeze state survives model reload (persisted via repository).
+- [x] `CardDetailModel`/`CardDetailView` reachable via `router.navigateTo(.cardDetail(cardID:))`.
+- [x] Freeze/unfreeze via `CardActionRepository` + `CardCommand`; report lost/stolen; request replacement; replacement-request tracking (features.md — Card Controls/Replacement Tracking).
+- [x] Spending limits: display and set daily/weekly/monthly per card via `CardCommand.setSpendingLimit` (architecture.md §4.1, §11.4).
+- [x] Live status updates through the `CardStatusRepository` subscription (architecture.md §9.1).
+- [x] Tests: freeze/unfreeze/lost/replacement state transitions; error paths; UI test for the freeze flow.
+- **Verify:** Control flows green; freeze state survives model reload (persisted via repository). — done: full workspace TestPlan green on iPhone 17 (Domain 161 tests/20 suites, Data 166/19 — incl. new `MockCommandCoordinator` + mock-hook tests — Features 65/6 — incl. new `CardDetailModelTests` suite — 1 app smoke, 6 UI tests: 4 Dashboard + 2 new `CardDetailUITests`), zero build warnings, `swiftformat` clean. Notes for review: `MockCommandCoordinator` plays the backend echo in demo/tests (freeze→frozen etc. publishes through `MockStatusRepository.publish` + mirrors the store; `requestReplacement` mints a replacement offer for the dashboard §4.4 add path; `setSpendingLimit` persists the card-level amount) and is owned by the interim `DemoGraph` in `Nexus/DemoRootView.swift`, which now binds the shared `Router` + route→view mapping (Day 14 `AppContainer` takes over; card tap on the carousel front pushes detail); `CardDetail` product added to the `NexusUITests` target (pbxproj) for the shared accessibility namespace; appspec §2.2 records the M5 decisions (optimistic apply + idempotent stream reconcile, lost/stolen → `lost` with distinct commands, per-period limit ledger + card-level current limit; limit-window semantics deferred to the backend contract).
 
 ### Day 13 — Balances & transactions (M6)
 

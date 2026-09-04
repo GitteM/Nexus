@@ -35,4 +35,7 @@ public enum Icons {
 
     /// An item is already added / confirmed (offer rows).
     public static let added = "checkmark.circle.fill"
+
+    /// Unfreeze a frozen card (card detail).
+    public static let unfreeze = "snowflake"
 }
