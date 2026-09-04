@@ -84,10 +84,19 @@ private struct OfferCardView: View {
                     .foregroundStyle(ColorPalette.label)
                     .lineLimit(2)
                     .accessibilityAddTraits(.isHeader)
-                Text(offer.subtitle)
-                    .font(.caption)
-                    .foregroundStyle(ColorPalette.secondaryLabel)
-                    .lineLimit(3)
+                // The subtitle block always reserves two caption lines: a
+                // hidden placeholder sizes it, so every card is the same
+                // height whether the subtitle wraps once or twice.
+                ZStack(alignment: .topLeading) {
+                    Text(" \n ")
+                        .font(.caption)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .hidden()
+                    Text(offer.subtitle)
+                        .font(.caption)
+                        .foregroundStyle(ColorPalette.secondaryLabel)
+                        .lineLimit(2)
+                }
             }
 
             if isManaged {
