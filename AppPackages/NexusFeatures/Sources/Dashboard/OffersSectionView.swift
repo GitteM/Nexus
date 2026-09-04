@@ -45,6 +45,10 @@ struct OffersSectionView: View {
 
 /// One offer in the row: type art header, marketing copy, add action.
 private struct OfferCardView: View {
+    /// Corner radius of the card and its art header; they share the shape so
+    /// the header gradient matches the card's corners.
+    private static let cornerRadius: CGFloat = 16
+
     private let model: DashboardModel
     private let offer: CardOffer
 
@@ -69,19 +73,33 @@ private struct OfferCardView: View {
         } label: {
             Label(Strings.Common.add, systemImage: Icons.add)
                 .frame(maxWidth: .infinity)
+                // The spinner replaces the label while an add is in flight
+                // (never layered over it); .disabled(isAdding) blocks a
+                // redundant second tap.
+                .opacity(isAdding ? 0 : 1)
+                .overlay {
+                    if isAdding {
+                        ProgressView()
+                            .controlSize(.small)
+                            .tint(ColorPalette.brand)
+                    }
+                }
         }
         .buttonStyle(.borderedProminent)
         .tint(ColorPalette.brand)
         .disabled(isAdding)
-        .overlay {
-            if isAdding {
-                ProgressView()
-                    .controlSize(.small)
-                    .tint(ColorPalette.brand)
-            }
-        }
         .accessibilityLabel(Strings.Dashboard.addOffer(offer.title))
         .accessibilityIdentifier(DashboardAccessibility.addOffer(offer.id))
+    }
+
+    /// A geometry-only copy of `addButton`: invisible and out of VoiceOver,
+    /// but it keeps the exact button layout so a managed card reserves the
+    /// same slot as an addable one.
+    private var placeholderAddButton: some View {
+        addButton
+            .hidden()
+            .accessibilityHidden(true)
+            .disabled(true)
     }
 
     var body: some View {
@@ -99,7 +117,7 @@ private struct OfferCardView: View {
             .frame(maxWidth: .infinity)
             // `CardArtwork.gradient` is a plain fill — the rounded corners
             // come from this shape, matching the card's own radius.
-            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: Self.cornerRadius, style: .continuous))
             .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: Spacing.xs) {
@@ -109,13 +127,15 @@ private struct OfferCardView: View {
                     .lineLimit(2)
                     .accessibilityAddTraits(.isHeader)
                 // The subtitle block always reserves two caption lines: a
-                // hidden placeholder sizes it, so every card is the same
-                // height whether the subtitle wraps once or twice.
+                // hidden, accessibility-deaf placeholder sizes it, so every
+                // card is the same height whether the subtitle wraps once or
+                // twice.
                 ZStack(alignment: .topLeading) {
-                    Text(" \n ")
+                    Text(" ")
                         .font(.caption)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .fixedSize(horizontal: false, vertical: true)
                         .hidden()
+                        .accessibilityHidden(true)
                     Text(offer.subtitle)
                         .font(.caption)
                         .foregroundStyle(ColorPalette.secondaryLabel)
@@ -125,11 +145,10 @@ private struct OfferCardView: View {
 
             if isManaged {
                 // A hidden copy of the Add button reserves identical
-                // geometry, so a managed card keeps the addable card's
-                // height — the "Added" label fills the same slot.
+                // geometry, so a managed card keeps the addable card's height
+                // — the "Added" label fills the same slot.
                 ZStack {
-                    addButton
-                        .hidden()
+                    placeholderAddButton
                     Label(Strings.Common.added, systemImage: Icons.added)
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(ColorPalette.success)
@@ -144,7 +163,7 @@ private struct OfferCardView: View {
         .frame(width: 248, alignment: .leading)
         .background(
             ColorPalette.secondaryBackground,
-            in: RoundedRectangle(cornerRadius: 16, style: .continuous),
+            in: RoundedRectangle(cornerRadius: Self.cornerRadius, style: .continuous),
         )
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier(DashboardAccessibility.offer(offer.id))

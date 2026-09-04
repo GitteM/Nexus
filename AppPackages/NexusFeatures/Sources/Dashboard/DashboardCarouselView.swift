@@ -121,6 +121,8 @@ private struct CardFrontView: View {
                 Text(Strings.App.title)
                     .font(.headline.weight(.bold))
                     .tracking(1.2)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
                     .accessibilityHidden(true)
                 Spacer(minLength: Spacing.md)
                 Image(systemName: card.type.icon)
@@ -154,11 +156,12 @@ private struct CardFrontView: View {
             }
         }
         .padding(Spacing.lg)
-        // The art is a fixed-shape card, so on-art text stops growing past a
-        // legible ceiling — uncapped Dynamic Type pushes the bottom row
-        // (name, status chip) out of the card. Text that still cannot fit
-        // below the cap shrinks via `minimumScaleFactor`.
-        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+        // The art is a fixed-shape card, so on-art text stops growing at
+        // `.accessibility1` — still well into the accessibility range, but
+        // beyond it the fixed height can no longer keep the name/status row
+        // inside the card. Text below the cap that still cannot fit shrinks
+        // via `minimumScaleFactor`.
+        .dynamicTypeSize(...DynamicTypeSize.accessibility1)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .foregroundStyle(CardArtwork.foreground)
         .background(
@@ -250,6 +253,8 @@ private struct StatusChip: View {
             DashboardCarouselView(cards: Card.mockDefaults)
         }
         .background(ColorPalette.background)
-        .environment(\.sizeCategory, .accessibilityExtraExtraExtraLarge)
+        // At the cap: stresses the fixed-shape card just when the on-art
+        // text stops growing (Dynamic Type is capped at `.accessibility1`).
+        .environment(\.sizeCategory, .accessibilityExtraLarge)
     }
 #endif
