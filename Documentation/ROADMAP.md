@@ -14,11 +14,11 @@ Ship **Nexus**, a SwiftUI iOS banking app focused on cards and their features, b
 - **Architecture-first.** Follow the `architecture.md` Step 1–8 porting checklist in order. Never import upward; one `AppError`; no ViewModels, Combine, completion handlers, or `Result` at repository boundaries.
 - **Small, trunk-based changes.** One day = one branch, small conventional commits, PR at the end of the day. Branches live < 1 day; no direct pushes to `main`.
 - **Tests with the work.** Swift Testing suites beside code, aggregated in the workspace TestPlan; > 80% coverage; UI tests launch with `-demoMode`. Every milestone ends green.
-- **Staged releases.** Each release (v1.0 → v1.1 → v1.2) ends shippable: green build, green tests, docs updated.
+- **Staged releases.** Each release ends shippable: green build, green tests, docs updated.
 
 ## 3. Releases and milestones
 
-Estimated effort: **28 working days (~6 weeks)**. Milestones map 1:1 to days in [tasks.md](tasks.md).
+Estimated effort: **15 working days (~3 weeks)**. Milestones map 1:1 to days in [tasks.md](tasks.md).
 
 | Milestone | Release | Days | Goal |
 |---|---|---|---|
@@ -31,21 +31,18 @@ Estimated effort: **28 working days (~6 weeks)**. Milestones map 1:1 to days in 
 | **M6** Balances & transactions | v1.0 | 13 | Live balances, history, search/filter, details |
 | **M7** Composition root + demo mode | v1.0 | 14 | `AppContainer`, `AppState`, route→view, demo wiring |
 | **M8** v1.0 hardening | v1.0 | 15 | Full test sweep, invariants, README/CHANGELOG |
-| **M9** Payments | v1.1 | 16–17 | Credit card payments + confirmation |
-| **M10** Security | v1.1 | 18–20 | Biometric auth, app lock, session timeout, PIN |
-| **M11** v1.1 hardening | v1.1 | 21 | Security review, full sweep, docs |
-| **M12** Apple Pay + Wallet extension | v1.2 | 22–23 | In-app provisioning, issuer extension target |
-| **M13** Real-time alerts | v1.2 | 24 | Push notifications (`simctl push` demo) |
-| **M14** Virtual cards + personalization | v1.2 | 25 | Virtual card numbers, card themes |
-| **M15** Insights | v1.2 | 26 | Spending insights from transaction history |
-| **M16** v1.2 hardening | v1.2 | 27 | Integration sweep, invariants, doc updates |
-| **M17** Release readiness | v1.2 | 28 | Final QA, docs, release checklist |
 
 ### Release definitions
 
 - **v1.0 — Foundation & Core** (Days 1–15). Domain and Data layers complete; dashboard with card carousel, card controls (freeze/unfreeze, lost/stolen, replacement, spending limits), live balances, transaction history with search/filter and details; full demo mode; dark/light, haptics, accessibility. *Exit: a shippable, demoable banking core with no backend.*
-- **v1.1 — Payments & Security** (Days 16–21). Credit card payments (minimum/full/custom) with confirmation; biometric login and action approval, app lock, session timeout, secure PIN entry, PIN management. *Exit: payments and security complete and reviewed.*
-- **v1.2 — iOS Integrations, Alerts & Insights** (Days 22–28). Apple Pay provisioning, Wallet issuer extension, real-time alerts, virtual card numbers, card personalization, spending insights. *Exit: full features.md feature set shipped.*
+
+### Deferred releases (v1.1/v1.2 — removed from the active plan)
+
+Payments, security (biometrics/app lock/PIN), Apple Pay + Wallet extension,
+real-time alerts, virtual cards, and insights were previously scheduled as
+v1.1/v1.2 (Days 16–28). They are **deferred indefinitely** — `features.md`
+retains them as a catalog, and `appspec.md` §2.4–§2.7 mark the relevant
+sections deferred. Revisit after v1.0 ships.
 
 ### Milestone exit criteria (apply to every milestone)
 
@@ -63,10 +60,13 @@ Estimated effort: **28 working days (~6 weeks)**. Milestones map 1:1 to days in 
 - **Balances & transactions (v1.0):** current/available balances and credit limits, live updates; history with pending/cleared; search/filter by date, category, amount, status; transaction details.
 - **UX (v1.0):** dark/light mode, haptics, accessibility (Dynamic Type, VoiceOver).
 - **Demo mode (v1.0):** mock data, simulated network calls, in-memory state with reset-to-default; `-demoMode` / `API_ENVIRONMENT = demo`.
-- **Payments (v1.1):** credit card payments (minimum/full/custom), confirmation + receipts.
-- **Security (v1.1):** biometric login + action approval, app lock, session timeout, secure PIN entry, PIN view/change/reset.
-- **iOS integrations (v1.2):** Apple Pay provisioning (`PKAddPaymentPassViewController`), Wallet issuer extension.
-- **Alerts & insights (v1.2):** real-time push alerts (large purchases, low balance; `simctl push` in demo), virtual card numbers, card personalization, spending insights.
+
+### Deferred (previously v1.1/v1.2)
+
+- **Payments:** credit card payments (minimum/full/custom), confirmation + receipts.
+- **Security:** biometric login + action approval, app lock, session timeout, secure PIN entry, PIN view/change/reset.
+- **iOS integrations:** Apple Pay provisioning (`PKAddPaymentPassViewController`), Wallet issuer extension.
+- **Alerts & insights:** real-time push alerts, virtual card numbers, card personalization, spending insights.
 
 ### Out of scope (for now)
 
@@ -80,7 +80,6 @@ Estimated effort: **28 working days (~6 weeks)**. Milestones map 1:1 to days in 
 
 - **Demo persistence (features.md vs architecture.md).** `features.md` once said demo state persists via "UserDefaults/Keychain"; `architecture.md` says demo mode is in-memory only and durable data lives in SwiftData, credentials in Keychain. **Decision: architecture.md wins** — demo is in-memory with reset; persistence is a live-mode concern. (`features.md` now says the same.)
 - **Features with no blueprint coverage.** Payments, security, Apple Pay, Wallet extension, alerts, insights, virtual cards appear only in `features.md`; the architecture document is a pattern guide, not a scope list. **Decision:** build them on the same MV patterns, adding domain protocols (e.g., `PaymentRepositoryProtocol`, `BiometricAuthServiceProtocol`) following §4.2/§4.3.
-- **Wallet issuer extension adds a new target.** The `NexusWalletExtension` extension target goes beyond the module map in `architecture.md` §3 — update that document when it lands (Day 23).
 - **`appspec.md` is the behavior spec.** `features.md` wins on scope;
   `appspec.md` refines it with per-feature rules, flows, and acceptance
   criteria (skeleton + Card Controls example as of 2026-09-03);
@@ -90,7 +89,6 @@ Estimated effort: **28 working days (~6 weeks)**. Milestones map 1:1 to days in 
 ## 6. Risks
 
 - **No backend exists** — mitigated by demo-first design; live mode must still build and unit-test against the §11.4 contract.
-- **Wallet issuer extension complexity** (new target, app groups, device verification) — scheduled late and isolated in M12 so a slip does not block v1.0/v1.1.
 - **SwiftData on the iOS 17 floor** — hand-written `ModelActor` for background writes; iOS 18 macros are a later upgrade (architecture.md §12.3).
 - **`AsyncStream` cannot throw mid-stream** — mid-stream errors must be modeled as values (§12.3).
 - **Toolchain availability** — Xcode 26.6, iPhone 17 simulator (iOS 26.5); all gates assume these exact versions.
