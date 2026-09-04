@@ -2,10 +2,10 @@ import Entities
 import SharedUI
 import SwiftUI
 
-/// The root view: a pure function of the container's `appState`
-/// (architecture.md §11.3, tasks.md Day 14). Each state renders its own
-/// surface and injects the environments that surface needs; the session is
-/// observed through `container.sessionStatus` (`.onChange`, no polling).
+/// The root view: a pure function of the container's `appState`. Each state
+/// renders its own surface and injects the environments that surface needs;
+/// the session is observed through `container.sessionStatus` (`.onChange`,
+/// no polling).
 struct ContentView: View {
     @Environment(AppContainer.self) private var container
 

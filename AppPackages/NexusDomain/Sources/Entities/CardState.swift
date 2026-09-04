@@ -1,6 +1,6 @@
 import Foundation
 
-/// Live per-card state, decoded from the event stream (architecture.md §4.1).
+/// Live per-card state, decoded from the event stream.
 ///
 /// `CardState` is what `CardStatusRepository` subscribes to: the current
 /// lifecycle status of one card. Balances and spending limits travel as

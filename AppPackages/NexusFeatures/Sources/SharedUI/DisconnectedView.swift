@@ -1,11 +1,11 @@
 import Design
 import SwiftUI
 
-/// Full-area "session dropped" state (architecture.md §9.4, tasks.md Day 9).
+/// Full-area "session dropped" state.
 ///
 /// Shown when the live session disconnects — e.g. `AppContainer` swaps the
 /// content for this view on `.disconnected` instead of letting screens
-/// silently serve stale state (§11.2). Offers an optional reconnect action.
+/// silently serve stale state. Offers an optional reconnect action.
 public struct DisconnectedView: View {
     private let reconnect: (() -> Void)?
 

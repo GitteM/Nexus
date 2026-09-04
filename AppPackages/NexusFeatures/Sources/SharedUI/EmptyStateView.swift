@@ -1,8 +1,7 @@
 import Design
 import SwiftUI
 
-/// Empty-state surface for a screen with no content (architecture.md §9.4,
-/// tasks.md Day 9).
+/// Empty-state surface for a screen with no content.
 ///
 /// Wraps `ContentUnavailableView` (iOS 17+) so the empty state gets the
 /// platform look for free. Screens pass their own copy and an optional

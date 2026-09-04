@@ -3,25 +3,22 @@
     import RepositoryProtocols
 
     /// In-memory `CardActionRepositoryProtocol` double shared by previews,
-    /// model tests, and demo mode (architecture.md §9.5, §11.2; tasks.md
-    /// Day 8).
+    /// model tests, and demo mode.
     ///
     /// The mock records every executed `CardCommand` so model tests can
     /// assert what the UI asked the backend to do (`executedCommands`,
     /// `executeCallCount`). The resulting state change is *not* applied
     /// here: in the live architecture the new state arrives back on the
-    /// per-card event channel through the status repository (architecture.md
-    /// §11.4), so a mock action repository that silently mutated status
-    /// would model a backend that does not exist. Demo/test wiring that
-    /// needs the follow-up state pushes it through
-    /// `MockStatusRepository.publish` (the tests on Day 12 exercise that
-    /// pairing).
+    /// per-card event channel through the status repository, so a mock
+    /// action repository that silently mutated status would model a backend
+    /// that does not exist. Demo/test wiring that needs the follow-up state
+    /// pushes it through `MockStatusRepository.publish`.
     ///
     /// The `onExecute` hook is the concrete seam for that pairing: demo
     /// wiring (and tests that want the full round trip) installs a closure
     /// that pushes the follow-up state through the shared store graph — see
-    /// `MockCommandCoordinator` (tasks.md Day 12). The hook fires only on a
-    /// successful `execute`, so a failing command never echoes state.
+    /// `MockCommandCoordinator`. The hook fires only on a successful
+    /// `execute`, so a failing command never echoes state.
     ///
     /// Failure knobs: `shouldThrowError` throws `thrownError` (default
     /// `.cardActionFailed` — the model's action-error state),
@@ -37,7 +34,7 @@
         /// Called after a successful `execute` with the command that ran.
         /// The repository itself stays a pure recorder — this is the hook
         /// demo/test composition uses to publish the backend's follow-up
-        /// state (architecture.md §11.4).
+        /// state.
         public var onExecute: (@MainActor (CardCommand) -> Void)?
 
         public private(set) var executeCallCount = 0

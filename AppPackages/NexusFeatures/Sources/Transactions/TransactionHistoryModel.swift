@@ -3,9 +3,8 @@ import Foundation
 import Observation
 import RepositoryProtocols
 
-/// Owns one card's account-activity screen: the live balance header and the
-/// searchable/filterable transaction history (architecture.md §9.1,
-/// tasks.md Day 13).
+/// Owns one card's account-activity screen: the live balance header and
+/// the searchable/filterable transaction history.
 ///
 /// The "M" of MV for a card's financial activity: it loads the balance and
 /// the transaction feed through their repositories, subscribes to both live
@@ -17,7 +16,7 @@ import RepositoryProtocols
 /// later frame from either subscription updates state in place (no polling)
 /// and never blanks the screen. A failed fetch lands `.error` with the
 /// standard retry path; a failed *subscription* is dropped silently so one
-/// dead channel never takes the screen down (§9.1).
+/// dead channel never takes the screen down.
 @MainActor
 @Observable
 public final class TransactionHistoryModel {
@@ -120,7 +119,7 @@ public final class TransactionHistoryModel {
     /// Starts the balance and transaction-feed subscriptions. Each task is
     /// held weakly against the model (via the box) and ends when the model
     /// or the task is cancelled — a subscription that cannot be set up is
-    /// dropped silently (§9.1).
+    /// dropped silently.
     private func startSubscriptions() {
         subscriptionBox.tasks.forEach { $0.cancel() }
         subscriptionBox.tasks.removeAll()
@@ -155,7 +154,7 @@ public final class TransactionHistoryModel {
 }
 
 /// Owns the screen's subscription tasks so they can be cancelled when the
-/// model goes away (§9.1). Nonisolated so its `deinit` can cancel without
+/// model goes away. Nonisolated so its `deinit` can cancel without
 /// touching main-actor state.
 private final class ActivitySubscriptionBox {
     var tasks: [Task<Void, Never>] = []

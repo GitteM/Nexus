@@ -1,7 +1,6 @@
 import Foundation
 
-/// Grouping for `AppError` cases: analytics, logging, and policy decisions
-/// (architecture.md §5).
+/// Grouping for `AppError` cases: analytics, logging, and policy decisions.
 ///
 /// Encoded by its raw value on the wire, e.g. `"network"`.
 public enum ErrorCategory: String, Codable, CaseIterable, Sendable, Equatable {

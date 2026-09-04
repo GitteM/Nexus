@@ -7,14 +7,13 @@ import SwiftUI
     import Mocks
 #endif
 
-/// The offers row on the loaded dashboard (architecture.md §9.3, §4.4
-/// example; tasks.md Day 11).
+/// The offers row on the loaded dashboard.
 ///
 /// A horizontal scroll of offer cards. Each card shows the offer's type as
 /// art and its marketing copy, with an explicit add action that runs
-/// `DashboardModel.addOffer` — the offer becomes a managed card through
-/// `CardRepositoryProtocol.addCard` (architecture.md §4.4: one model
-/// method over one repository) and disappears from the catalog.
+/// `DashboardModel.addOffer` — one model method over one repository — so
+/// the offer becomes a managed card through `CardRepositoryProtocol.addCard`
+/// and disappears from the catalog.
 ///
 /// Row states mirror the model's signals:
 /// - offer already managed (its id is in `cards`) → an "Added" checkmark,
@@ -171,10 +170,10 @@ private struct OfferCardView: View {
 }
 
 #if DEBUG
-    /// Loads the section's model before showing it. `DashboardView` owns the
-    /// `load()` call in its `.task` (architecture.md §9.1); a section preview
-    /// has no such parent, so without this `offeredCards` stays empty and the
-    /// row renders nothing.
+    /// Loads the section's model before showing it. `DashboardView` owns
+    /// the `load()` call in its `.task`; a section preview has no such
+    /// parent, so without this `offeredCards` stays empty and the row
+    /// renders nothing.
     private struct OffersSectionPreview: View {
         private let model: DashboardModel
 

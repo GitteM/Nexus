@@ -1,8 +1,7 @@
 #if DEBUG
     import Entities
 
-    /// Plays the backend's command echo for demo mode and tests (tasks.md
-    /// Day 12, architecture.md §11.4, appspec §2.2).
+    /// Plays the backend's command echo for demo mode and tests.
     ///
     /// The live contract: a `CardCommand` is sent on `card.commands`, the
     /// backend applies it, and the resulting state returns on
@@ -22,13 +21,12 @@
     ///   so `getCards` reflects it after a reload (the per-period ledger
     ///   itself lives in the screen model for the session).
     /// - `.requestReplacement` publishes a replacement `CardOffer` into the
-    ///   offers store; the dashboard's offer→card add path (architecture.md
-    ///   §4.4) turns it into a managed card. The old card stays `lost`.
+    ///   offers store; the dashboard's offer→card add path turns it into a
+    ///   managed card. The old card stays `lost`.
     ///
     /// Commands arrive through `MockActionRepository.onExecute`, which fires
     /// only after a successful `execute` — the failure knobs throw first, so
-    /// a rejected command never echoes state (appspec §2.2: the card is
-    /// unchanged on failure).
+    /// a rejected command never echoes state.
     @MainActor
     public final class MockCommandCoordinator {
         private let actionRepository: MockActionRepository

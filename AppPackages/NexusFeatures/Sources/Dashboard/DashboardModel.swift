@@ -2,14 +2,13 @@ import Entities
 import Observation
 import RepositoryProtocols
 
-/// Owns the dashboard screen's state and its live data (architecture.md
-/// §9.1, tasks.md Day 10).
+/// Owns the dashboard screen's state and its live data.
 ///
 /// The "M" of MV: it orchestrates the three repositories the dashboard
 /// reads (managed cards, available offers, per-card status), publishes an
 /// explicit `DashboardViewState`, and owns the per-card live subscription
 /// `Task`s that keep card status current. It carries no business rules and
-/// no view logic — views switch on `viewState` (§9.3) and trigger one-shot
+/// no view logic — views switch on `viewState` and trigger one-shot
 /// work through `.task` / `.refreshable`; the model never spawns one-shot
 /// tasks itself.
 ///
@@ -29,7 +28,7 @@ public final class DashboardModel {
     public private(set) var offeredCards: [CardOffer] = []
     /// Latest live state per managed card id, filled by the subscriptions
     /// `load()` starts. `cards` also reflects the effective status so views
-    /// can read either surface (§9.1).
+    /// can read either surface.
     public private(set) var cardStates: [String: CardState] = [:]
 
     /// Offer ids with an `addOffer` call in flight — the offers row disables
@@ -51,7 +50,7 @@ public final class DashboardModel {
     private let statusRepository: CardStatusRepositoryProtocol
 
     /// One long-lived task per subscribed card; cancelled and pruned when
-    /// the card leaves the list or the model deallocates (§9.1).
+    /// the card leaves the list or the model deallocates.
     private let subscriptionTasks = SubscriptionTaskStore()
     private var isLoadInFlight = false
 
@@ -93,9 +92,8 @@ public final class DashboardModel {
 
         do {
             // Both fetches run in parallel through `async let`: the
-            // repository protocols are `Sendable` (§4.2), so the child
-            // tasks may carry them; the results are still published
-            // together below.
+            // repository protocols are `Sendable`, so the child tasks may
+            // carry them; the results are still published together below.
             async let fetchedCards = cardRepository.getCards()
             async let fetchedOffers = offersRepository.getAvailableOffers()
             let (cards, offers) = try await (fetchedCards, fetchedOffers)
@@ -116,9 +114,9 @@ public final class DashboardModel {
         }
     }
 
-    // MARK: - Adding an offer (architecture.md §4.4: one model method over
+    // MARK: - Adding an offer
 
-    // one repository — `CardRepositoryProtocol.addCard`)
+    // One model method over one repository: `CardRepositoryProtocol.addCard`.
 
     /// Turns an accepted offer into a managed card: the repository creates
     /// the card (the duplicate rule's owner — it throws
@@ -160,7 +158,7 @@ public final class DashboardModel {
 
     /// Reconciles the per-card subscription tasks with the current card
     /// list: cancels tasks for cards that left the list and starts one for
-    /// each card that does not have one yet (§9.1).
+    /// each card that does not have one yet.
     private func syncSubscriptions(to cards: [Card]) {
         let managedCardIDs = Set(cards.map(\.id))
 
@@ -180,7 +178,7 @@ public final class DashboardModel {
     /// held weakly against the model: it writes through `apply` while the
     /// model lives and ends when the model (or the card's task) is
     /// cancelled — a subscription that cannot be set up is dropped silently
-    /// so one bad channel never takes the dashboard down (§9.1 sketch).
+    /// so one bad channel never takes the dashboard down.
     private func startLiveSubscription(for card: Card) {
         let cardID = card.id
         let task = Task { @MainActor [weak self] in
@@ -197,7 +195,7 @@ public final class DashboardModel {
 
     /// Records one live `CardState`: updates the raw state ledger and the
     /// matching card's effective status so the UI stays current without a
-    /// reload (§9.1: subscriptions write straight into observable state).
+    /// reload — subscriptions write straight into observable state.
     private func apply(_ state: CardState) {
         cardStates[state.cardId] = state
         guard let index = cards.firstIndex(where: { $0.id == state.cardId }) else { return }
@@ -206,7 +204,7 @@ public final class DashboardModel {
 }
 
 /// Owns the per-card subscription tasks so they can be cancelled when the
-/// model goes away (§9.1: models own and cancel their subscription tasks).
+/// model goes away (models own and cancel their subscription tasks).
 ///
 /// Deliberately nonisolated: a `deinit` cannot touch a main-actor-isolated
 /// property, so the cancellation lives here, in the store's own `deinit`,

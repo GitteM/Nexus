@@ -1,23 +1,22 @@
 import Foundation
 import Observation
 
-/// Owns the navigation stack as plain state (architecture.md §8, tasks.md
-/// Day 9).
+/// Owns the navigation stack as plain state.
 ///
 /// The router has no knowledge of views: it holds a stack of `Route` values
 /// that the app target binds to a `NavigationStack` path, and exposes the
 /// push/pop actions views call. Screens reach it through
 /// `@Environment(Router.self)`; detail views that must stay router-agnostic
-/// take an `onNavigate: (Route) -> Void` closure instead (§8, §9.3).
+/// take an `onNavigate: (Route) -> Void` closure instead.
 ///
-/// Main-actor isolated like every `@Observable` model (§9.1): the stack is
+/// Main-actor isolated like every `@Observable` model: the stack is
 /// UI state read and written from SwiftUI, so Observation access stays on
 /// the main actor.
 @MainActor
 @Observable
 public final class Router {
     /// The current navigation path, root first. Bind to a `NavigationStack`
-    /// path in the app target (§11.3).
+    /// path in the app target.
     public var routes: [Route]
 
     public init(routes: [Route] = []) {

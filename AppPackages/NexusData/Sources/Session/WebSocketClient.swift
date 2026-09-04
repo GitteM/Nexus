@@ -1,19 +1,17 @@
 import Entities
 import Foundation
 
-/// The transport seam behind `APISessionManager` (architecture.md §6.2).
+/// The transport seam behind `APISessionManager`.
 ///
 /// `APISessionManager` is the one SDK-touching object and the only type that
 /// sees this seam. It exists so tests can substitute a fake "SDK client"
-/// (tasks.md Day 5) while the real `URLSessionWebSocketTask` plumbing stays
-/// in one place. The seam is plain async/await — no delegate callbacks, no
-/// `DispatchQueue`, no `@unchecked Sendable` — and carries `AppError` across
-/// the boundary.
+/// while the real `URLSessionWebSocketTask` plumbing stays in one place. The
+/// seam is plain async/await — no delegate callbacks, no `DispatchQueue`, no
+/// `@unchecked Sendable` — and carries `AppError` across the boundary.
 ///
 /// The whole transport stack is main-actor confined: URLSession's async APIs
 /// do their work off-main and only resume here, so actor isolation is the
-/// synchronization (architecture.md §6.2) and nothing needs `Sendable`
-/// gymnastics.
+/// synchronization and nothing needs `Sendable` gymnastics.
 @MainActor
 protocol WebSocketClientProtocol {
     /// Opens the connection and confirms the open handshake.
@@ -39,13 +37,13 @@ protocol WebSocketClientProtocol {
 }
 
 /// Default transport: `URLSessionWebSocketTask` over a plain `URLSession`
-/// (architecture.md §6.2, "URLSession + async/await ... no SDK required").
+/// — URLSession + async/await, no SDK required.
 ///
 /// Uses only URLSession's async surface — there is no delegate object, so
 /// nothing here needs `@unchecked Sendable`. URLSession offers no async
 /// "did open" event, so the open handshake is confirmed with a ping, bridged
 /// into `withCheckedThrowingContinuation` (the canonical callback → async
-/// bridge; architecture.md §6.2). The upgrade request carries a connection
+/// bridge). The upgrade request carries a connection
 /// timeout, so a dead endpoint fails `connect()` instead of hanging on the
 /// ping forever.
 ///
@@ -67,7 +65,7 @@ final class URLSessionWebSocketClient: WebSocketClientProtocol {
     /// - Parameters:
     ///   - url: WebSocket endpoint (`ws`/`wss`).
     ///   - headers: Extra headers for the upgrade request — the auth-token
-    ///     slot for the backend plug-in contract (architecture.md §11.4).
+    ///     slot for the backend plug-in contract.
     init(url: URL, headers: [String: String] = [:]) {
         self.url = url
         self.headers = headers

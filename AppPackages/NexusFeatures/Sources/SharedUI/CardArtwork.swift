@@ -3,7 +3,7 @@ import Entities
 import SwiftUI
 
 /// The card-front artwork: a per-`CardType` gradient with a fixed on-art
-/// foreground (architecture.md §9.4, tasks.md Day 11).
+/// foreground.
 ///
 /// The card front is a *physical object*: its art and text colors are fixed
 /// values tuned to hold contrast in both appearances (dark/light support
@@ -11,8 +11,8 @@ import SwiftUI
 /// members, not from changing the card). Color literals stay in the token
 /// layer (`ColorPalette.CardArt`); this type is the one composition point
 /// that knows how a `CardType` looks, so the dashboard carousel and any
-/// later card screen (Card Detail, Day 12) render the same art without
-/// duplicating the switch.
+/// later card screen (Card Detail) render the same art without duplicating
+/// the switch.
 public enum CardArtwork {
     /// The art background for one card type.
     public static func gradient(for type: CardType) -> LinearGradient {

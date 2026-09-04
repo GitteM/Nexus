@@ -1,39 +1,39 @@
 import Foundation
 
-/// Bounded in-memory cache for ephemeral live state (architecture.md §6.4,
-/// tasks.md Day 7: "`CacheManager` actor (NSCache, 50 items / 25 MB, TTL) for
-/// ephemeral live state").
+/// Bounded in-memory cache for ephemeral live state: the `CacheManager`
+/// actor backs the store with `NSCache` (50 items / 25 MB budget) and adds
+/// per-entry TTLs.
 ///
 /// Two guarantees, enforced at different layers:
 ///
 /// - **Policy that must be deterministic** — the 50-item cap and per-entry
 ///   TTL — is enforced by the actor itself, mirroring the per-id LRU policy
-///   `CardStateDataSource` already uses (architecture.md §6.1): the actor
-///   keeps a recency list, evicts the least-recently-used entry past the
-///   cap, and drops expired entries on read (an expired entry is reported
-///   missing and removed, never served).
+///   `CardStateDataSource` already uses: the actor keeps a recency list,
+///   evicts the least-recently-used entry past the cap, and drops expired
+///   entries on read (an expired entry is reported missing and removed,
+///   never served).
 /// - **Memory pressure** is delegated to an `NSCache` (`countLimit` 50,
-///   `totalCostLimit` 25 MB) as the architecture prescribes. `NSCache`
-///   eviction is a *hint* — it may drop entries early under memory pressure
-///   and its byte accounting is approximate — so callers must treat the
-///   cache as lossy either way, which an ephemeral cache is allowed to be.
-///   Callers storing large payloads pass an estimated byte `cost` so the
-///   byte budget means something; the default cost of 1 keeps tiny values
-///   out of the byte accounting.
+///   `totalCostLimit` 25 MB). `NSCache` eviction is a *hint* — it may drop
+///   entries early under memory pressure and its byte accounting is
+///   approximate — so callers must treat the cache as lossy either way,
+///   which an ephemeral cache is allowed to be. Callers storing large
+///   payloads pass an estimated byte `cost` so the byte budget means
+///   something; the default cost of 1 keeps tiny values out of the byte
+///   accounting.
 ///
-/// The cache stores **display-safe data only** (architecture.md §6.4): last
-/// four digits, balances, preferences. Never card numbers, CVV, or auth
-/// tokens — credentials belong in `KeychainWrapper`.
+/// The cache stores **display-safe data only**: last four digits, balances,
+/// preferences. Never card numbers, CVV, or auth tokens — credentials
+/// belong in `KeychainWrapper`.
 ///
 /// Why not `@unchecked Sendable` to share the `NSCache`? The actor *is* the
 /// synchronization: `NSCache` is not `Sendable`, so it never leaves this
-/// actor's isolation domain (architecture.md §6.2: actor isolation is the
-/// synchronization — no `DispatchQueue` barriers, no `@unchecked Sendable`).
+/// actor's isolation domain — no `DispatchQueue` barriers, no `@unchecked
+/// Sendable`.
 public actor CacheManager {
-    /// Default maximum number of cached entries (architecture.md §6.4: 50).
+    /// Default maximum number of cached entries (50).
     public static let defaultItemLimit = 50
 
-    /// Default byte budget for cached entries (architecture.md §6.4: 25 MB).
+    /// Default byte budget for cached entries (25 MB).
     public static let defaultTotalCostLimit = 25 * 1024 * 1024
 
     /// An `NSCache` requires class instances; the box keeps the value opaque
@@ -123,8 +123,7 @@ public actor CacheManager {
     ///
     /// Reading an expired entry removes it — an expired cache entry is never
     /// served and never retained (the same rule
-    /// `OffersDataSource.freshSnapshot` applies to stale offers,
-    /// architecture.md §6.1).
+    /// `OffersDataSource.freshSnapshot` applies to stale offers).
     public func value<Value: Sendable>(forKey key: String) -> Value? {
         guard let box = cache.object(forKey: key as NSString) else {
             // The backing cache dropped the entry (memory pressure). Clean up

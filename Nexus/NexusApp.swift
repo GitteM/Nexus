@@ -2,7 +2,7 @@ import SwiftUI
 
 @main
 struct NexusApp: App {
-    /// One container for the app's whole life (architecture.md §11.1).
+    /// One container for the app's whole life.
     @State private var appContainer = AppContainer()
 
     var body: some Scene {

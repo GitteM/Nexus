@@ -2,17 +2,17 @@ import Entities
 import Foundation
 import ServiceProtocols
 
-/// The `JSONDecoder` AppError extension (architecture.md §6.4).
+/// The `JSONDecoder` AppError extension.
 ///
 /// Every decode in the Data layer goes through `decode(_:from:logger:context:)`
 /// so that no `DecodingError` (and no raw `Error`) ever crosses the data
 /// source boundary: each kind is logged with the operation context and
-/// rethrown as `AppError.deserializationError(type:details:)`. This is the
-/// mechanism behind the Day 6 verify note "every decode error is an AppError".
+/// rethrown as `AppError.deserializationError(type:details:)` — every decode
+/// error is an AppError.
 ///
 /// It lives in `DataSources` — the consumers of wire JSON — and is reused by
-/// `Repositories` (REST DTO decoding, tasks.md Day 7) and the demo mocks,
-/// which both depend on this target.
+/// `Repositories` (REST DTO decoding) and the demo mocks, which both depend
+/// on this target.
 public extension JSONDecoder {
     /// Decodes `data` as `T`, logging failures and rethrowing them as
     /// `AppError.deserializationError`.
@@ -22,8 +22,8 @@ public extension JSONDecoder {
     ///   - data: The raw wire bytes.
     ///   - logger: Receives a `.error` message with the context and reason.
     ///   - context: Human-readable description of the decode site (e.g.
-    ///     "CardState from card.events payload") — must stay display-safe
-    ///     (architecture.md §7.2: no full card numbers, CVV, or tokens).
+    ///     "CardState from card.events payload") — must stay display-safe:
+    ///     no full card numbers, CVV, or tokens.
     func decode<T: Decodable>(
         _ type: T.Type,
         from data: Data,

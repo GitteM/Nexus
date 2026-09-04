@@ -2,9 +2,9 @@ import Foundation
 import Security
 
 /// The Keychain Services surface `KeychainWrapper` needs — the seam that
-/// keeps the real `SecItem*` calls in one place (architecture.md §6.2
-/// pattern, the same way `WebSocketClientProtocol` confines
-/// `URLSessionWebSocketTask` for the session manager, tasks.md Day 5).
+/// keeps the real `SecItem*` calls in one place, the same way
+/// `WebSocketClientProtocol` confines `URLSessionWebSocketTask` for the
+/// session manager.
 ///
 /// **Why the seam exists.** SwiftData unit tests run on the iOS simulator in
 /// standalone XCTest runners that are not signed with an
@@ -14,8 +14,7 @@ import Security
 /// duplicate→update path, status mapping) be tested on every platform with a
 /// scripted/emulating fake, while `SecurityKeychainSession` — the thin real
 /// implementation — is exercised by a macOS-gated integration suite whose
-/// process is not subject to the entitlement restriction. Day 20's
-/// Keychain-backed PIN store will reuse this seam.
+/// process is not subject to the entitlement restriction.
 ///
 /// The surface mirrors the four `SecItem*` calls with plain `[String: Any]`
 /// attributes (bridged to `CFDictionary` by the real session) so a fake can

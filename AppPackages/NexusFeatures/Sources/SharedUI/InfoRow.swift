@@ -1,8 +1,8 @@
 import Design
 import SwiftUI
 
-/// Informational row for hints and neutral context (architecture.md §9.4,
-/// tasks.md Day 9) — e.g. "replacement cards keep their number".
+/// Informational row for hints and neutral context — e.g. "replacement
+/// cards keep their number".
 ///
 /// The icon and tint are fixed; screens pass the copy.
 public struct InfoRow: View {

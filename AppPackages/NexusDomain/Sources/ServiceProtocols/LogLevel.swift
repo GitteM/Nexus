@@ -1,8 +1,8 @@
-/// Severity taxonomy for log messages (architecture.md §4.3).
+/// Severity taxonomy for log messages.
 ///
 /// Domain defines its own level enum instead of importing OSLog; the
 /// Data-layer `LoggingService` maps these to `OSLogType` behind
-/// `LoggerProtocol` (architecture.md §7.2).
+/// `LoggerProtocol`.
 public enum LogLevel: Sendable, Equatable {
     case debug
     case info

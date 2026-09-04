@@ -71,7 +71,7 @@ public extension TransactionCategory {
     }
 }
 
-/// A card transaction, decoded from the event stream (architecture.md §4.1).
+/// A card transaction, decoded from the event stream.
 ///
 /// `amount` is signed: negative for purchases and debits, positive for
 /// refunds and credits. `location` is optional — present only when the

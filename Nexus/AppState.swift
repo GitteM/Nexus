@@ -1,7 +1,7 @@
 import Entities
 import Foundation
 
-/// The app-level UI state (architecture.md §11.3, tasks.md Day 14).
+/// The app-level UI state.
 ///
 /// Mirrors the screen-level view states at the top: the root view is a pure
 /// function of this enum, and each state injects its own environment.

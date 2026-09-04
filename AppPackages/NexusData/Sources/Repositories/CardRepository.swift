@@ -2,27 +2,25 @@ import Entities
 import Persistence
 import RepositoryProtocols
 
-/// Domain-facing implementation of `CardRepositoryProtocol`
-/// (architecture.md §6.3, tasks.md Day 7): the managed-card repository the
-/// models call (architecture.md §4.4 example — the dashboard adds an offer
-/// via `CardRepository.addCard`).
+/// Domain-facing implementation of `CardRepositoryProtocol`: the
+/// managed-card repository the models call (the dashboard adds an offer via
+/// `CardRepository.addCard`).
 ///
 /// The repository is thin: it holds the `SwiftDataCardRepository` durable
-/// store (architecture.md §6.4) and adds only the rules the Domain protocol
-/// contract states — offer validation and duplicate rejection on `addCard`
-/// — plus boundary validation on `removeCard`. The store maps `@Model`
+/// store and adds only the rules the Domain protocol contract states — offer
+/// validation and duplicate rejection on `addCard` — plus boundary
+/// validation on `removeCard`. The store maps `@Model`
 /// records to domain `Card` structs and wraps SwiftData errors as
 /// `AppError.persistenceError`; neither `@Model` types nor raw errors cross
 /// this boundary.
 ///
-/// **Provisional offer → card mapping.** Until the §11.4 issuance REST
+/// **Provisional offer → card mapping.** Until the issuance REST
 /// contract lands (a backend that provisions a real card and returns its
 /// PAN tail), a locally accepted offer is recorded as a `Card` that shares
 /// the offer's id, starts `.active`, and carries empty holder/`lastFourDigits`
 /// — the fields only the issuance endpoint can fill. No card number is ever
-/// fabricated, stored, or logged (architecture.md §6.4). Demo mode does not
-/// use this path at all: demo offers become cards through the Day 8 mock
-/// repositories.
+/// fabricated, stored, or logged. Demo mode does not use this path at all:
+/// demo offers become cards through the mock repositories.
 public struct CardRepository: CardRepositoryProtocol, Sendable {
     private let store: SwiftDataCardRepository
 
@@ -45,7 +43,7 @@ public struct CardRepository: CardRepositoryProtocol, Sendable {
     /// - Throws `AppError.validationError` when the offer cannot be
     ///   persisted (empty id or currency).
     /// - Throws `AppError.cardAlreadyExists` when an offer with the same id
-    ///   is already managed (architecture.md §4.2 contract).
+    ///   is already managed.
     public func addCard(_ offer: CardOffer) async throws -> Card {
         try Self.validate(offer)
         let card = Self.provisionedCard(from: offer)

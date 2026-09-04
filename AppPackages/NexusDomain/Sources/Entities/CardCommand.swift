@@ -1,7 +1,6 @@
 import Foundation
 
-/// An outgoing card action sent through `CardActionRepository`
-/// (architecture.md §4.1).
+/// An outgoing card action sent through `CardActionRepository`.
 ///
 /// `amount` and `period` carry the payload for `.setSpendingLimit` and are
 /// nil for every other type. Use the static factories (`freeze`,

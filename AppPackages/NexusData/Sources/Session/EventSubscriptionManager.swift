@@ -1,15 +1,15 @@
 import Entities
 import ServiceProtocols
 
-/// The session surface data sources are given (architecture.md §6.1–6.2):
-/// connect/disconnect/events/send, with no SDK types and no session-status
-/// plumbing. `EventSubscriptionManager` is the production backing; the demo
-/// mocks conform to the same protocol (tasks.md Day 8).
+/// The session surface data sources are given: connect/disconnect/events/send,
+/// with no SDK types and no session-status plumbing.
+/// `EventSubscriptionManager` is the production backing; the demo mocks
+/// conform to the same protocol.
 ///
 /// The protocol is `Sendable` so actor-based data sources can store it;
 /// conformers are `@MainActor` classes and mark the conformance
-/// `@preconcurrency` (the §12.3 #8 pattern — an isolated conformance cannot
-/// carry `Sendable`). Callers therefore hop to the main actor.
+/// `@preconcurrency` (an isolated conformance cannot carry `Sendable`).
+/// Callers therefore hop to the main actor.
 public protocol EventSubscriptionManagerProtocol: Sendable {
     func connect() async throws
     func disconnect()
@@ -17,8 +17,7 @@ public protocol EventSubscriptionManagerProtocol: Sendable {
     func send(to channel: String, payload: String) async throws
 }
 
-/// Thin facade over any `SessionManagerProtocol` (architecture.md §6.2,
-/// tasks.md Day 5).
+/// Thin facade over any `SessionManagerProtocol`.
 ///
 /// Data sources receive this facade — never the session manager or the SDK
 /// behind it. It adds no behavior; it narrows the surface data sources can

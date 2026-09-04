@@ -3,14 +3,13 @@ import Foundation
 import ServiceProtocols
 import Session
 
-/// Stateless one-shot source for outgoing card actions (architecture.md §6.1,
-/// tasks.md Day 6).
+/// Stateless one-shot source for outgoing card actions.
 ///
-/// `CardActionRepositoryProtocol` (Day 7) validates and adds operation
-/// context on top of this struct. The struct itself encodes a `CardCommand`
-/// and sends it on the `card.commands` channel (architecture.md §11.4: the
-/// resulting state arrives back on the live per-card event channel, which is
-/// what `CardStateDataSource` streams).
+/// `CardActionRepositoryProtocol` validates and adds operation context on
+/// top of this struct. The struct itself encodes a `CardCommand` and sends
+/// it on the `card.commands` channel; the resulting state arrives back on
+/// the live per-card event channel, which is what `CardStateDataSource`
+/// streams.
 ///
 /// `Sendable`: stateless, safe to pass across concurrency domains — both
 /// collaborators are `Sendable` protocol requirements.

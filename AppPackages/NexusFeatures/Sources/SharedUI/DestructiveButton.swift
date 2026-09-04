@@ -1,8 +1,7 @@
 import Design
 import SwiftUI
 
-/// Full-width destructive action button (architecture.md §9.4, tasks.md
-/// Day 9) — e.g. "Report lost or stolen".
+/// Full-width destructive action button — e.g. "Report lost or stolen".
 ///
 /// Uses the destructive button role so system behaviors (confirmation
 /// dialogs, accessibility) treat it correctly, tinted with the palette's

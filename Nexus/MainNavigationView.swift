@@ -5,9 +5,8 @@ import Navigation
 import SwiftUI
 import Transactions
 
-/// The navigation shell for the ready app (architecture.md §8, §11.3,
-/// tasks.md Day 14): binds the shared `Router.routes` to a
-/// `NavigationStack` and maps routes to views.
+/// The navigation shell for the ready app: binds the shared `Router.routes`
+/// to a `NavigationStack` and maps routes to views.
 ///
 /// The route → view mapping lives in the app target — the only place that
 /// knows both routes and views. Screen models come from the container

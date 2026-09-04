@@ -2,12 +2,11 @@ import DataSources
 import Entities
 import RepositoryProtocols
 
-/// Domain-facing implementation of `CardOffersRepositoryProtocol`
-/// (architecture.md §6.3, tasks.md Day 7): a thin wrapper over the
-/// `OffersDataSource` actor.
+/// Domain-facing implementation of `CardOffersRepositoryProtocol`: a thin
+/// wrapper over the `OffersDataSource` actor.
 ///
 /// The data source owns the TTL-bounded `card.offers` snapshot cache and
-/// the live stream (architecture.md §6.1); this repository is the protocol
+/// the live stream; this repository is the protocol
 /// boundary models receive. It adds no validation or business rules — the
 /// offer list has no per-call input to validate, and an empty result is a
 /// legitimate "no fresh offers known" state, not an error (a stale snapshot
@@ -24,8 +23,8 @@ public struct CardOffersRepository: CardOffersRepositoryProtocol, Sendable {
     }
 
     /// The offers available right now: the current fresh snapshot, or `[]`
-    /// when none is cached (architecture.md §6.1 — `[]` means "no fresh
-    /// offers known", a valid empty state for the dashboard row).
+    /// when none is cached. `[]` means "no fresh offers known" — a valid
+    /// empty state for the dashboard row.
     public func getAvailableOffers() async -> [CardOffer] {
         await source.getAvailableOffers()
     }

@@ -3,10 +3,9 @@
     import RepositoryProtocols
 
     /// In-memory `TransactionRepositoryProtocol` double shared by previews,
-    /// model tests, and demo mode (architecture.md §9.5, §11.2; tasks.md
-    /// Day 13).
+    /// model tests, and demo mode.
     ///
-    /// Mirrors the live contract (architecture.md §4.2, §6.1):
+    /// Mirrors the live contract:
     /// - `getTransactions` answers the current newest-first list for a
     ///   card.
     /// - `subscribeToTransactions` yields the current list first, then the

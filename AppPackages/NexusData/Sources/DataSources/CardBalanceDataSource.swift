@@ -4,14 +4,14 @@ import ServiceProtocols
 import Session
 
 /// Live balance source: the actor that owns one card's balance event
-/// stream and a per-card cache (architecture.md §6.1, tasks.md Day 13).
+/// stream and a per-card cache.
 ///
 /// `BalanceRepositoryProtocol` (thin validation/error wrapper) exposes this
 /// actor. It subscribes on `card.events.{cardId}` and parses only the
 /// balance-shaped payloads on that channel — status/transaction/limit
 /// frames decode as `Balance` failures and are skipped, keeping one source
 /// of truth per kind while other data sources parse their own kinds from
-/// the same channel (the `CardStateDataSource` contract, §6.1).
+/// the same channel.
 ///
 /// Contract notes (mirror `CardStateDataSource`):
 /// - A returned stream means "subscribed": `subscribeToBalance` throws on
@@ -23,13 +23,13 @@ import Session
 ///   to the per-id cache *before* it is yielded, so once a balance has been
 ///   observed, `getBalance` answers it.
 /// - The per-id cache is bounded (`cacheLimit`, default 50) so a
-///   long-lived source never grows without bound (architecture.md §6.4).
+///   long-lived source never grows without bound.
 public actor CardBalanceDataSource {
     private let eventSubscriptionManager: any EventSubscriptionManagerProtocol
     private let logger: any LoggerProtocol
     private let decoder = JSONDecoder()
 
-    /// Default cap for the per-id cache (architecture.md §6.4: 50 items).
+    /// Default cap for the per-id cache (50 items).
     public static let defaultCacheLimit = 50
 
     private let cacheLimit: Int
@@ -85,8 +85,7 @@ public actor CardBalanceDataSource {
         let channel = EventChannels.cardEvents(cardId: cardId)
         let eventManager = eventSubscriptionManager
         // The session facade is `@MainActor` (its `events(for:)` is a sync
-        // protocol requirement), so registration hops to the main actor
-        // (architecture.md §12.3 #8).
+        // protocol requirement), so registration hops to the main actor.
         let source = await MainActor.run {
             eventManager.events(for: channel)
         }
@@ -115,7 +114,7 @@ public actor CardBalanceDataSource {
 
     // MARK: - Parsing
 
-    /// Normalizes one wire payload into a `Balance` (§6.1 `parseEvent`).
+    /// Normalizes one wire payload into a `Balance`.
     ///
     /// Any payload that is not a balance frame (other entity kinds on the
     /// shared per-card channel, malformed JSON) is logged and skipped — a

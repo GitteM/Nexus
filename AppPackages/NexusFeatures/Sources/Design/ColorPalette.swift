@@ -1,7 +1,6 @@
 import SwiftUI
 
-/// Semantic color namespace for Nexus UI (architecture.md §9.4, tasks.md
-/// Day 9).
+/// Semantic color namespace for Nexus UI.
 ///
 /// System-backed members (`background`, `label`, …) resolve dynamically for
 /// dark/light appearance. The brand and semantic accents are fixed values

@@ -2,13 +2,12 @@ import Design
 import Entities
 import SwiftUI
 
-/// Full-area error state for one screen (architecture.md §9.4, tasks.md
-/// Day 9).
+/// Full-area error state for one screen.
 ///
 /// Renders an `AppError` through its user-facing surfaces —
 /// `errorDescription` as the headline, `recoverySuggestion` as the
 /// guidance — and offers an optional retry action. Screen views switch their
-/// `.error` view state to this component (§9.3).
+/// `.error` view state to this component.
 public struct ErrorView: View {
     private let error: AppError
     private let retry: (() -> Void)?

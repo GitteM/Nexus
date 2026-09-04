@@ -3,15 +3,14 @@
     import RepositoryProtocols
 
     /// In-memory `CardRepositoryProtocol` double shared by previews, model
-    /// tests, and demo mode (architecture.md §9.5, §11.2; tasks.md Day 8).
+    /// tests, and demo mode.
     ///
     /// Mocks exist once, in `NexusData/Mocks`, behind `#if DEBUG`: SwiftUI
     /// previews, unit tests, UI tests, and demo mode all exercise the real
     /// orchestration code over these doubles, and a release build compiles
     /// the module to empty.
     ///
-    /// Success-path contract mirrors the live repository (architecture.md
-    /// §4.2, §6.3):
+    /// Success-path contract mirrors the live repository:
     /// - `getCards()` returns the seeded list in seed order.
     /// - `addCard(_:)` records the offer and returns a provisional `Card`
     ///   exactly like `CardRepository` does — the offer's id, `.active`,
@@ -21,7 +20,7 @@
     /// - `removeCard(cardId:)` removes the card; removing an unknown id is a
     ///   no-op (idempotent, mirroring the store's delete semantics).
     ///
-    /// Failure knobs (architecture.md §9.5, §10): `shouldThrowError` throws
+    /// Failure knobs: `shouldThrowError` throws
     /// `thrownError` (default `.apiConnectionFailed` — the model error
     /// state), `shouldNeverComplete` parks the call forever (the model
     /// loading state; never-complete wins over throwing so a loading mock
@@ -77,10 +76,8 @@
 
         /// Replaces the stored card with `card` (matched by id) so later
         /// reads reflect the change — the demo's way to persist a command
-        /// result (e.g. a new spending limit) into the repository store
-        /// (appspec §2.2: "execute() applies the change so later reads
-        /// reflect it"). No-op for an unknown id, mirroring `removeCard`'s
-        /// idempotence.
+        /// result (e.g. a new spending limit) into the repository store.
+        /// No-op for an unknown id, mirroring `removeCard`'s idempotence.
         public func updateCard(_ card: Card) {
             updateCardCallCount += 1
             guard let index = cards.firstIndex(where: { $0.id == card.id }) else {
@@ -90,9 +87,9 @@
         }
 
         /// The provisional local record for an accepted offer — mirrors
-        /// `CardRepository.provisionedCard` so demo behavior matches live
-        /// (architecture.md §6.3: only the issuance endpoint can fill the
-        /// PAN tail; no card number is ever fabricated).
+        /// `CardRepository.provisionedCard` so demo behavior matches live:
+        /// only the issuance endpoint can fill the PAN tail, so no card
+        /// number is ever fabricated.
         private static func provisionedCard(from offer: CardOffer) -> Card {
             Card(
                 id: offer.id,

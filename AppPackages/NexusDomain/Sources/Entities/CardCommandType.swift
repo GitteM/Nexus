@@ -5,7 +5,7 @@ import Foundation
 /// Encoded by its raw value on the wire, e.g. `"freeze"`. Unlike
 /// `CardType`/`CardStatus`, unknown wire values decode to `.unknown` instead
 /// of throwing — the stub keeps the app running when the backend ships an
-/// action this version does not know yet (architecture.md §12.3).
+/// action this version does not know yet.
 public enum CardCommandType: String, Codable, CaseIterable, Sendable, Equatable {
     case freeze
     case unfreeze

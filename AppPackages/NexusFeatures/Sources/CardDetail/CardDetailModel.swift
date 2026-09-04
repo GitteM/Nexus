@@ -3,19 +3,18 @@ import Foundation
 import Observation
 import RepositoryProtocols
 
-/// Owns the card detail screen's state and its card's live data
-/// (architecture.md §9.1, tasks.md Day 12).
+/// Owns the card detail screen's state and its card's live data.
 ///
 /// The "M" of MV for one managed card: it loads the card through the card
 /// repository (there is no get-by-id on the boundary — the model fetches
-/// the list and picks its card, appspec §2.2), subscribes to that card's
-/// live status channel, and executes the card-control commands (freeze /
+/// the list and picks its card), subscribes to that card's live status
+/// channel, and executes the card-control commands (freeze /
 /// unfreeze / report lost / report stolen / request replacement /
 /// set spending limit) through the action repository. It carries no view
-/// logic — views switch on `viewState` (§9.3) and trigger one-shot work
+/// logic — views switch on `viewState` and trigger one-shot work
 /// through `.task`; the model never spawns one-shot tasks itself.
 ///
-/// Action semantics (settled at M5, appspec §2.2):
+/// Action semantics:
 /// - *Validity* is checked in the model: `freeze` only when `active`,
 ///   `unfreeze` only when `frozen`, lost/stolen reporting only when the
 ///   card is neither `expired` nor already `lost`, replacement only after
@@ -30,10 +29,10 @@ import RepositoryProtocols
 ///   card is unchanged and the error surfaces as a transient
 ///   `actionError` — the screen's `viewState` stays `.loaded`.
 /// - *Confirmation* arrives through `CardStatusRepositoryProtocol`
-///   subscriptions (architecture.md §11.4); demo/test wiring plays the
-///   backend echo (`MockCommandCoordinator`). The status ledger and the
-///   card's effective status update together and idempotently, so an
-///   optimistic apply followed by the stream frame causes no flicker.
+///   subscriptions; demo/test wiring plays the backend echo
+///   (`MockCommandCoordinator`). The status ledger and the card's
+///   effective status update together and idempotently, so an optimistic
+///   apply followed by the stream frame causes no flicker.
 @MainActor
 @Observable
 public final class CardDetailModel {
@@ -47,9 +46,9 @@ public final class CardDetailModel {
     /// The latest live status frame for the card, from the subscription.
     public private(set) var cardState: CardState?
 
-    /// Per-period spending limits set in this session (appspec §2.2: the
-    /// wire has no limit-read contract yet, so the model keeps the ledger
-    /// it writes and the demo store mirrors the card-level amount).
+    /// Per-period spending limits set in this session. The wire has no
+    /// limit-read contract yet, so the model keeps the ledger it writes
+    /// and the demo store mirrors the card-level amount.
     public private(set) var spendingLimits: [SpendingLimit] = []
 
     /// The command currently executing, or `nil` when idle. Views disable
@@ -178,14 +177,14 @@ public final class CardDetailModel {
 
     /// Reports the card as stolen (transition → `lost`; the `reportStolen`
     /// command keeps the backend record distinct even though the domain has
-    /// no separate `stolen` status, appspec §2.2).
+    /// no separate `stolen` status).
     public func reportStolen() async {
         await performStatusTransition(.reportStolen, allowed: canReportIssue, resultingStatus: .lost)
     }
 
     /// Requests a replacement for a lost card (transition: `lost` →
     /// replacement requested, once). The old card stays `lost`; the
-    /// replacement arrives as an offer on the dashboard (§4.4 add path).
+    /// replacement arrives as an offer on the dashboard.
     public func requestReplacement() async {
         guard canRequestReplacement, !isExecuting else { return }
         pendingAction = .requestReplacement
@@ -276,7 +275,7 @@ public final class CardDetailModel {
     /// current state first, then updates. The task is held weakly against
     /// the model (via the subscription box) and ends when the model (or the
     /// task) is cancelled — a subscription that cannot be set up is dropped
-    /// silently (§9.1).
+    /// silently.
     private func startStatusSubscription() {
         subscriptionBox.task?.cancel()
         // Locals, not implicit-self reads: the closure holds the model
@@ -297,7 +296,7 @@ public final class CardDetailModel {
 
     /// Records one live `CardState`: updates the raw status ledger and the
     /// card's effective status. Idempotent against the optimistic apply of
-    /// the same status, so confirmation frames never flicker the UI (§9.1).
+    /// the same status, so confirmation frames never flicker the UI.
     private func apply(_ state: CardState) {
         cardState = state
         guard state.cardId == cardID else { return }
@@ -306,7 +305,7 @@ public final class CardDetailModel {
 
     /// A copy of `card` with a new card-level current limit (the `Card`
     /// entity's single spending-limit slot; per-period values live in the
-    /// model's ledger until the backend defines the wire read, §2.2).
+    /// model's ledger until the backend defines the wire read).
     private static func copy(_ card: Card, spendingLimit: Decimal?) -> Card {
         Card(
             id: card.id,
@@ -321,7 +320,7 @@ public final class CardDetailModel {
 }
 
 /// Owns the card's subscription task so it can be cancelled when the model
-/// goes away (§9.1: models own and cancel their subscription tasks).
+/// goes away (models own and cancel their subscription tasks).
 ///
 /// Deliberately nonisolated: a `deinit` cannot touch a main-actor-isolated
 /// property, so the cancellation lives here, in the box's own `deinit`,

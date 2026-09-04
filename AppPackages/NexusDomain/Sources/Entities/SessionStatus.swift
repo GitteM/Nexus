@@ -1,10 +1,10 @@
 import Foundation
 
-/// The connection state of the app session (architecture.md §4.1).
+/// The connection state of the app session.
 ///
 /// Exposed by `SessionManagerProtocol.sessionStatus` and consumed by the UI:
-/// `SessionStatusIndicator` renders it and `AppContainer` reacts to changes
-/// (architecture.md §9.4, §11.2). `.connecting` covers the in-flight
+/// `SessionStatusIndicator` renders it and `AppContainer` reacts to changes.
+/// `.connecting` covers the in-flight
 /// `connect()` handshake; `.error` means the last attempt failed and the
 /// session is not usable.
 public enum SessionStatus: String, Codable, CaseIterable, Sendable, Equatable {

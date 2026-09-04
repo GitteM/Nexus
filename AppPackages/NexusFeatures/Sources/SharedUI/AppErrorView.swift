@@ -2,12 +2,11 @@ import Design
 import Entities
 import SwiftUI
 
-/// App-level fatal/startup error state (architecture.md §9.4, tasks.md
-/// Day 9).
+/// App-level fatal/startup error state.
 ///
 /// Composes the shared `ErrorView` under an app-brand header. `AppContainer`
 /// shows this when the container cannot be built or the session enters an
-/// unrecoverable `.error` state (§11.2).
+/// unrecoverable `.error` state.
 public struct AppErrorView: View {
     private let error: AppError
     private let retry: (() -> Void)?

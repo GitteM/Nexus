@@ -3,15 +3,14 @@ import Entities
 import SharedUI
 import SwiftUI
 
-/// The swipeable card carousel on the loaded dashboard (architecture.md
-/// §9.3, tasks.md Day 11).
+/// The swipeable card carousel on the loaded dashboard.
 ///
 /// A paged `TabView`: one `CardFrontView` per managed card, in repository
-/// order (no reordering in v1.0), with custom page dots below the art. The
+/// order (no reordering), with custom page dots below the art. The
 /// front reads the card's *effective* status, so live `CardState` updates
 /// from the model's subscriptions repaint the status chip without a reload.
 ///
-/// Accessibility (features.md §UX, tasks.md Day 11): each front is one
+/// Accessibility: each front is one
 /// combined element — label "Credit card ending in 4821, Active", value
 /// "Card 1 of 6" — with an adjustable action (VoiceOver swipe up/down) to
 /// move between pages; the decorative dots are hidden from VoiceOver
@@ -24,9 +23,9 @@ struct DashboardCarouselView: View {
     /// The pager keeps the physical-card aspect ratio (ISO/IEC 7810 ID-1:
     /// 85.6 × 53.98 mm), so the page height derives from the container
     /// width and the card holds its shape on every device instead of
-    /// scaling a point constant (architecture.md §9.4). The art is fixed
-    /// per appearance; text inside compresses via `minimumScaleFactor`
-    /// rather than growing the card.
+    /// scaling a point constant. The art is fixed per appearance; text
+    /// inside compresses via `minimumScaleFactor` rather than growing the
+    /// card.
     private static let cardAspectRatio: CGFloat = 85.6 / 53.98
 
     /// Page-dot metrics (points): the active dot is a wide capsule, the
@@ -98,13 +97,13 @@ struct DashboardCarouselView: View {
     }
 }
 
-/// The front of one managed card, drawn as card art (architecture.md §9.4,
-/// tasks.md Day 11): a per-type gradient, brand wordmark, masked number
-/// (display-safe: only the last four digits, never the PAN), cardholder,
-/// and a status chip that reflects the card's current lifecycle status.
+/// The front of one managed card, drawn as card art: a per-type gradient,
+/// brand wordmark, masked number (display-safe: only the last four digits,
+/// never the PAN), cardholder, and a status chip that reflects the card's
+/// current lifecycle status.
 ///
 /// The front is a stylized physical card, so its art is fixed per
-/// appearance while the screen around it adapts (features.md §UX).
+/// appearance while the screen around it adapts.
 private struct CardFrontView: View {
     private let card: Card
     private let pageIndex: Int
@@ -199,8 +198,8 @@ private struct CardFrontView: View {
     }
 
     /// Display-safe number area: only the tail is shown, and a provisioned
-    /// card with no number yet (Day 7 `addCard`) falls back to its type
-    /// name — no PAN is ever fabricated.
+    /// card with no number yet (added via `addCard`) falls back to its
+    /// type name — no PAN is ever fabricated.
     private var maskedNumber: String {
         card.lastFourDigits.isEmpty
             ? card.type.displayName.uppercased()

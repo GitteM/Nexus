@@ -2,8 +2,7 @@ import Entities
 import Foundation
 import SwiftData
 
-/// Hand-written `ModelActor` for `StoredCard` background writes
-/// (architecture.md §6.4, tasks.md Day 7).
+/// Hand-written `ModelActor` for `StoredCard` background writes.
 ///
 /// The iOS 17 floor has no `@ModelActor` macro (that lands with iOS 18), so
 /// the actor is written by hand: it owns one `ModelContext` on the
@@ -24,7 +23,7 @@ import SwiftData
 ///
 /// Every method wraps thrown SwiftData errors as
 /// `AppError.persistenceError(operation:details:)` — no raw `Error` crosses
-/// this boundary (architecture.md §5).
+/// this boundary.
 actor StoredCardModelActor {
     private let context: ModelContext
 
@@ -108,9 +107,7 @@ actor StoredCardModelActor {
     // MARK: - Error wrapping
 
     /// Runs `body`, rethrowing `AppError` untouched and mapping anything
-    /// else to `AppError.persistenceError` with the operation context
-    /// (architecture.md §5: repositories wrap lower-level errors and
-    /// augment the operation context).
+    /// else to `AppError.persistenceError` with the operation context.
     private func wrap<T>(_ operation: String, _ body: () throws -> T) throws -> T {
         do {
             return try body()

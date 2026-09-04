@@ -21,7 +21,7 @@ public extension SpendingLimitPeriod {
 }
 
 /// A per-card spending limit for one period, decoded from the event stream
-/// and set through `CardCommand.setSpendingLimit` (architecture.md §4.1).
+/// and set through `CardCommand.setSpendingLimit`.
 public struct SpendingLimit: Codable, Sendable, Equatable {
     public let cardId: String
     public let period: SpendingLimitPeriod

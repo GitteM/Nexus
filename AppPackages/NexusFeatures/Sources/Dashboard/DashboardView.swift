@@ -4,12 +4,12 @@ import Navigation
 import SharedUI
 import SwiftUI
 
-/// The dashboard screen (architecture.md §9.3, tasks.md Day 10–11).
+/// The dashboard screen.
 ///
 /// A thin switch over the model's `viewState`: the loading / error / empty
 /// surfaces come from SharedUI components and the loaded screen delegates
 /// to `DashboardContentView`. The model comes from the environment — the
-/// composition root injects it (§11.3), it is never created in a view — and
+/// composition root injects it, it is never created in a view — and
 /// one-shot work is view-triggered: `.task` fires `load()` on every appear
 /// (idempotent once content is on screen) and `.refreshable` forces
 /// `refresh()`.
@@ -51,17 +51,15 @@ public struct DashboardView: View {
     }
 }
 
-/// The loaded dashboard (tasks.md Day 11): the swipeable card carousel and
-/// the offers row, each under a section header, in one scroll view. This is
-/// the content restyle of the Day 10 scaffold; the model contract it
-/// renders — `cards`, `offeredCards`, and effective card status folded in
-/// from live `CardState` updates — is unchanged.
+/// The loaded dashboard: the swipeable card carousel and the offers row,
+/// each under a section header, in one scroll view. It renders the model's
+/// `cards`, `offeredCards`, and effective card status folded in from live
+/// `CardState` updates.
 ///
 /// The action surfaces live here: adding an offer is the dashboard's one
-/// card action in M4, so success and failure haptics ride the model's
+/// card action, so success and failure haptics ride the model's
 /// `lastAddedCardID` / `addOfferError` signals, and a failed add surfaces
-/// the `AppError` in an alert without touching the loaded content
-/// (features.md §UX, architecture.md §9.3).
+/// the `AppError` in an alert without touching the loaded content.
 private struct DashboardContentView: View {
     private let model: DashboardModel
     private let onSelectCard: (Card) -> Void
@@ -116,8 +114,8 @@ private struct DashboardContentView: View {
     }
 
     /// The alert's dismissal clears the model's transient error so the next
-    /// failure can present again (architecture.md §9.1: views mutate model
-    /// state through model methods).
+    /// failure can present again (views mutate model state through model
+    /// methods).
     private var addErrorPresented: Binding<Bool> {
         Binding(
             get: { model.addOfferError != nil },
@@ -129,8 +127,8 @@ private struct DashboardContentView: View {
         )
     }
 
-    /// Alert copy reuses the `AppError` surfaces: the headline first, the
-    /// recovery guidance below (ErrorView order, §5).
+    /// Alert copy reuses the `AppError` surfaces, matching `ErrorView`'s
+    /// order: the headline first, the recovery guidance below.
     private func alertMessage(for error: AppError) -> String {
         var parts: [String] = []
         if let description = error.errorDescription {

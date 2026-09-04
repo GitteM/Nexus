@@ -3,15 +3,14 @@ import Foundation
 import Observation
 import RepositoryProtocols
 
-/// Owns the transaction detail screen for one transaction (architecture.md
-/// §9.1, tasks.md Day 13).
+/// Owns the transaction detail screen for one transaction.
 ///
 /// The screen is a static deep view: it fetches the card's feed once and
 /// picks the transaction by id (there is no get-by-id on the boundary).
 /// A stale deep link whose transaction left the feed lands in `.missing`
 /// (an empty state, not an error); a failed fetch lands `.error` with the
 /// standard retry path. Live updates are unnecessary on a snapshot detail
-/// screen in v1.0 — the list screen above stays live.
+/// screen — the list screen above stays live.
 @MainActor
 @Observable
 public final class TransactionDetailModel {

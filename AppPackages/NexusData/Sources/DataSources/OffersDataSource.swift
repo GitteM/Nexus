@@ -3,9 +3,8 @@ import Foundation
 import ServiceProtocols
 import Session
 
-/// Offer-list source with a TTL-bounded in-memory cache (architecture.md
-/// §6.1, tasks.md Day 6: "offers cache drops stale entries after a few
-/// minutes").
+/// Offer-list source with a TTL-bounded in-memory cache: the offers cache
+/// drops stale entries after a few minutes.
 ///
 /// The backend owns the offer list and publishes full-list replacements on
 /// `card.offers` (an `OffersSnapshotDTO` envelope). Every snapshot replaces
@@ -18,10 +17,8 @@ import Session
 ///   `[]` means "no fresh offers known" (empty is a valid UI state, and the
 ///   dashboard treats it as an empty offers row).
 /// - `subscribeToOffers` yields the current fresh list first, then every
-///   replacement (architecture.md §4.2 `CardOffersRepositoryProtocol`: "the
-///   stream yields the current offers first, then updates as they change").
-///   The seed is buffered before the stream is returned, so the first
-///   element is deterministic.
+///   replacement. The seed is buffered before the stream is returned, so
+///   the first element is deterministic.
 /// - Delivery is the happens-before edge for the cache: a snapshot is
 ///   written *before* it is yielded, so once a list has been observed on a
 ///   subscription, `getAvailableOffers` answers it. (An event freshly
@@ -30,8 +27,7 @@ import Session
 /// - Malformed snapshots are logged and skipped; a decode failure never
 ///   clears or half-applies the cache.
 public actor OffersDataSource {
-    /// Default freshness window for a cached snapshot (architecture.md §6.1:
-    /// "a few minutes").
+    /// Default freshness window for a cached snapshot (a few minutes).
     public static let defaultTTL: TimeInterval = 5 * 60
 
     private let eventSubscriptionManager: any EventSubscriptionManagerProtocol
@@ -75,7 +71,7 @@ public actor OffersDataSource {
         // The session facade is `@MainActor` (its `events(for:)` is a sync
         // protocol requirement), so registration hops to the main actor
         // before touching it — actor-isolated callers cannot invoke the
-        // main-actor witness directly (architecture.md §12.3 #8).
+        // main-actor witness directly.
         let eventManager = eventSubscriptionManager
         let source = await MainActor.run {
             eventManager.events(for: EventChannels.offers)
@@ -114,10 +110,9 @@ public actor OffersDataSource {
 
     // MARK: - Parsing
 
-    /// Normalizes one `card.offers` payload into the decoded offer list
-    /// (architecture.md §6.1 `parseEvent`). Any frame that is not a valid
-    /// snapshot — malformed JSON, a missing `offers` key, an offer that does
-    /// not decode — is logged and skipped.
+    /// Normalizes one `card.offers` payload into the decoded offer list.
+    /// Any frame that is not a valid snapshot — malformed JSON, a missing
+    /// `offers` key, an offer that does not decode — is logged and skipped.
     func parseEvent(_ event: BankingEvent) -> [CardOffer]? {
         guard let data = event.payload.data(using: .utf8) else {
             logger.log(

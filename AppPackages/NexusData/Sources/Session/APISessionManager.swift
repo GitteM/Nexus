@@ -32,8 +32,7 @@ private struct ReceiveTaskHandle: Sendable {
     }
 }
 
-/// URLSession-backed implementation of `SessionManagerProtocol`
-/// (architecture.md §6.2, tasks.md Day 5).
+/// URLSession-backed implementation of `SessionManagerProtocol`.
 ///
 /// `APISessionManager` is the app's one SDK-touching object. It lives on the
 /// main actor because `sessionStatus` is consumed directly by UI; actor
@@ -52,7 +51,7 @@ private struct ReceiveTaskHandle: Sendable {
 ///   socket (no barrier queue; the registry *is* the queue).
 /// - `disconnect()` and transport drops finish every active stream. Streams
 ///   created after that point queue until the next successful `connect()`;
-///   models re-subscribe on reload (architecture.md §9.1), so streams are
+///   models re-subscribe on reload, so streams are
 ///   never silently revived across a teardown.
 ///
 /// Threading notes: every method here runs on the main actor, but consumer
@@ -66,9 +65,8 @@ private struct ReceiveTaskHandle: Sendable {
 /// Conformance note: `SessionManagerProtocol` inherits `Sendable`, and a
 /// main-actor-isolated conformance cannot carry `Sendable`, so the
 /// conformance is marked `@preconcurrency` (Swift 6.2 conformance-isolation
-/// diagnostics; the §12.3 #8 pattern used by the Day 4 test doubles). The
-/// runtime check is satisfied because every caller of these methods is on the
-/// main actor.
+/// diagnostics). The runtime check is satisfied because every caller of
+/// these methods is on the main actor.
 @MainActor
 @Observable
 public final class APISessionManager: @preconcurrency SessionManagerProtocol {
@@ -150,8 +148,8 @@ public final class APISessionManager: @preconcurrency SessionManagerProtocol {
 
     /// Returns a stream of events on `channel`.
     ///
-    /// Channel names follow the app/backend contract (architecture.md §11.4:
-    /// `card.events.{cardId}`, `card.offers`, ...). The manager does not
+    /// Channel names follow the app/backend contract (`card.events.{cardId}`,
+    /// `card.offers`, ...). The manager does not
     /// validate names client-side — an unknown or empty channel simply
     /// receives nothing until the backend pushes on it. Subscriptions are
     /// registered regardless of connection state and start receiving once
@@ -159,7 +157,7 @@ public final class APISessionManager: @preconcurrency SessionManagerProtocol {
     /// queue). Each call returns an independent stream; ending it (consumer
     /// cancellation or deinit) unregisters exactly that subscriber.
     public func events(for channel: String) -> AsyncStream<BankingEvent> {
-        assert(!channel.isEmpty, "events(for:) requires a non-empty channel (architecture.md §11.4)")
+        assert(!channel.isEmpty, "events(for:) requires a non-empty channel")
         let (stream, continuation) = AsyncStream<BankingEvent>.makeStream()
         register(continuation, for: channel)
         return stream
@@ -275,8 +273,7 @@ public final class APISessionManager: @preconcurrency SessionManagerProtocol {
         else {
             // Malformed frames are dropped here. Contextualized
             // deserialization errors (with logging) land with the
-            // `JSONDecoder` AppError extension (architecture.md §6.4,
-            // tasks.md Day 6).
+            // `JSONDecoder` AppError extension.
             return nil
         }
         return event

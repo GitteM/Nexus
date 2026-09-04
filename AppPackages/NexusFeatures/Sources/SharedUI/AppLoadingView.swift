@@ -1,10 +1,9 @@
 import Design
 import SwiftUI
 
-/// App-level launch/bootstrapping state (architecture.md §9.4, tasks.md
-/// Day 9).
+/// App-level launch/bootstrapping state.
 ///
-/// `AppContainer` shows this while `createDependencies()` runs (§11.2) and
+/// `AppContainer` shows this while `createDependencies()` runs and
 /// while the app is in `.loading`.
 public struct AppLoadingView: View {
     public init() {}

@@ -15,10 +15,9 @@ import Transactions
     import Mocks
 #endif
 
-/// The resolved repository/model graph for one mode (architecture.md
-/// §11.2). Every property is the *protocol* surface models already use, so
-/// live and demo differ only in how this struct is built — consumers never
-/// switch on the mode.
+/// The resolved repository/model graph for one mode. Every property is the
+/// *protocol* surface models already use, so live and demo differ only in
+/// how this struct is built — consumers never switch on the mode.
 struct AppDependencies {
     let session: any SessionManagerProtocol
     let cardRepository: CardRepositoryProtocol
@@ -40,10 +39,9 @@ struct AppDependencies {
 /// separate static factories (the demo one is DEBUG-only) so the mode
 /// switch happens exactly once, at the composition root.
 enum AppDependenciesFactory {
-    /// Live mode: the real Data-layer graph over the API session
-    /// (architecture.md §11.4). `nil` when no base URL is configured —
-    /// `AppContainer.start()` reports the configuration gap instead of
-    /// building a session to nowhere.
+    /// Live mode: the real Data-layer graph over the API session. `nil`
+    /// when no base URL is configured — `AppContainer.start()` reports the
+    /// configuration gap instead of building a session to nowhere.
     @MainActor
     static func live(baseURL: URL?, logger: LoggingService) -> AppDependencies? {
         guard let baseURL else {
@@ -77,8 +75,8 @@ enum AppDependenciesFactory {
             CardRepository(store: SwiftDataCardRepository(container: container))
         } else {
             // No persistence available (e.g. entitlements in a bare test
-            // runner): nothing to manage yet. Recorded in appspec §2.9;
-            // the live backend contract (§11.4) defines the real path.
+            // runner): nothing to manage yet. The live backend contract
+            // defines the real path.
             EmptyCardRepository()
         }
 
@@ -105,7 +103,7 @@ enum AppDependenciesFactory {
 /// initialized (e.g. entitlements missing in a bare test runner). It never
 /// fabricates data — `getCards()` is empty and adds are accepted but not
 /// persisted, mirroring the provisional-add contract until the real
-/// persistence path is available (appspec §2.9).
+/// persistence path is available.
 private struct EmptyCardRepository: CardRepositoryProtocol {
     func getCards() async throws -> [Card] {
         []

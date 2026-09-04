@@ -2,8 +2,7 @@
     import Entities
     import Mocks
 
-    /// Shared-mock factories for the card detail screen (architecture.md
-    /// §9.5, tasks.md Day 12).
+    /// Shared-mock factories for the card detail screen.
     ///
     /// Every factory builds the *real* `CardDetailModel` over the shared
     /// `Mock*Repository` doubles, so previews, unit tests, and demo mode all
@@ -11,8 +10,8 @@
     /// pre-loaded: `CardDetailView`'s `.task` fires `load()` when a preview
     /// appears, exactly as in the running app.
     ///
-    /// Release builds compile this file to nothing (the `Mocks` module
-    /// itself is empty outside DEBUG, Day 8).
+    /// Release builds compile this file to nothing: the `Mocks` module
+    /// itself is empty outside DEBUG.
     public extension CardDetailModel {
         /// Default demo content for one card: `load()` lands in `.loaded`
         /// with the mock card set and the standard per-card status seeds.

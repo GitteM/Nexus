@@ -1,7 +1,6 @@
 import CoreGraphics
 
-/// The spacing scale shared by every Nexus screen (architecture.md §9.4,
-/// tasks.md Day 9).
+/// The spacing scale shared by every Nexus screen.
 ///
 /// Small values (`xs…xl`) pad content inside a block; the `section` values
 /// separate distinct content blocks (carousel → offers → limits, etc.).

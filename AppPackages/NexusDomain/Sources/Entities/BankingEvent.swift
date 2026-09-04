@@ -1,10 +1,10 @@
 import Foundation
 
 /// A transport-neutral event value: the wire channel plus the raw JSON
-/// payload (architecture.md §4.1).
+/// payload.
 ///
 /// `BankingEvent` is what `SessionManagerProtocol` streams and what
-/// `CardStateDataSource.parseEvent` (Day 6) decodes into typed entities —
+/// `CardStateDataSource.parseEvent` decodes into typed entities —
 /// `CardState`, `Balance`, `Transaction`, `SpendingLimit`. The payload stays
 /// a string here so the Domain never touches the wire format.
 public struct BankingEvent: Codable, Sendable, Equatable {

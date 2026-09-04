@@ -1,8 +1,7 @@
 import Entities
 import Foundation
 
-/// The stable accessibility-identifier contract for the card detail screen
-/// (architecture.md §9.4, tasks.md Day 12).
+/// The stable accessibility-identifier contract for the card detail screen.
 ///
 /// Views set `.accessibilityIdentifier` from this namespace and the UI tests
 /// (`NexusUITests`) reference the same helpers — never literal strings in
@@ -39,6 +38,6 @@ public enum CardDetailAccessibility {
         "cardDetail.limit.\(period.rawValue)"
     }
 
-    /// The "Transactions" activity row (Day 13 entry to account activity).
+    /// The "Transactions" activity row, the entry to account activity.
     public static let transactions = "cardDetail.transactions"
 }

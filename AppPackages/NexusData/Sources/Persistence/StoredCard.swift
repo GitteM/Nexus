@@ -2,8 +2,7 @@ import Entities
 import Foundation
 import SwiftData
 
-/// SwiftData record for one managed card (architecture.md §6.4, tasks.md
-/// Day 7).
+/// SwiftData record for one managed card.
 ///
 /// **`@Model` classes never leave NexusData.** `StoredCard` is `internal` to
 /// the `Persistence` target on purpose: the only code that ever touches it is
@@ -11,7 +10,7 @@ import SwiftData
 /// Features see only `Card` structs; this class is neither `Sendable` nor
 /// `Codable` and is never returned from a repository method.
 ///
-/// **Banking-specific storage rule** (architecture.md §6.4): the record holds
+/// **Banking-specific storage rule**: the record holds
 /// only what the domain `Card` itself carries — display-safe identity data
 /// (`lastFourDigits` at most, never a full PAN). Card numbers, CVV, and auth
 /// tokens are never persisted anywhere in plaintext; credentials belong in
@@ -19,7 +18,7 @@ import SwiftData
 ///
 /// Enum `CardType`/`CardStatus` values are stored by raw string so the schema
 /// stays primitive (SwiftData stores the raw value, matching the wire
-/// encoding, architecture.md §4.1) and are mapped back through their failable
+/// encoding) and are mapped back through their failable
 /// inits in `toDomain()` — a corrupted raw value surfaces as
 /// `AppError.persistenceError`, never a force-unwrap or a silently wrong
 /// card.
@@ -66,8 +65,7 @@ final class StoredCard {
     /// matches a known `CardType`/`CardStatus` (schema drift or store
     /// corruption). The detail names only the record's id and the offending
     /// raw value so the corrupted row can be located — never a card number,
-    /// CVV, or auth token (the display-safe posture of architecture.md
-    /// §6.4).
+    /// CVV, or auth token.
     func toDomain() throws -> Card {
         guard let type = CardType(rawValue: typeRaw) else {
             throw AppError.persistenceError(
