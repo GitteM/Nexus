@@ -438,4 +438,90 @@ struct MockRepositoriesTests {
         coordinator.start()
         return (action, card, status, offers, coordinator)
     }
+
+    // MARK: - MockBalanceRepository
+
+    @Test
+    func `balance repository serves seeds and publishes live values`() async throws {
+        let mock = MockBalanceRepository(seed: Balance.mockDefaults)
+
+        #expect(try await mock.getBalance(cardId: Card.mockCreditCard.id) == .mockCreditBalance)
+        #expect(try await mock.getBalance(cardId: "card-unknown") == nil)
+
+        let stream = try await mock.subscribeToBalance(cardId: Card.mockCreditCard.id)
+        var iterator = stream.makeAsyncIterator()
+        #expect(await iterator.next() == .mockCreditBalance) // seeds current first
+
+        let updated = Balance(cardId: Card.mockCreditCard.id, current: 900, available: 900, creditLimit: 2500, currency: "EUR")
+        mock.publish(updated)
+        #expect(await iterator.next() == updated)
+        #expect(mock.balancesByCardId[Card.mockCreditCard.id] == updated) // store updated
+        #expect(mock.publishedBalances == [updated])
+    }
+
+    @Test
+    func `balance repository rejects an empty card id like the live boundary`() async {
+        let mock = MockBalanceRepository()
+
+        await #expect(throws: AppError.validationError(field: "cardId", reason: "Card id must not be empty.")) {
+            _ = try await mock.getBalance(cardId: "")
+        }
+        await #expect(throws: AppError.validationError(field: "cardId", reason: "Card id must not be empty.")) {
+            _ = try await mock.subscribeToBalance(cardId: "")
+        }
+    }
+
+    // MARK: - MockTransactionRepository
+
+    @Test
+    func `transaction repository serves seeds and folds publishes newest-first`() async throws {
+        let mock = MockTransactionRepository(seed: [Card.mockCreditCard.id: Transaction.mockDefaults])
+
+        #expect(try await mock.getTransactions(cardId: Card.mockCreditCard.id) == Transaction.mockDefaults)
+        #expect(try await mock.getTransactions(cardId: Card.mockDebitCard.id) == [])
+
+        let stream = try await mock.subscribeToTransactions(cardId: Card.mockCreditCard.id)
+        var iterator = stream.makeAsyncIterator()
+        #expect(await iterator.next() == Transaction.mockDefaults) // seeds current first
+
+        // A newer purchase lands at the front of the folded list.
+        let newer = Transaction(
+            id: "txn-newest",
+            cardId: Card.mockCreditCard.id,
+            date: .now,
+            merchant: "New Shop",
+            amount: -20,
+            currency: "EUR",
+            category: .shopping,
+            status: .pending,
+            location: nil,
+        )
+        mock.publish(newer)
+        let folded = await iterator.next()
+        #expect(folded?.first == newer)
+        #expect(folded?.count == Transaction.mockDefaults.count + 1)
+        #expect(mock.transactionsByCardId[Card.mockCreditCard.id] == folded)
+    }
+
+    @Test
+    func `transaction repository publish replaces a same-id frame`() async throws {
+        let mock = MockTransactionRepository(seed: [Card.mockCreditCard.id: Transaction.mockDefaults])
+        let cleared = Transaction(
+            id: Transaction.mockCoffeePurchase.id,
+            cardId: Card.mockCreditCard.id,
+            date: Transaction.mockCoffeePurchase.date,
+            merchant: Transaction.mockCoffeePurchase.merchant,
+            amount: Transaction.mockCoffeePurchase.amount,
+            currency: "EUR",
+            category: .dining,
+            status: .cleared,
+            location: "Berlin",
+        )
+
+        mock.publish(cleared)
+
+        let list = try await mock.getTransactions(cardId: Card.mockCreditCard.id)
+        #expect(list.count == Transaction.mockDefaults.count) // replaced, not appended
+        #expect(list.contains { $0.id == Transaction.mockCoffeePurchase.id && $0.status == .cleared })
+    }
 }
