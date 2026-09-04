@@ -37,6 +37,8 @@ final class DashboardUITests: XCTestCase {
         }
     }
 
+    /// `XCUIApplication` is main-actor-isolated, so the helper must be too.
+    @MainActor
     private func launchApp(state: DemoState) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments += ["-demoMode", state.launchArgument]

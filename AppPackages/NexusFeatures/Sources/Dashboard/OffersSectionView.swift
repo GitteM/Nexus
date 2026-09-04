@@ -45,6 +45,10 @@ struct OffersSectionView: View {
 
 /// One offer in the row: type art header, marketing copy, add action.
 private struct OfferCardView: View {
+    /// Corner radius of the card and its art header; they share the shape so
+    /// the header gradient matches the card's corners.
+    private static let cornerRadius: CGFloat = 16
+
     private let model: DashboardModel
     private let offer: CardOffer
 
@@ -63,6 +67,41 @@ private struct OfferCardView: View {
         model.offersBeingAdded.contains(offer.id)
     }
 
+    private var addButton: some View {
+        Button {
+            Task { await model.addOffer(offer) }
+        } label: {
+            Label(Strings.Common.add, systemImage: Icons.add)
+                .frame(maxWidth: .infinity)
+                // The spinner replaces the label while an add is in flight
+                // (never layered over it); .disabled(isAdding) blocks a
+                // redundant second tap.
+                .opacity(isAdding ? 0 : 1)
+                .overlay {
+                    if isAdding {
+                        ProgressView()
+                            .controlSize(.small)
+                            .tint(ColorPalette.brand)
+                    }
+                }
+        }
+        .buttonStyle(.borderedProminent)
+        .tint(ColorPalette.brand)
+        .disabled(isAdding)
+        .accessibilityLabel(Strings.Dashboard.addOffer(offer.title))
+        .accessibilityIdentifier(DashboardAccessibility.addOffer(offer.id))
+    }
+
+    /// A geometry-only copy of `addButton`: invisible and out of VoiceOver,
+    /// but it keeps the exact button layout so a managed card reserves the
+    /// same slot as an addable one.
+    private var placeholderAddButton: some View {
+        addButton
+            .hidden()
+            .accessibilityHidden(true)
+            .disabled(true)
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
             ZStack {
@@ -76,6 +115,9 @@ private struct OfferCardView: View {
             }
             .frame(height: artHeight)
             .frame(maxWidth: .infinity)
+            // `CardArtwork.gradient` is a plain fill — the rounded corners
+            // come from this shape, matching the card's own radius.
+            .clipShape(RoundedRectangle(cornerRadius: Self.cornerRadius, style: .continuous))
             .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: Spacing.xs) {
@@ -84,44 +126,44 @@ private struct OfferCardView: View {
                     .foregroundStyle(ColorPalette.label)
                     .lineLimit(2)
                     .accessibilityAddTraits(.isHeader)
-                Text(offer.subtitle)
-                    .font(.caption)
-                    .foregroundStyle(ColorPalette.secondaryLabel)
-                    .lineLimit(3)
+                // The subtitle block always reserves two caption lines: a
+                // hidden, accessibility-deaf placeholder sizes it, so every
+                // card is the same height whether the subtitle wraps once or
+                // twice.
+                ZStack(alignment: .topLeading) {
+                    Text(" ")
+                        .font(.caption)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .hidden()
+                        .accessibilityHidden(true)
+                    Text(offer.subtitle)
+                        .font(.caption)
+                        .foregroundStyle(ColorPalette.secondaryLabel)
+                        .lineLimit(2)
+                }
             }
 
             if isManaged {
-                Label(Strings.Common.added, systemImage: Icons.added)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(ColorPalette.success)
-                    .accessibilityLabel(Strings.Dashboard.addOffer(offer.title))
-                    .accessibilityIdentifier(DashboardAccessibility.addedOffer(offer.id))
+                // A hidden copy of the Add button reserves identical
+                // geometry, so a managed card keeps the addable card's height
+                // — the "Added" label fills the same slot.
+                ZStack {
+                    placeholderAddButton
+                    Label(Strings.Common.added, systemImage: Icons.added)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(ColorPalette.success)
+                        .accessibilityLabel(Strings.Dashboard.addOffer(offer.title))
+                        .accessibilityIdentifier(DashboardAccessibility.addedOffer(offer.id))
+                }
             } else {
-                Button {
-                    Task { await model.addOffer(offer) }
-                } label: {
-                    Label(Strings.Common.add, systemImage: Icons.add)
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(ColorPalette.brand)
-                .disabled(isAdding)
-                .overlay {
-                    if isAdding {
-                        ProgressView()
-                            .controlSize(.small)
-                            .tint(ColorPalette.brand)
-                    }
-                }
-                .accessibilityLabel(Strings.Dashboard.addOffer(offer.title))
-                .accessibilityIdentifier(DashboardAccessibility.addOffer(offer.id))
+                addButton
             }
         }
         .padding(Spacing.md)
         .frame(width: 248, alignment: .leading)
         .background(
             ColorPalette.secondaryBackground,
-            in: RoundedRectangle(cornerRadius: 16, style: .continuous),
+            in: RoundedRectangle(cornerRadius: Self.cornerRadius, style: .continuous),
         )
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier(DashboardAccessibility.offer(offer.id))
@@ -129,9 +171,26 @@ private struct OfferCardView: View {
 }
 
 #if DEBUG
+    /// Loads the section's model before showing it. `DashboardView` owns the
+    /// `load()` call in its `.task` (architecture.md §9.1); a section preview
+    /// has no such parent, so without this `offeredCards` stays empty and the
+    /// row renders nothing.
+    private struct OffersSectionPreview: View {
+        private let model: DashboardModel
+
+        init(model: DashboardModel) {
+            self.model = model
+        }
+
+        var body: some View {
+            OffersSectionView(model: model)
+                .background(ColorPalette.background)
+                .task { await model.load() }
+        }
+    }
+
     #Preview("Offers — addable") {
-        OffersSectionView(model: DashboardModel.preview())
-            .background(ColorPalette.background)
+        OffersSectionPreview(model: DashboardModel.preview())
     }
 
     #Preview("Offers — added state") {
@@ -152,13 +211,11 @@ private struct OfferCardView: View {
             offersRepository: MockOffersRepository(seed: CardOffer.mockDefaults),
             statusRepository: MockStatusRepository(seed: CardState.mockDefaults),
         )
-        return OffersSectionView(model: model)
-            .background(ColorPalette.background)
+        return OffersSectionPreview(model: model)
     }
 
     #Preview("Offers — dark") {
-        OffersSectionView(model: DashboardModel.preview())
-            .background(ColorPalette.background)
+        OffersSectionPreview(model: DashboardModel.preview())
             .preferredColorScheme(.dark)
     }
 #endif

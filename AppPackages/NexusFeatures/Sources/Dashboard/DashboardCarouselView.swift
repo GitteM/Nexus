@@ -20,11 +20,13 @@ struct DashboardCarouselView: View {
     private let cards: [Card]
 
     @State private var selection: String?
-    /// Art height at the default text size. `@ScaledMetric` grows it with
-    /// Dynamic Type so the card front (and its text) scales honestly
-    /// instead of clipping; the default value keeps a physical-card aspect
-    /// ratio on a standard-width screen (architecture.md §9.4).
-    @ScaledMetric(relativeTo: .body) private var cardHeight: CGFloat = 216
+    /// The pager keeps the physical-card aspect ratio (ISO/IEC 7810 ID-1:
+    /// 85.6 × 53.98 mm), so the page height derives from the container
+    /// width and the card holds its shape on every device instead of
+    /// scaling a point constant (architecture.md §9.4). The art is fixed
+    /// per appearance; text inside compresses via `minimumScaleFactor`
+    /// rather than growing the card.
+    private static let cardAspectRatio: CGFloat = 85.6 / 53.98
 
     /// Page-dot metrics (points): the active dot is a wide capsule, the
     /// inactive dots small circles.
@@ -54,7 +56,7 @@ struct DashboardCarouselView: View {
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
-            .frame(height: cardHeight)
+            .aspectRatio(Self.cardAspectRatio, contentMode: .fit)
 
             if cards.count > 1 {
                 pageDots
@@ -119,6 +121,8 @@ private struct CardFrontView: View {
                 Text(Strings.App.title)
                     .font(.headline.weight(.bold))
                     .tracking(1.2)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
                     .accessibilityHidden(true)
                 Spacer(minLength: Spacing.md)
                 Image(systemName: card.type.icon)
@@ -152,6 +156,12 @@ private struct CardFrontView: View {
             }
         }
         .padding(Spacing.lg)
+        // The art is a fixed-shape card, so on-art text stops growing at
+        // `.accessibility1` — still well into the accessibility range, but
+        // beyond it the fixed height can no longer keep the name/status row
+        // inside the card. Text below the cap that still cannot fit shrinks
+        // via `minimumScaleFactor`.
+        .dynamicTypeSize(...DynamicTypeSize.accessibility1)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .foregroundStyle(CardArtwork.foreground)
         .background(
@@ -207,13 +217,18 @@ private struct StatusChip: View {
     }
 
     var body: some View {
-        Label(status.displayName, systemImage: status.icon)
-            .font(.caption.weight(.semibold))
-            .labelStyle(.titleAndIcon)
-            .lineLimit(1)
-            .padding(.horizontal, Spacing.sm + 2)
-            .padding(.vertical, Spacing.xs)
-            .background(CardArtwork.foreground.opacity(0.18), in: Capsule())
+        // Plain text (not `Label`) so `minimumScaleFactor` reaches the title:
+        // a long status shrinks to fit instead of being clipped mid-word.
+        HStack(spacing: Spacing.xs) {
+            Image(systemName: status.icon)
+            Text(status.displayName)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+        }
+        .font(.caption.weight(.semibold))
+        .padding(.horizontal, Spacing.sm + 2)
+        .padding(.vertical, Spacing.xs)
+        .background(CardArtwork.foreground.opacity(0.18), in: Capsule())
     }
 }
 
@@ -238,6 +253,8 @@ private struct StatusChip: View {
             DashboardCarouselView(cards: Card.mockDefaults)
         }
         .background(ColorPalette.background)
-        .environment(\.sizeCategory, .accessibilityExtraExtraExtraLarge)
+        // At the cap: stresses the fixed-shape card just when the on-art
+        // text stops growing (Dynamic Type is capped at `.accessibility1`).
+        .environment(\.sizeCategory, .accessibilityExtraLarge)
     }
 #endif
