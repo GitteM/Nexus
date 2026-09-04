@@ -30,14 +30,14 @@ final class TransactionsUITests: XCTestCase {
     @MainActor
     private func openHistory(in app: XCUIApplication) {
         let carousel = app.descendants(matching: .any)[DashboardAccessibility.carousel]
-        XCTAssertTrue(carousel.waitForExistence(timeout: UITestTimeout.seconds(20)))
+        XCTAssertTrue(carousel.waitForExistence(timeout: 20))
 
         let firstCard = app.descendants(matching: .any)[DashboardAccessibility.card(Card.mockCreditCard.id)]
-        XCTAssertTrue(firstCard.waitForExistence(timeout: UITestTimeout.seconds(10)))
+        XCTAssertTrue(firstCard.waitForExistence(timeout: 10))
         firstCard.tap()
 
         let transactionsRow = app.buttons[CardDetailAccessibility.transactions]
-        XCTAssertTrue(transactionsRow.waitForExistence(timeout: UITestTimeout.seconds(20)))
+        XCTAssertTrue(transactionsRow.waitForExistence(timeout: 20))
         if !transactionsRow.isHittable {
             app.swipeUp()
         }
@@ -45,7 +45,7 @@ final class TransactionsUITests: XCTestCase {
 
         XCTAssertTrue(
             app.descendants(matching: .any)[TransactionsAccessibility.historyScreen]
-                .waitForExistence(timeout: UITestTimeout.seconds(20)),
+                .waitForExistence(timeout: 20),
         )
     }
 
@@ -59,7 +59,7 @@ final class TransactionsUITests: XCTestCase {
         // Balance header for the mock credit card (locale formats vary:
         // 1,240.75 / 1.240,75 / 1 240,75 €).
         let balance = app.descendants(matching: .any)[TransactionsAccessibility.balanceSummary]
-        XCTAssertTrue(balance.waitForExistence(timeout: UITestTimeout.seconds(10)))
+        XCTAssertTrue(balance.waitForExistence(timeout: 10))
         let compactLabel = balance.label.replacingOccurrences(of: " ", with: "")
         XCTAssertTrue(
             compactLabel.contains("240,75") || compactLabel.contains("240.75"),
@@ -68,20 +68,20 @@ final class TransactionsUITests: XCTestCase {
 
         // A seeded transaction row exists (pending coffee purchase).
         let row = app.descendants(matching: .any)[TransactionsAccessibility.transactionRow(Transaction.mockCoffeePurchase.id)]
-        XCTAssertTrue(row.waitForExistence(timeout: UITestTimeout.seconds(10)))
+        XCTAssertTrue(row.waitForExistence(timeout: 10))
         XCTAssertTrue(row.label.contains("Cafe Central"), "label was: \(row.label)")
 
         // Tapping the row opens the detail screen with the transaction id.
         row.tap()
         XCTAssertTrue(
             app.descendants(matching: .any)[TransactionsAccessibility.detailScreen]
-                .waitForExistence(timeout: UITestTimeout.seconds(20)),
+                .waitForExistence(timeout: 20),
         )
         // The id row can surface as several accessibility elements; the
         // first match carries the id text.
         let detailID = app.descendants(matching: .any)
             .matching(identifier: TransactionsAccessibility.detailTransactionID).firstMatch
-        XCTAssertTrue(detailID.waitForExistence(timeout: UITestTimeout.seconds(10)))
+        XCTAssertTrue(detailID.waitForExistence(timeout: 10))
         XCTAssertTrue(detailID.label.contains(Transaction.mockCoffeePurchase.id),
                       "label was: \(detailID.label)")
     }
@@ -95,25 +95,25 @@ final class TransactionsUITests: XCTestCase {
 
         let coffeeRow = app.descendants(matching: .any)[TransactionsAccessibility.transactionRow(Transaction.mockCoffeePurchase.id)]
         let groceriesRow = app.descendants(matching: .any)[TransactionsAccessibility.transactionRow(Transaction.mockGroceriesPurchase.id)]
-        XCTAssertTrue(coffeeRow.waitForExistence(timeout: UITestTimeout.seconds(10)))
-        XCTAssertTrue(groceriesRow.waitForExistence(timeout: UITestTimeout.seconds(10)))
+        XCTAssertTrue(coffeeRow.waitForExistence(timeout: 10))
+        XCTAssertTrue(groceriesRow.waitForExistence(timeout: 10))
 
         let searchField = app.searchFields.firstMatch
-        XCTAssertTrue(searchField.waitForExistence(timeout: UITestTimeout.seconds(10)))
+        XCTAssertTrue(searchField.waitForExistence(timeout: 10))
         searchField.tap()
         searchField.typeText("Cafe")
 
-        XCTAssertTrue(coffeeRow.waitForExistence(timeout: UITestTimeout.seconds(10)))
-        XCTAssertTrue(groceriesRow.waitForNonExistence(timeout: UITestTimeout.seconds(10)))
+        XCTAssertTrue(coffeeRow.waitForExistence(timeout: 10))
+        XCTAssertTrue(groceriesRow.waitForNonExistence(timeout: 10))
 
         // The filtered state is announced in-list: a banner with the result
         // count and the active filter (copy matched literally — Design is
         // not linked into the UI test target). The banner container exposes
         // its text as child elements, so assert on those.
         let banner = app.descendants(matching: .any)[TransactionsAccessibility.filteredBanner]
-        XCTAssertTrue(banner.waitForExistence(timeout: UITestTimeout.seconds(10)))
+        XCTAssertTrue(banner.waitForExistence(timeout: 10))
         let filtersActive = app.staticTexts["Filters active"]
-        XCTAssertTrue(filtersActive.waitForExistence(timeout: UITestTimeout.seconds(10)))
+        XCTAssertTrue(filtersActive.waitForExistence(timeout: 10))
         let showingCount = app.staticTexts.matching(
             NSPredicate(format: "label CONTAINS %@", "Showing 1 of \(Transaction.mockDefaults.count)"),
         ).firstMatch
@@ -121,10 +121,10 @@ final class TransactionsUITests: XCTestCase {
 
         // Reset restores the whole feed and removes the banner.
         let reset = app.buttons[TransactionsAccessibility.filteredBannerReset]
-        XCTAssertTrue(reset.waitForExistence(timeout: UITestTimeout.seconds(10)))
+        XCTAssertTrue(reset.waitForExistence(timeout: 10))
         reset.tap()
-        XCTAssertTrue(banner.waitForNonExistence(timeout: UITestTimeout.seconds(10)))
-        XCTAssertTrue(groceriesRow.waitForExistence(timeout: UITestTimeout.seconds(10)))
+        XCTAssertTrue(banner.waitForNonExistence(timeout: 10))
+        XCTAssertTrue(groceriesRow.waitForExistence(timeout: 10))
         XCTAssertTrue(coffeeRow.exists)
     }
 }
