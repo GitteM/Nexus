@@ -77,7 +77,15 @@ private struct HistoryContent: View {
                 }
             }
             Section {
-                filterBar
+                categoryRow
+                statusRow
+                dateRow
+                if !model.query.isDefault {
+                    Button(Strings.Transactions.clearFilters) {
+                        model.clearFilters()
+                    }
+                    .foregroundStyle(ColorPalette.brand)
+                }
             }
             if model.transactions.isEmpty {
                 emptyTransactions
@@ -100,23 +108,11 @@ private struct HistoryContent: View {
         .accessibilityIdentifier(TransactionsAccessibility.historyScreen)
     }
 
-    /// Category / status / date filter menus, with the active filters
-    /// summarized in the menu labels.
-    private var filterBar: some View {
-        HStack(spacing: Spacing.md) {
-            categoryMenu
-            statusMenu
-            dateMenu
-            if !model.query.isDefault {
-                Button(Strings.Transactions.clearFilters) {
-                    model.clearFilters()
-                }
-            }
-        }
-        .font(.subheadline)
-    }
-
-    private var categoryMenu: some View {
+    /// The filter controls, one full-width row per dimension: the menu
+    /// label names the dimension and the trailing text shows the active
+    /// selection (All categories / Dining / …). Stacked vertically so long
+    /// selections and Dynamic Type never squash the labels.
+    private var categoryRow: some View {
         Menu {
             checkedButton(
                 label: Strings.Transactions.allCategories,
@@ -133,15 +129,14 @@ private struct HistoryContent: View {
                 }
             }
         } label: {
-            Label(
-                model.query.category?.displayName ?? Strings.Transactions.allCategories,
-                systemImage: Icons.filter,
+            filterRowLabel(
+                title: Strings.Transactions.filterCategory,
+                value: model.query.category?.displayName ?? Strings.Transactions.allCategories,
             )
         }
-        .accessibilityLabel(Strings.Transactions.filterCategory)
     }
 
-    private var statusMenu: some View {
+    private var statusRow: some View {
         Menu {
             checkedButton(
                 label: Strings.Transactions.allStatuses,
@@ -158,15 +153,14 @@ private struct HistoryContent: View {
                 }
             }
         } label: {
-            Label(
-                model.query.status?.displayName ?? Strings.Transactions.allStatuses,
-                systemImage: Icons.filter,
+            filterRowLabel(
+                title: Strings.Transactions.filterStatus,
+                value: model.query.status?.displayName ?? Strings.Transactions.allStatuses,
             )
         }
-        .accessibilityLabel(Strings.Transactions.filterStatus)
     }
 
-    private var dateMenu: some View {
+    private var dateRow: some View {
         Menu {
             ForEach(TransactionDateRange.allCases, id: \.self) { range in
                 checkedButton(label: dateLabel(range), isOn: model.query.dateRange == range) {
@@ -174,9 +168,29 @@ private struct HistoryContent: View {
                 }
             }
         } label: {
-            Label(dateLabel(model.query.dateRange), systemImage: Icons.filter)
+            filterRowLabel(
+                title: Strings.Transactions.filterDate,
+                value: dateLabel(model.query.dateRange),
+            )
         }
-        .accessibilityLabel(Strings.Transactions.filterDate)
+    }
+
+    /// One full-width filter row: dimension name on the left, current
+    /// selection and a chevron on the right.
+    private func filterRowLabel(title: String, value: String) -> some View {
+        HStack(spacing: Spacing.sm) {
+            Text(title)
+                .foregroundStyle(ColorPalette.label)
+            Spacer(minLength: Spacing.md)
+            Text(value)
+                .foregroundStyle(ColorPalette.secondaryLabel)
+                .lineLimit(1)
+                .minimumScaleFactor(0.9)
+            Image(systemName: Icons.chevronRight)
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(ColorPalette.secondaryLabel)
+        }
+        .contentShape(Rectangle())
     }
 
     private func checkedButton(
