@@ -184,6 +184,17 @@
         /// coordinator's hook holds it weakly, so the graph owns it.
         private let coordinator: MockCommandCoordinator
 
+        // Destination models are created ONCE per route key and reused.
+        // SwiftUI can evaluate a `navigationDestination` closure more than
+        // once around a push; minting a fresh model per evaluation can
+        // leave the visible view holding a second, never-loaded instance
+        // whose `.task` never fires — a stuck `.loading` spinner, seen on
+        // cold builds. The composition root owns screen models anyway
+        // (Day 14 `AppContainer` formalizes this).
+        private var cardDetailModels: [String: CardDetailModel] = [:]
+        private var historyModels: [String: TransactionHistoryModel] = [:]
+        private var transactionDetailModels: [String: TransactionDetailModel] = [:]
+
         init(options: DemoRootView.LaunchOptions) {
             cardRepository = MockCardRepository(seed: Card.mockDefaults)
             offersRepository = MockOffersRepository(seed: CardOffer.mockDefaults)
@@ -227,36 +238,56 @@
             coordinator.start()
         }
 
-        /// Mints one detail model over the shared graph for a pushed
-        /// destination (composition-root responsibility; Day 14 moves this
-        /// into `AppContainer`).
+        /// Returns one detail model over the shared graph for a pushed
+        /// destination, creating it on first use and reusing it afterwards
+        /// (composition-root responsibility; Day 14 moves this into
+        /// `AppContainer`). Reuse matters: destination closures can be
+        /// evaluated multiple times around a push, and every evaluation
+        /// must present the same screen state.
         func makeDetailModel(cardID: String) -> CardDetailModel {
-            CardDetailModel(
+            if let existing = cardDetailModels[cardID] {
+                return existing
+            }
+            let model = CardDetailModel(
                 cardID: cardID,
                 cardRepository: cardRepository,
                 statusRepository: statusRepository,
                 actionRepository: actionRepository,
             )
+            cardDetailModels[cardID] = model
+            return model
         }
 
-        /// Mints the per-card account-activity model (Day 13): the live
+        /// Returns the per-card account-activity model (Day 13): the live
         /// balance and the transaction feed share the demo store graph, so
         /// pushes made in tests/demo are visible to every screen.
         func makeHistoryModel(cardID: String) -> TransactionHistoryModel {
-            TransactionHistoryModel(
+            if let existing = historyModels[cardID] {
+                return existing
+            }
+            let model = TransactionHistoryModel(
                 cardID: cardID,
                 balanceRepository: balanceRepository,
                 transactionRepository: transactionRepository,
             )
+            historyModels[cardID] = model
+            return model
         }
 
-        /// Mints the transaction detail model over the same shared feed.
+        /// Returns the transaction detail model over the same shared feed,
+        /// created once per (card, transaction) pair.
         func makeDetailModel(cardID: String, transactionID: String) -> TransactionDetailModel {
-            TransactionDetailModel(
+            let key = "\(cardID):\(transactionID)"
+            if let existing = transactionDetailModels[key] {
+                return existing
+            }
+            let model = TransactionDetailModel(
                 cardID: cardID,
                 transactionID: transactionID,
                 transactionRepository: transactionRepository,
             )
+            transactionDetailModels[key] = model
+            return model
         }
     }
 #endif
