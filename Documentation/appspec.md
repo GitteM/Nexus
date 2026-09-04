@@ -207,12 +207,71 @@ takes this over and this file is deleted there.
 in the M5 PR.
 
 ### 2.3 Balances & Transactions
-- **Status:** not yet specified — fill at M6 (Day 13).
+- **Status:** M6 (Day 13) settled — behaviors below are pinned by code +
+  tests; every open item resolved as marked.
 - **Scope pointer:** features.md §Balance & Transactions; tasks.md Day 13;
-  architecture.md §9.1 (live subscription ownership).
-- **Open decisions to record here at M6:** search/filter predicate
-  semantics, pending vs. cleared handling, currency display, live-update
-  UX for a visible transaction list.
+  architecture.md §9.1 (live subscription ownership), §4.2/§6.1
+  (repository/source contract).
+
+**Entry & placement (settled):** account activity is per-card. Card
+Detail gains an “Account activity → Transactions” row that pushes the
+per-card history screen; that screen carries the **live balance header**
+(current, available, credit limit when present, card currency) above the
+searchable/filterable feed. A card-wide balance widget on the dashboard is
+out of M6 scope (recorded for a later milestone).
+
+**Data contract (M6, new protocols):** `BalanceRepositoryProtocol` (latest
+per-card value + subscription) and `TransactionRepositoryProtocol`
+(newest-first feed list + subscription) mirror the status boundary.
+`CardBalanceDataSource` and `CardTransactionsDataSource` subscribe on
+`card.events.{cardId}` and parse only their own payload kind, skipping
+others (the §6.1 per-kind contract). The transaction feed replaces a frame
+with the same id in place (pending → cleared) and is bounded
+(`defaultFeedLimit = 100`, oldest dropped). Demo mocks seed the credit
+card (balance + the 9-transaction mock set) and expose `publish` for live
+updates; no balance/transaction command echo exists in v1.0 (nothing
+changes them until Payments, M9).
+
+**Search & filter semantics (settled, pinned by `TransactionQuery`
+unit tests):** free-text search over merchant and transaction id
+(case-insensitive); category and status are exact matches; date presets
+all / 7 / 30 / 90 days relative to now; amount filters apply to the
+*magnitude* (a €129.99 spend is “€100–300”, a €45 refund is not).
+Ordering stays newest-first and the query never mutates the source list.
+The UI surfaces search, category/status/date menus, and Clear filters;
+the amount-range API is implemented and unit-tested but not surfaced in
+the v1.0 UI (recorded).
+
+**Display & live semantics (settled):** pending rows show a Pending
+marker; refunds render as a positive signed amount. The history model
+subscribes to the balance and the feed after its first load — frames
+update state in place, never blank the screen, no polling; a reload keeps
+the state through the repository stores. The transaction detail is a
+snapshot deep view (merchant, signed amount, category, status, date,
+optional location, selectable transaction id); a stale deep link whose
+transaction left the feed renders a “missing” empty state, not an error.
+
+**Acceptance criteria (M6, Day 13) — all met:**
+
+- [x] Live balance updates without polling — model + data-source tests
+      (publish → header updates; viewState stays `.loaded`).
+- [x] Filter/search logic — `TransactionQuery` pure-filter suite + model
+      query tests (search, category, status, date window, amount,
+      combined, clear).
+- [x] Transaction details — `TransactionDetailModel`/View tests (found /
+      missing / error / retry) + UI navigation test.
+- [x] UI test for history + filter — `TransactionsUITests`
+      (balance header, feed row → detail, search narrows the list).
+- [x] VoiceOver + Dynamic Type on the new controls — combined row elements
+      with identifiers + labels; full visual sweep remains Day 15 human QA
+      (Day 11 convention).
+
+**Implementation map:** Domain protocols (`BalanceRepositoryProtocol`,
+`TransactionRepositoryProtocol`); Data sources/repositories + mocks;
+NexusFeatures `Transactions` target (`TransactionFilter`,
+`TransactionHistoryModel`/`View`, `TransactionDetailModel`/`View`, a11y
+namespace, previews); Route cases + app-target DemoGraph wiring; `Strings`
+/`Icons` additions; `CardDetail` entry row.
 
 ### 2.4 Payments
 - **Status:** not yet specified — fill at M9 (Days 16–17).
