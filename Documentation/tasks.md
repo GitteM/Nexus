@@ -128,13 +128,13 @@
 
 ### Day 14 — Composition root + demo mode (M7)
 
-- [ ] `NexusApp` creates `AppContainer` once (architecture.md §11.1).
-- [ ] `AppContainer`: `Mode` (live/demo), inline `createDependencies()`, `appState`, `sessionStatus` computed pass-through, `retry()`/`reinitialize()`, `handleSessionStatusChange(_:)` driven by `.onChange` — no polling (architecture.md §11.2–11.3).
-- [ ] `AppState` enum + `ContentView` switch; `MainNavigationView` binds `Router.routes` to `NavigationStack`; route→view mapping lives in the app target (architecture.md §11.3, §8).
-- [ ] `AppContainer+Preview` for each state (architecture.md §9.5).
-- [ ] Demo mode rules: `#if DEBUG` only, no network/Keychain/disk; reset-demo action; "Nexus Demo" scheme; `API_ENVIRONMENT = demo` auto-selects demo (architecture.md §11.2).
-- [ ] Integration tests: container builds both modes; state transitions.
-- **Verify:** App runs end-to-end in demo mode with no backend; release build ignores `-demoMode`.
+- [x] `NexusApp` creates `AppContainer` once (architecture.md §11.1).
+- [x] `AppContainer`: `Mode` (live/demo), inline `createDependencies()`, `appState`, `sessionStatus` computed pass-through, `retry()`/`reinitialize()`, `handleSessionStatusChange(_:)` driven by `.onChange` — no polling (architecture.md §11.2–11.3).
+- [x] `AppState` enum + `ContentView` switch; `MainNavigationView` binds `Router.routes` to `NavigationStack`; route→view mapping lives in the app target (architecture.md §11.3, §8).
+- [x] `AppContainer+Preview` for each state (architecture.md §9.5).
+- [x] Demo mode rules: `#if DEBUG` only, no network/Keychain/disk; reset-demo action; "Nexus Demo" scheme; `API_ENVIRONMENT = demo` auto-selects demo (architecture.md §11.2).
+- [x] Integration tests: container builds both modes; state transitions.
+- **Verify:** App runs end-to-end in demo mode with no backend; release build ignores `-demoMode`. — done: full workspace TestPlan green on iPhone 17 (Domain 161/20, Data 179/20, Features 86/9, NexusTests 6/2 — new `AppContainerTests` — 8 UI tests), Release `build` succeeds with the mock graph compiled out (generic simulator, unsigned), `swiftformat` clean, zero warnings. Notes for review: interim `DemoRootView`/`DemoGraph` deleted — `AppContainer` owns the router, the per-route screen models (created once, see PR #26), the demo store graph + `MockCommandCoordinator`, and the UI-test launch knobs (`LaunchArguments`: `-demoState`, `-demoActionState`, `-demoOpenCard`); live mode composes the real Data layer and reports the missing-backend config gap when `API_BASE_URL` is empty (appspec §2.9); a "Nexus Demo" shared scheme launches Debug with `-demoMode`.
 
 ### Day 15 — v1.0 hardening (M8)
 

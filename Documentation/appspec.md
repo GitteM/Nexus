@@ -94,7 +94,7 @@
 5. *UI-test harness* — the dashboard UI suite launches with `-demoMode` and
    the `-demoState=ready|loading|error` knobs, which drive the shared mock
    repositories (architecture.md §10). **Interim app-target note:** Day 11
-   adds a small DEBUG-only `DemoRootView` (Nexus/DemoRootView.swift) that
+   adds a small DEBUG-only demo root that
    parses the launch arguments and builds the dashboard over the mocks;
    Day 14's `AppContainer` replaces it — it is not a shipped pattern.
 
@@ -198,9 +198,8 @@ in sync in the M4 PR.
 `CardDetailAccessibility`), `CardDetailView`, `Strings.CardDetail`;
 mock/test pairing `MockCommandCoordinator` + `MockActionRepository.onExecute`
 (NexusData/Mocks); dashboard card-tap → `Router` → `.cardDetail(cardID:)`;
-interim demo composition root `Nexus/DemoRootView.swift` (shared
-`DemoGraph` + `Router` + route→view mapping) — Day 14's `AppContainer`
-takes this over and this file is deleted there.
+route→view mapping lives in Day 14's `AppContainer` + `MainNavigationView`
+(interim `DemoRootView`/`DemoGraph` deleted there).
 
 **Rule of record:** Domain vocabulary + `CardActionRepositoryProtocol`
 (code), Day 12 tests (tasks.md), and this section — keep the three in sync
@@ -270,7 +269,7 @@ transaction left the feed renders a “missing” empty state, not an error.
 `TransactionRepositoryProtocol`); Data sources/repositories + mocks;
 NexusFeatures `Transactions` target (`TransactionFilter`,
 `TransactionHistoryModel`/`View`, `TransactionDetailModel`/`View`, a11y
-namespace, previews); Route cases + app-target DemoGraph wiring; `Strings`
+namespace, previews); Route cases + app-target AppContainer wiring; `Strings`
 /`Icons` additions; `CardDetail` entry row.
 
 ### 2.4 Payments
@@ -310,12 +309,27 @@ namespace, previews); Route cases + app-target DemoGraph wiring; `Strings`
   strings), §13 Step 8 (a11y invariants).
 
 ### 2.9 Demo mode & data
-- **Status:** not yet specified — fill at M7 (Day 14).
-- **Scope pointer:** features.md §Demo-Specific Features; architecture.md
-  §11.2 demo-mode rules; ROADMAP.md §5 (demo is in-memory — no
-  network/Keychain/disk).
-- **Open decisions to record here at M7:** demo dataset contents (mock
-  cards/transactions/offers in EUR), `-demoState` knobs, reset-demo UX.
+- **Status:** M7 (Day 14) settled — the composition root owns demo mode
+  (architecture.md §11.2, tasks.md Day 14).
+- **Mechanism:** `AppContainer` selects live vs. demo once at init
+  (`-demoMode` argument or `API_ENVIRONMENT = demo`, Debug builds only).
+  Demo builds the same repositories/models the screens always use, backed
+  by the shared in-memory `Mock*` stores — no network, Keychain, or disk;
+  the demo session (`MockSessionManager`) connects instantly and the
+  `MockCommandCoordinator` plays the backend echo. Release builds compile
+  the mock graph out and ignore `-demoMode` (`API_ENVIRONMENT = sandbox`).
+- **UI-test knobs:** `-demoState=ready|loading|error`,
+  `-demoActionState=error`, and `-demoOpenCard=<id>` (deep link) drive the
+  demo graph from the launch arguments (parsed by `LaunchArguments`).
+- **Reset demo:** the composition root's `resetDemo()` rebuilds the
+  in-memory graph and reconnects; the ready shell exposes a Debug-only
+  "Reset demo" toolbar action. A "Nexus Demo" scheme launches the app
+  with `-demoMode`.
+- **Live mode:** composed over the real Data layer (session → data sources
+  → repositories) and SwiftData cards; with no backend base URL configured
+  (current builds) it reports the configuration gap instead of connecting
+  (architecture.md §7.1/§11.4). The `EmptyCardRepository` fallback covers
+  a missing SwiftData store (bare test runners).
 
 ## 3. Non-goals (for now)
 

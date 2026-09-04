@@ -44,4 +44,7 @@ public enum Icons {
 
     /// Filter menus (transaction history).
     public static let filter = "line.3.horizontal.decrease.circle"
+
+    /// Reset demo state (Day 14 composition root).
+    public static let resetDemo = "arrow.counterclockwise"
 }

@@ -144,6 +144,9 @@ public enum Strings {
         public static let title = String(localized: "Nexus")
         public static let errorTitle = String(localized: "Something went wrong")
         public static let errorMessage = String(localized: "Nexus couldn't start. Please try again.")
+
+        /// Demo-only reset action (Day 14 composition root).
+        public static let resetDemo = String(localized: "Reset demo")
     }
 
     public enum Errors {
