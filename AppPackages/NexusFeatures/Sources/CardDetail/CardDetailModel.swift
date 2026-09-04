@@ -76,7 +76,6 @@ public final class CardDetailModel {
     private let actionRepository: CardActionRepositoryProtocol
 
     private let subscriptionBox = CardDetailSubscriptionBox()
-    private var isLoadInFlight = false
 
     public init(
         cardID: String,
@@ -131,9 +130,13 @@ public final class CardDetailModel {
     /// card comes from the managed-card list (no get-by-id boundary), then
     /// the live status subscription starts.
     public func load() async {
-        guard !isLoadInFlight, viewState != .loaded else { return }
-        isLoadInFlight = true
-        defer { isLoadInFlight = false }
+        // Deliberately no in-flight guard: SwiftUI can cancel one `.task`
+        // and start the next while the first is still unwinding (screen
+        // identity changes during a push), and an in-flight check would
+        // make the retry return early forever — the screen would stay
+        // `.loading` with no further appear to refire. The fetch is
+        // idempotent, so an overlapping retry simply fetches again.
+        guard viewState != .loaded else { return }
         viewState = .loading
         do {
             let cards = try await cardRepository.getCards()
@@ -146,8 +149,8 @@ public final class CardDetailModel {
             viewState = .loaded
         } catch is CancellationError {
             // The triggering view task was cancelled (screen disappeared
-            // mid-load); keep whatever state was showing — the next appear
-            // refires load().
+            // mid-load or the push identity churned); keep whatever state
+            // was showing — the next `.task` refire retries load().
         } catch let error as AppError {
             viewState = .error(error)
         } catch {

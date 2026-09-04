@@ -20,7 +20,6 @@ public final class TransactionDetailModel {
     private let cardID: String
     private let transactionID: String
     private let transactionRepository: TransactionRepositoryProtocol
-    private var isLoadInFlight = false
 
     public init(
         cardID: String,
@@ -36,9 +35,13 @@ public final class TransactionDetailModel {
     /// `.error`. The feed is fetched once and the matching transaction
     /// picked out — a missing id maps to `.missing`.
     public func load() async {
-        guard !isLoadInFlight, !isSettled else { return }
-        isLoadInFlight = true
-        defer { isLoadInFlight = false }
+        // Deliberately no in-flight guard: a `.task` retry that lands while
+        // an earlier attempt is cancelled-but-unwinding (push identity
+        // changes) would otherwise return early forever, leaving the screen
+        // stuck in `.loading` (CardDetailModel.load notes the same race).
+        // The feed fetch is idempotent, so an overlapping retry just
+        // refetches.
+        guard !isSettled else { return }
         viewState = .loading
         do {
             let transactions = try await transactionRepository.getTransactions(cardId: cardID)

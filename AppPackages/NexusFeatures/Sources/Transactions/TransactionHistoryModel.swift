@@ -39,7 +39,6 @@ public final class TransactionHistoryModel {
     private let balanceRepository: BalanceRepositoryProtocol
     private let transactionRepository: TransactionRepositoryProtocol
     private let subscriptionBox = ActivitySubscriptionBox()
-    private var isLoadInFlight = false
 
     public init(
         cardID: String,
@@ -91,9 +90,12 @@ public final class TransactionHistoryModel {
     /// balance and the transaction feed fetch in parallel (`async let`),
     /// then both live subscriptions start.
     public func load() async {
-        guard !isLoadInFlight, viewState != .loaded else { return }
-        isLoadInFlight = true
-        defer { isLoadInFlight = false }
+        // Deliberately no in-flight guard: a `.task` retry that lands while
+        // an earlier attempt is cancelled-but-unwinding (push identity
+        // changes) would otherwise return early forever, leaving the screen
+        // stuck in `.loading` (CardDetailModel.load notes the same race).
+        // The fetches are idempotent, so an overlapping retry just refetches.
+        guard viewState != .loaded else { return }
         viewState = .loading
         do {
             async let fetchedBalance = balanceRepository.getBalance(cardId: cardID)
