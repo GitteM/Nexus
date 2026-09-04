@@ -58,18 +58,18 @@ jobs:
           echo "Simulator: $DEVICE"
           echo "device=$DEVICE" >> "$GITHUB_OUTPUT"
 
-      # UI tests are NOT part of the PR gate: on free-tier macOS runners the
-      # earliest UI launches on a cold simulator drop gestures even when the
-      # accessibility tree is ready (same code passes locally on a warm
-      # simulator and later in the same run — many consecutive failures with
-      # every test-side mitigation in place). Run the UI suite via the
-      # on-demand "UI Tests" workflow, or locally on a warm simulator
-      # before merging (AGENTS.md §5.6).
-      - name: Test (workspace TestPlan — unit & integration)
+      # The full workspace TestPlan runs here, UI suite included. (The UI
+      # suite was temporarily excluded while a cold-runner stuck-loading
+      # bug was chased; root-caused and fixed in PR #26 — destination
+      # models are now minted once per route. If free-tier cold-runner
+      # flakes return, reproduce locally on a warm simulator before
+      # treating them as regressions — AGENTS.md §5.6.)
+      - name: Test (workspace TestPlan)
         run: >
           xcodebuild test-without-building
           -workspace Nexus.xcworkspace
           -scheme Nexus
           -destination 'platform=iOS Simulator,name=${{ steps.simulator.outputs.device }}'
           -derivedDataPath DerivedData
-          -skip-testing:NexusUITests
+          -retry-tests-on-failure
+          -test-iterations 2
