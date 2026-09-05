@@ -500,6 +500,14 @@ struct TransactionRowView: View {
         }
     }
 
+    #Preview("Loaded — no activity") {
+        NavigationStack {
+            TransactionHistoryView()
+                .environment(TransactionHistoryModel.preview(cardID: Card.mockDebitCard.id))
+                .environment(Router())
+        }
+    }
+
     #Preview("Loading") {
         NavigationStack {
             TransactionHistoryView()
