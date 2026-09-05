@@ -814,6 +814,13 @@ target holds the design language, `SharedUI` holds components.
   `xcrun xcstringstool extract --modern-localizable-strings
   --output-directory <scratch-dir> <changed-files>`
   then add the missing keys by hand.
+  Keys that come from package-side copy are stored with
+  `extractionState: manual`: Xcode reference-checks catalog keys only
+  against the owning (app) target's sources, so a key whose literal
+  lives in a package would otherwise be reported stale ("References to
+  this key could not be found in source code"). `manual` is the
+  truthful state for curated keys, silences that IDE diagnostic, and is
+  editor metadata only — it does not change the compiled output.
   Non-goals that keep diagnostics stable: `ErrorCategory`/`CardCommandType`
   `displayName` and `AppError.failureReason` stay hardcoded English
   (log/support text, never rendered as end-user copy), and demo/server

@@ -2,7 +2,7 @@
   "sourceLanguage" : "en",
   "strings" : {
     "%@ card ending in %@, %@" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -25,7 +25,7 @@
       }
     },
     "%@ card, %@" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -48,7 +48,7 @@
       }
     },
     "A replacement offer will appear on your Dashboard. The lost card stays blocked." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -65,7 +65,7 @@
       }
     },
     "A system service is unavailable — contact support if it keeps happening." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -82,7 +82,7 @@
       }
     },
     "A system service isn't available right now." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -99,7 +99,7 @@
       }
     },
     "Account activity" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -116,7 +116,7 @@
       }
     },
     "Active" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -133,7 +133,7 @@
       }
     },
     "Add" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -150,7 +150,7 @@
       }
     },
     "Add %@" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -173,7 +173,7 @@
       }
     },
     "Add funds or use a different card." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -190,7 +190,7 @@
       }
     },
     "Added" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -207,7 +207,7 @@
       }
     },
     "All categories" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -224,7 +224,7 @@
       }
     },
     "All statuses" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -241,7 +241,7 @@
       }
     },
     "All time" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -258,7 +258,7 @@
       }
     },
     "Amount" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -275,7 +275,7 @@
       }
     },
     "Available" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -292,7 +292,7 @@
       }
     },
     "Back" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -309,7 +309,7 @@
       }
     },
     "Balance" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -326,7 +326,7 @@
       }
     },
     "Bills" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -343,7 +343,7 @@
       }
     },
     "Cancel" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -360,7 +360,7 @@
       }
     },
     "Card %lld of %lld" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -383,7 +383,7 @@
       }
     },
     "Card ••%@" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -406,7 +406,7 @@
       }
     },
     "Card controls" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -423,7 +423,7 @@
       }
     },
     "Cards you add and offers you can browse will appear here." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -440,7 +440,7 @@
       }
     },
     "Category" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -457,7 +457,7 @@
       }
     },
     "Check your connection and try again." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -474,7 +474,7 @@
       }
     },
     "Cleared" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -491,7 +491,7 @@
       }
     },
     "Connected" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -508,7 +508,7 @@
       }
     },
     "Connecting" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -525,7 +525,7 @@
       }
     },
     "Connection Error" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -542,7 +542,7 @@
       }
     },
     "Contact support if it keeps happening." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -559,7 +559,7 @@
       }
     },
     "Couldn't Add Card" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -576,7 +576,7 @@
       }
     },
     "Couldn't Update Card" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -593,7 +593,7 @@
       }
     },
     "Credit" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -610,7 +610,7 @@
       }
     },
     "Credit limit" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -627,7 +627,7 @@
       }
     },
     "Current limit" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -644,7 +644,7 @@
       }
     },
     "Daily" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -661,7 +661,7 @@
       }
     },
     "Dashboard" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -678,7 +678,7 @@
       }
     },
     "Date" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -695,7 +695,7 @@
       }
     },
     "Debit" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -712,7 +712,7 @@
       }
     },
     "Details" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -729,7 +729,7 @@
       }
     },
     "Dining" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -746,7 +746,7 @@
       }
     },
     "Disconnected" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -763,7 +763,7 @@
       }
     },
     "Done" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -780,7 +780,7 @@
       }
     },
     "Edit" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -797,7 +797,7 @@
       }
     },
     "Entertainment" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -814,7 +814,7 @@
       }
     },
     "Expired" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -831,7 +831,7 @@
       }
     },
     "Explore offers" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -848,7 +848,7 @@
       }
     },
     "Filter" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -865,7 +865,7 @@
       }
     },
     "Filter transactions" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -882,7 +882,7 @@
       }
     },
     "Filters active" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -899,7 +899,7 @@
       }
     },
     "Find your new card offer on the Dashboard and add it." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -916,7 +916,7 @@
       }
     },
     "Freeze card" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -933,7 +933,7 @@
       }
     },
     "Freeze this card?" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -950,7 +950,7 @@
       }
     },
     "Frozen" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -967,7 +967,7 @@
       }
     },
     "Groceries" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -984,7 +984,7 @@
       }
     },
     "Last 7 days" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1001,7 +1001,7 @@
       }
     },
     "Last 30 days" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1018,7 +1018,7 @@
       }
     },
     "Last 90 days" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1035,7 +1035,7 @@
       }
     },
     "Loading" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1052,7 +1052,7 @@
       }
     },
     "Loading transactions" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1069,7 +1069,7 @@
       }
     },
     "Loading your card" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1086,7 +1086,7 @@
       }
     },
     "Loading your cards" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1103,7 +1103,7 @@
       }
     },
     "Location" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1120,7 +1120,7 @@
       }
     },
     "Lost" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1137,7 +1137,7 @@
       }
     },
     "Merchant" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1154,7 +1154,7 @@
       }
     },
     "Monthly" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1171,7 +1171,7 @@
       }
     },
     "New purchases and withdrawals will be blocked until you unfreeze." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1188,7 +1188,7 @@
       }
     },
     "Nexus" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1205,7 +1205,7 @@
       }
     },
     "Nexus couldn't start. Please try again." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1222,7 +1222,7 @@
       }
     },
     "No cards yet" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1239,7 +1239,7 @@
       }
     },
     "No filters" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1256,7 +1256,7 @@
       }
     },
     "No matching transactions" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1273,7 +1273,7 @@
       }
     },
     "No transactions yet" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1290,7 +1290,7 @@
       }
     },
     "Not set" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1307,7 +1307,7 @@
       }
     },
     "Nothing to do — the card is already added." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1324,7 +1324,7 @@
       }
     },
     "OK" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1341,7 +1341,7 @@
       }
     },
     "Other" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1358,7 +1358,7 @@
       }
     },
     "Pending" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1375,7 +1375,7 @@
       }
     },
     "Prepaid" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1392,7 +1392,7 @@
       }
     },
     "Reconnect" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1409,7 +1409,7 @@
       }
     },
     "Reconnect to keep your cards and balances up to date." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1426,7 +1426,7 @@
       }
     },
     "Refresh" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1443,7 +1443,7 @@
       }
     },
     "Refresh your cards and try again." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1460,7 +1460,7 @@
       }
     },
     "Refund" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1477,7 +1477,7 @@
       }
     },
     "Replacement requested" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1494,7 +1494,7 @@
       }
     },
     "Report lost" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1511,7 +1511,7 @@
       }
     },
     "Report lost or stolen" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1528,7 +1528,7 @@
       }
     },
     "Report stolen" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1545,7 +1545,7 @@
       }
     },
     "Report this card lost or stolen?" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1562,7 +1562,7 @@
       }
     },
     "Request a replacement card?" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1579,7 +1579,7 @@
       }
     },
     "Request replacement" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1596,7 +1596,7 @@
       }
     },
     "Reset" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1613,7 +1613,7 @@
       }
     },
     "Reset demo" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1630,7 +1630,7 @@
       }
     },
     "Restart the app to try again." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1647,7 +1647,7 @@
       }
     },
     "Retry" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1664,7 +1664,7 @@
       }
     },
     "Review the highlighted fields and try again." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1681,7 +1681,7 @@
       }
     },
     "Save" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1698,7 +1698,7 @@
       }
     },
     "Search by merchant" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1715,7 +1715,7 @@
       }
     },
     "Set %@ limit" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1738,7 +1738,7 @@
       }
     },
     "Shopping" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1755,7 +1755,7 @@
       }
     },
     "Showing %lld of %lld" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1778,7 +1778,7 @@
       }
     },
     "Some of the information you entered isn't valid." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1795,7 +1795,7 @@
       }
     },
     "Something went wrong" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1812,7 +1812,7 @@
       }
     },
     "Something went wrong while preparing your data." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1829,7 +1829,7 @@
       }
     },
     "Something went wrong." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1846,7 +1846,7 @@
       }
     },
     "Spending limits" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1863,7 +1863,7 @@
       }
     },
     "Status" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1880,7 +1880,7 @@
       }
     },
     "Status: %@" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1903,7 +1903,7 @@
       }
     },
     "The '%@' action failed." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1926,7 +1926,7 @@
       }
     },
     "The app couldn't finish starting up." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1943,7 +1943,7 @@
       }
     },
     "The card is blocked. Request a replacement card." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1960,7 +1960,7 @@
       }
     },
     "The card will be blocked right away. You can request a replacement next." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1977,7 +1977,7 @@
       }
     },
     "The card will work again immediately." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -1994,7 +1994,7 @@
       }
     },
     "The data we received couldn't be read — contact support if it keeps happening." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -2011,7 +2011,7 @@
       }
     },
     "The request took too long." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -2028,7 +2028,7 @@
       }
     },
     "There aren't enough funds for this payment." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -2045,7 +2045,7 @@
       }
     },
     "This card couldn't be found." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -2062,7 +2062,7 @@
       }
     },
     "This card is already in your wallet." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -2079,7 +2079,7 @@
       }
     },
     "This card is lost" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -2096,7 +2096,7 @@
       }
     },
     "This is a technical issue — contact support if it keeps happening." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -2113,7 +2113,7 @@
       }
     },
     "Transaction ID" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -2130,7 +2130,7 @@
       }
     },
     "Transactions" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -2147,7 +2147,7 @@
       }
     },
     "Transactions for this card will appear here." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -2164,7 +2164,7 @@
       }
     },
     "Transfer" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -2181,7 +2181,7 @@
       }
     },
     "Travel" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -2198,7 +2198,7 @@
       }
     },
     "Try again in a moment." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -2215,7 +2215,7 @@
       }
     },
     "Try clearing a filter or searching for something else." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -2232,7 +2232,7 @@
       }
     },
     "Try saving again." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -2249,7 +2249,7 @@
       }
     },
     "Try the action again." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -2266,7 +2266,7 @@
       }
     },
     "Unfreeze card" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -2283,7 +2283,7 @@
       }
     },
     "Unfreeze this card?" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -2300,7 +2300,7 @@
       }
     },
     "We couldn't reach the server." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -2317,7 +2317,7 @@
       }
     },
     "We couldn't read the data we received." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -2334,7 +2334,7 @@
       }
     },
     "Weekly" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -2351,7 +2351,7 @@
       }
     },
     "You're offline" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -2368,7 +2368,7 @@
       }
     },
     "Your cards" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
@@ -2385,7 +2385,7 @@
       }
     },
     "Your data couldn't be saved." : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "et" : {
           "stringUnit" : {
