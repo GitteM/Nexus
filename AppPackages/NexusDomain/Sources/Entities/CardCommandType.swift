@@ -17,7 +17,9 @@ public enum CardCommandType: String, Codable, CaseIterable, Sendable, Equatable 
 }
 
 public extension CardCommandType {
-    /// Human-readable label for UI, e.g. "Report Lost".
+    /// Stable English diagnostic label for logs and demo data. Not
+    /// user-facing copy and intentionally not localized: call sites are
+    /// diagnostics, and log output must stay language-independent.
     var displayName: String {
         switch self {
         case .freeze: "Freeze"

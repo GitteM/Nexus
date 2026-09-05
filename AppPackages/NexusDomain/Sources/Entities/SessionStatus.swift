@@ -15,13 +15,14 @@ public enum SessionStatus: String, Codable, CaseIterable, Sendable, Equatable {
 }
 
 public extension SessionStatus {
-    /// Human-readable label for UI, e.g. "Connected".
+    /// Human-readable label for UI, e.g. "Connected". Localized through
+    /// the app's String Catalog at lookup time.
     var displayName: String {
         switch self {
-        case .connecting: "Connecting"
-        case .connected: "Connected"
-        case .disconnected: "Disconnected"
-        case .error: "Connection Error"
+        case .connecting: String(localized: "Connecting")
+        case .connected: String(localized: "Connected")
+        case .disconnected: String(localized: "Disconnected")
+        case .error: String(localized: "Connection Error")
         }
     }
 

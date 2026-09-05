@@ -14,7 +14,9 @@ public enum ErrorCategory: String, Codable, CaseIterable, Sendable, Equatable {
 }
 
 public extension ErrorCategory {
-    /// Human-readable label for UI and analytics, e.g. "Network".
+    /// Stable English diagnostic label for analytics and logs. Not
+    /// user-facing copy and intentionally not localized: call sites are
+    /// diagnostics, and log output must stay language-independent.
     var displayName: String {
         switch self {
         case .network: "Network"

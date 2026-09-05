@@ -44,26 +44,29 @@ public enum AppError: Error, Sendable, LocalizedError {
 }
 
 public extension AppError {
-    /// User-facing message.
+    /// User-facing message. Localized through the app's String Catalog at
+    /// lookup time.
     var errorDescription: String? {
         switch self {
-        case .apiConnectionFailed: "We couldn't reach the server."
-        case .requestTimedOut: "The request took too long."
-        case .cardNotFound: "This card couldn't be found."
-        case .cardAlreadyExists: "This card is already in your wallet."
-        case let .cardActionFailed(action, _): "The '\(action)' action failed."
-        case .insufficientFunds: "There aren't enough funds for this payment."
-        case .persistenceError: "Your data couldn't be saved."
-        case .serializationError: "Something went wrong while preparing your data."
-        case .deserializationError: "We couldn't read the data we received."
-        case .validationError: "Some of the information you entered isn't valid."
-        case .systemUnavailable: "A system service isn't available right now."
-        case .initializationFailed: "The app couldn't finish starting up."
-        case .unknown: "Something went wrong."
+        case .apiConnectionFailed: String(localized: "We couldn't reach the server.")
+        case .requestTimedOut: String(localized: "The request took too long.")
+        case .cardNotFound: String(localized: "This card couldn't be found.")
+        case .cardAlreadyExists: String(localized: "This card is already in your wallet.")
+        case let .cardActionFailed(action, _): String(localized: "The '\(action)' action failed.")
+        case .insufficientFunds: String(localized: "There aren't enough funds for this payment.")
+        case .persistenceError: String(localized: "Your data couldn't be saved.")
+        case .serializationError: String(localized: "Something went wrong while preparing your data.")
+        case .deserializationError: String(localized: "We couldn't read the data we received.")
+        case .validationError: String(localized: "Some of the information you entered isn't valid.")
+        case .systemUnavailable: String(localized: "A system service isn't available right now.")
+        case .initializationFailed: String(localized: "The app couldn't finish starting up.")
+        case .unknown: String(localized: "Something went wrong.")
         }
     }
 
-    /// Short technical reason.
+    /// Short technical reason. Diagnostic text (log/support only) and
+    /// intentionally not localized: it is never rendered as end-user copy
+    /// and keeps logs language-independent.
     var failureReason: String? {
         switch self {
         case let .apiConnectionFailed(details): details ?? "The connection to the server failed."
@@ -82,22 +85,23 @@ public extension AppError {
         }
     }
 
-    /// The action a user could take.
+    /// The action a user could take. Localized through the app's String
+    /// Catalog at lookup time.
     var recoverySuggestion: String? {
         switch self {
-        case .apiConnectionFailed: "Check your connection and try again."
-        case .requestTimedOut: "Try again in a moment."
-        case .cardNotFound: "Refresh your cards and try again."
-        case .cardAlreadyExists: "Nothing to do — the card is already added."
-        case .cardActionFailed: "Try the action again."
-        case .insufficientFunds: "Add funds or use a different card."
-        case .persistenceError: "Try saving again."
-        case .serializationError: "This is a technical issue — contact support if it keeps happening."
-        case .deserializationError: "The data we received couldn't be read — contact support if it keeps happening."
-        case .validationError: "Review the highlighted fields and try again."
-        case .systemUnavailable: "A system service is unavailable — contact support if it keeps happening."
-        case .initializationFailed: "Restart the app to try again."
-        case .unknown: "Contact support if it keeps happening."
+        case .apiConnectionFailed: String(localized: "Check your connection and try again.")
+        case .requestTimedOut: String(localized: "Try again in a moment.")
+        case .cardNotFound: String(localized: "Refresh your cards and try again.")
+        case .cardAlreadyExists: String(localized: "Nothing to do — the card is already added.")
+        case .cardActionFailed: String(localized: "Try the action again.")
+        case .insufficientFunds: String(localized: "Add funds or use a different card.")
+        case .persistenceError: String(localized: "Try saving again.")
+        case .serializationError: String(localized: "This is a technical issue — contact support if it keeps happening.")
+        case .deserializationError: String(localized: "The data we received couldn't be read — contact support if it keeps happening.")
+        case .validationError: String(localized: "Review the highlighted fields and try again.")
+        case .systemUnavailable: String(localized: "A system service is unavailable — contact support if it keeps happening.")
+        case .initializationFailed: String(localized: "Restart the app to try again.")
+        case .unknown: String(localized: "Contact support if it keeps happening.")
         }
     }
 

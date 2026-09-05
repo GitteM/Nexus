@@ -1,3 +1,5 @@
+import Foundation
+
 /// The lifecycle status of a card.
 ///
 /// Encoded by its raw value on the wire, e.g. `"frozen"`.
@@ -9,13 +11,14 @@ public enum CardStatus: String, Codable, CaseIterable, Sendable, Equatable {
 }
 
 public extension CardStatus {
-    /// Human-readable label for UI, e.g. "Frozen".
+    /// Human-readable label for UI, e.g. "Frozen". Localized through the
+    /// app's String Catalog at lookup time.
     var displayName: String {
         switch self {
-        case .active: "Active"
-        case .frozen: "Frozen"
-        case .expired: "Expired"
-        case .lost: "Lost"
+        case .active: String(localized: "Active")
+        case .frozen: String(localized: "Frozen")
+        case .expired: String(localized: "Expired")
+        case .lost: String(localized: "Lost")
         }
     }
 

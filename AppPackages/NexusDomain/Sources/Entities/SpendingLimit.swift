@@ -10,12 +10,13 @@ public enum SpendingLimitPeriod: String, Codable, CaseIterable, Sendable, Equata
 }
 
 public extension SpendingLimitPeriod {
-    /// Human-readable label for UI, e.g. "Weekly".
+    /// Human-readable label for UI, e.g. "Weekly". Localized through the
+    /// app's String Catalog at lookup time.
     var displayName: String {
         switch self {
-        case .daily: "Daily"
-        case .weekly: "Weekly"
-        case .monthly: "Monthly"
+        case .daily: String(localized: "Daily")
+        case .weekly: String(localized: "Weekly")
+        case .monthly: String(localized: "Monthly")
         }
     }
 }

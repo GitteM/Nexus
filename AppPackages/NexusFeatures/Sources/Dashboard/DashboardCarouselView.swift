@@ -207,11 +207,17 @@ private struct CardFrontView: View {
     }
 
     private var accessibilityLabel: String {
-        let typeName = card.type.displayName
         if card.lastFourDigits.isEmpty {
-            return "\(typeName) card, \(card.status.displayName)"
+            return Strings.Dashboard.cardAccessibility(
+                typeName: card.type.displayName,
+                status: card.status.displayName,
+            )
         }
-        return "\(typeName) card ending in \(card.lastFourDigits), \(card.status.displayName)"
+        return Strings.Dashboard.cardAccessibility(
+            typeName: card.type.displayName,
+            lastFour: card.lastFourDigits,
+            status: card.status.displayName,
+        )
     }
 
     private func adjust(_ direction: AccessibilityAdjustmentDirection) {

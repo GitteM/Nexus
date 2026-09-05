@@ -59,6 +59,10 @@ sections deferred. Revisit after v1.0 ships.
 - **Cards (v1.0):** dashboard with card art/status, carousel; freeze/unfreeze, report lost/stolen, replacement requests + tracking; spending limits (daily/weekly/monthly).
 - **Balances & transactions (v1.0):** current/available balances and credit limits, live updates; history with pending/cleared; search/filter by date, category, amount, status; transaction details.
 - **UX (v1.0):** dark/light mode, haptics, accessibility (Dynamic Type, VoiceOver).
+- **Localization (v1.0):** English, Estonian and Russian via one app-target
+  String Catalog (`Nexus/Localizable.xcstrings`) — chrome copy (`Strings`)
+  plus domain value labels (`displayName`, `AppError` surfaces); demo/server
+  content and diagnostic text stay English (architecture.md §9.4).
 - **Demo mode (v1.0):** mock data, simulated network calls, in-memory state with reset-to-default; `-demoMode` / `API_ENVIRONMENT = demo`.
 
 ### Deferred (previously v1.1/v1.2)
@@ -73,7 +77,8 @@ sections deferred. Revisit after v1.0 ships.
 - **Real backend.** The app ships demo-first; a backend plugs in later via the §11.4 adapter checklist (four repository protocols + `SessionManagerProtocol` against URLSession). No backend work is scheduled.
 - **Real push infrastructure.** Demo uses `simctl push`; APNs certificate/infrastructure work is deferred until a backend exists.
 - **Third-party banking SDK.** The default transport is URLSession (architecture.md §6.2); an SDK adapter is an alternative, not a requirement.
-- **App Store submission**, macOS/multi-platform, localization beyond English.
+- **App Store submission**, macOS/multi-platform, additional locales
+  beyond English/Estonian/Russian.
 - **git/CI hosting setup** beyond the local repo + workflow files (user initializes the repo once this document and tasks.md are approved).
 
 ## 5. Known tensions & decisions

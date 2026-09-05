@@ -299,6 +299,8 @@
 			knownRegions = (
 				en,
 				Base,
+				et,
+				ru,
 			);
 			mainGroup = 000000000000000000000002;
 			packageReferences = (

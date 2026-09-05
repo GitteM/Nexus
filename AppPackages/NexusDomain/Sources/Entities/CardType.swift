@@ -8,12 +8,13 @@ public enum CardType: String, Codable, CaseIterable, Sendable, Equatable {
 }
 
 public extension CardType {
-    /// Human-readable label for UI, e.g. "Credit".
+    /// Human-readable label for UI, e.g. "Credit". Localized through the
+    /// app's String Catalog at lookup time.
     var displayName: String {
         switch self {
-        case .credit: "Credit"
-        case .debit: "Debit"
-        case .prepaid: "Prepaid"
+        case .credit: String(localized: "Credit")
+        case .debit: String(localized: "Debit")
+        case .prepaid: String(localized: "Prepaid")
         }
     }
 

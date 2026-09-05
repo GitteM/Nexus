@@ -340,5 +340,6 @@ namespace, previews); Route cases + app-target AppContainer wiring; `Strings`
 ## 3. Non-goals (for now)
 
 Real backend, real push infrastructure, third-party banking SDK, App Store
-submission, localization beyond English, macOS/multi-platform — same list as
-ROADMAP.md §4 (out of scope); keep that list single-sourced there.
+submission, additional locales beyond English/Estonian/Russian,
+macOS/multi-platform — same list as ROADMAP.md §4 (out of scope); keep that
+list single-sourced there.

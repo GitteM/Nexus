@@ -3,9 +3,15 @@ import Foundation
 /// Single source of UI copy.
 ///
 /// Every user-facing string that shared components and screens render goes
-/// through `String(localized:)` here — never a literal at a call site. Real
-/// translations land later (English only for now); this enum is the
-/// localization seam.
+/// through `String(localized:)` here — never a literal at a call site.
+/// Translations ship in the app target's String Catalog
+/// (`Nexus/Localizable.xcstrings`, English/Estonian/Russian): lookups from
+/// package code resolve against the running app's main bundle, so this seam
+/// needs no per-module bundles. New copy must be added through this enum;
+/// after a copy change, add the new key to the catalog by hand (mirroring
+/// the literal: strings → `%@`, integers → `%lld`; see architecture.md
+/// §9.4 — the CLI extractor is not type-aware and must not be merged
+/// blindly).
 ///
 /// Copy that describes a *domain* value stays on the domain type
 /// (`SessionStatus.displayName`, `CardStatus.displayName`, `AppError`
@@ -43,6 +49,18 @@ public enum Strings {
 
         /// Title of the alert shown when adding an offer fails.
         public static let addOfferFailedTitle = String(localized: "Couldn't Add Card")
+
+        /// VoiceOver label for one card-front page without a number tail,
+        /// e.g. "Credit card, Active".
+        public static func cardAccessibility(typeName: String, status: String) -> String {
+            String(localized: "\(typeName) card, \(status)")
+        }
+
+        /// VoiceOver label for one card-front page with a number tail,
+        /// e.g. "Credit card ending in 4821, Active".
+        public static func cardAccessibility(typeName: String, lastFour: String, status: String) -> String {
+            String(localized: "\(typeName) card ending in \(lastFour), \(status)")
+        }
     }
 
     public enum CardDetail {
@@ -77,13 +95,20 @@ public enum Strings {
         public static let activitySection = String(localized: "Account activity")
         public static let transactionsRow = String(localized: "Transactions")
 
-        /// Title of the per-period set-limit sheet: "Set Daily limit".
+        /// Title of the per-period set-limit sheet: "Set daily limit".
+        /// Period adjectives arrive title-cased (row labels) and are
+        /// lowercased at the call site for sentence case in the title.
         public static func setLimitTitle(period: String) -> String {
             String(localized: "Set \(period) limit")
         }
 
         public static let amountPlaceholder = String(localized: "Amount")
         public static let save = String(localized: "Save")
+
+        /// VoiceOver label prefixing a card status, e.g. "Status: Frozen".
+        public static func statusAccessibility(status: String) -> String {
+            String(localized: "Status: \(status)")
+        }
 
         /// Title of the alert shown when a card action fails.
         public static let actionFailedTitle = String(localized: "Couldn't Update Card")
@@ -100,6 +125,7 @@ public enum Strings {
         public static let filtersSheetTitle = String(localized: "Filter transactions")
         public static let resetFilters = String(localized: "Reset")
         public static let filtersActiveTitle = String(localized: "Filters active")
+        public static let noFilters = String(localized: "No filters")
         public static let edit = String(localized: "Edit")
 
         /// "Showing 3 of 9" — the banner line under the active-filters title.
