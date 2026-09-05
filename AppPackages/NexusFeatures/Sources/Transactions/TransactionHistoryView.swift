@@ -458,6 +458,10 @@ struct TransactionRowView: View {
                 Text(transaction.merchant)
                     .font(.body.weight(.medium))
                     .lineLimit(1)
+                    // One line keeps the row height stable; shrink instead
+                    // of truncating so long merchant names stay readable at
+                    // accessibility sizes.
+                    .minimumScaleFactor(0.7)
                 HStack(spacing: Spacing.xs) {
                     Text(transaction.date.formatted(date: .abbreviated, time: .omitted))
                     if transaction.amount > 0 {
