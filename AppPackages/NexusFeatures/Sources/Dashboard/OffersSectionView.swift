@@ -151,7 +151,7 @@ private struct OfferCardView: View {
                     Label(Strings.Common.added, systemImage: Icons.added)
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(ColorPalette.success)
-                        .accessibilityLabel(Strings.Dashboard.addOffer(offer.title))
+                        .accessibilityLabel(Strings.Dashboard.offerAdded(offer.title))
                         .accessibilityIdentifier(DashboardAccessibility.addedOffer(offer.id))
                 }
             } else {
