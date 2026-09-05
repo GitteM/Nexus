@@ -119,7 +119,11 @@ private struct HistoryContent: View {
                 }
                 .accessibilityIdentifier(TransactionsAccessibility.filterButton)
                 .accessibilityLabel(Strings.Transactions.filterButton)
-                .accessibilityValue(model.query.isDefault ? "No filters" : "Filters active")
+                .accessibilityValue(
+                    model.query.isDefault
+                        ? Strings.Transactions.noFilters
+                        : Strings.Transactions.filtersActiveTitle,
+                )
             }
         }
         .sheet(isPresented: $showFilters) {

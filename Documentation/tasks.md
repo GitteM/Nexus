@@ -144,6 +144,38 @@
 - [ ] Write `README.md` and `CHANGELOG.md` (v1.0 section).
 - **Exit:** **v1.0 shippable** — core cards, controls, balances, transactions, demo mode all working with no backend.
 
+### Day 16 — String Catalog localization en/et/ru (M9)
+
+- [x] One app-target String Catalog, `Nexus/Localizable.xcstrings`
+  (source English + Estonian/Russian); project `knownRegions` += `et`/`ru`;
+  catalog compiled into `en`/`et`/`ru` `.lproj` in the built app
+  (architecture.md §9.4).
+- [x] Every user-facing literal localizable: `Strings` enum copy stays the
+  seam; domain value labels (`CardType`/`CardStatus`/`TransactionStatus`/
+  `TransactionCategory`/`SpendingLimitPeriod`/`SessionStatus` `displayName`)
+  and `AppError` `errorDescription`/`recoverySuggestion` now go through
+  `String(localized:)` — lookups resolve against the running app's main
+  bundle, so package code needs no `Bundle.module`.
+- [x] Folded the last seam bypasses into `Strings`: carousel card VoiceOver
+  summaries, the card-detail "Status: …" pill label, and the transaction
+  filter button's "No filters"/"Filters active" a11y values.
+- [x] et/ru translations for all 138 keys; format keys keep `%@`/`%lld`
+  placeholders. Diagnostics stay deliberately English: `ErrorCategory`/
+  `CardCommandType` `displayName`, `AppError.failureReason`, demo/server
+  content (offer titles, merchants) are not catalog copy.
+- [x] Canary UI tests: `LocalizationUITests` launches with
+  `-AppleLanguages (ru)` / `(et)` and asserts translated chrome on the real
+  view layer (deep-linked card detail).
+- **Verify:** full workspace TestPlan green on iPhone 17; UI canaries pass
+  for both locales; build with zero warnings; `swiftformat` clean.
+  Notes for review: catalog keys are the code literals — after copy
+  changes, add new keys by hand (re-extract to a scratch dir with
+  `xcstringstool extract` to enumerate them; never merge its output
+  blindly — it is not type-aware, architecture.md §9.4); the set-limit
+  sheet title lowercases the period label for sentence case ("Set daily
+  limit"); ROADMAP §4 moves en/et/ru localization into v1.0 scope and
+  limits the out-of-scope note to additional locales.
+
 ---
 
 ---

@@ -9,11 +9,12 @@ public enum TransactionStatus: String, Codable, CaseIterable, Sendable, Equatabl
 }
 
 public extension TransactionStatus {
-    /// Human-readable label for UI, e.g. "Pending".
+    /// Human-readable label for UI, e.g. "Pending". Localized through the
+    /// app's String Catalog at lookup time.
     var displayName: String {
         switch self {
-        case .pending: "Pending"
-        case .cleared: "Cleared"
+        case .pending: String(localized: "Pending")
+        case .cleared: String(localized: "Cleared")
         }
     }
 
@@ -42,17 +43,18 @@ public enum TransactionCategory: String, Codable, CaseIterable, Sendable, Equata
 }
 
 public extension TransactionCategory {
-    /// Human-readable label for UI, e.g. "Groceries".
+    /// Human-readable label for UI, e.g. "Groceries". Localized through
+    /// the app's String Catalog at lookup time.
     var displayName: String {
         switch self {
-        case .dining: "Dining"
-        case .groceries: "Groceries"
-        case .shopping: "Shopping"
-        case .travel: "Travel"
-        case .entertainment: "Entertainment"
-        case .bills: "Bills"
-        case .transfer: "Transfer"
-        case .other: "Other"
+        case .dining: String(localized: "Dining")
+        case .groceries: String(localized: "Groceries")
+        case .shopping: String(localized: "Shopping")
+        case .travel: String(localized: "Travel")
+        case .entertainment: String(localized: "Entertainment")
+        case .bills: String(localized: "Bills")
+        case .transfer: String(localized: "Transfer")
+        case .other: String(localized: "Other")
         }
     }
 

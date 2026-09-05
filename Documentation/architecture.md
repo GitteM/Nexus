@@ -789,6 +789,42 @@ target holds the design language, `SharedUI` holds components.
   place platform-backed values live), plus the **localization seam**: a
   single `Strings` enum using `String(localized:)` — all UI copy goes
   through it. Components and screens import `Design` directly.
+
+  **String Catalog architecture.** Translations ship in **one app-target
+  String Catalog**, `Nexus/Localizable.xcstrings` (English source +
+  Estonian/Russian). Copy lives in package code (`Strings` in `Design`;
+  domain value labels and `AppError` user surfaces in `NexusDomain`), but
+  every lookup omits `bundle:`, so it resolves against the running app's
+  main bundle at runtime (`String(localized:)` with `bundle: nil` →
+  `Bundle.main`; Xcode compiles the catalog into `en`/`et`/`ru` `.lproj`
+  in the app). That is what makes one catalog serve every module with no
+  per-package resources and no `Bundle.module` wiring, and it keeps
+  package unit tests (no app bundle) falling back to the English key.
+  The catalog's keys are the extracted code literals; after a copy
+  change, add the new key (and its et/ru values) to
+  `Nexus/Localizable.xcstrings`. For app-target literals, Xcode's
+  extract-from-code fills the correct format specifiers (`%@` for
+  strings, `%lld` for integers); package-side copy is never auto-
+  extracted, so type the key by hand mirroring the literal — strings →
+  `%@`, integers → `%lld`. The CLI extractor is a *linting aid only*:
+  `xcstringstool extract` does not type-check, so it cannot choose `%@`
+  vs `%lld` and writes `%arg` for interpolations — never merge its
+  output into the catalog blindly. To enumerate new keys after a copy
+  change, extract into a scratch directory (never the repo) and diff:
+  `xcrun xcstringstool extract --modern-localizable-strings
+  --output-directory <scratch-dir> <changed-files>`
+  then add the missing keys by hand.
+  Keys that come from package-side copy are stored with
+  `extractionState: manual`: Xcode reference-checks catalog keys only
+  against the owning (app) target's sources, so a key whose literal
+  lives in a package would otherwise be reported stale ("References to
+  this key could not be found in source code"). `manual` is the
+  truthful state for curated keys, silences that IDE diagnostic, and is
+  editor metadata only — it does not change the compiled output.
+  Non-goals that keep diagnostics stable: `ErrorCategory`/`CardCommandType`
+  `displayName` and `AppError.failureReason` stay hardcoded English
+  (log/support text, never rendered as end-user copy), and demo/server
+  content (offer titles, merchant names) is data, not catalog copy.
 - **Components (`SharedUI` target):** `LoadingView`, `EmptyStateView`,
   `ErrorView`, `SessionStatusIndicator`, `WarningRow`, `InfoRow`,
   `DestructiveButton`, `BackToolbarItem`, `DisconnectedView` (shown when

@@ -442,7 +442,7 @@ private struct StatusPill: View {
         .padding(.vertical, Spacing.xs)
         .background(CardArtwork.foreground.opacity(0.18), in: Capsule())
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Status: \(status.displayName)")
+        .accessibilityLabel(Strings.CardDetail.statusAccessibility(status: status.displayName))
         .accessibilityIdentifier(CardDetailAccessibility.status)
     }
 }
@@ -543,14 +543,14 @@ private struct LimitSetterSheet: View {
                         .keyboardType(.decimalPad)
                         .monospacedDigit()
                 } header: {
-                    Text(Strings.CardDetail.setLimitTitle(period: period.displayName))
+                    Text(Strings.CardDetail.setLimitTitle(period: period.displayName.lowercased()))
                 } footer: {
                     if let currentLimit {
                         Text(formatted(currentLimit))
                     }
                 }
             }
-            .navigationTitle(Strings.CardDetail.setLimitTitle(period: period.displayName))
+            .navigationTitle(Strings.CardDetail.setLimitTitle(period: period.displayName.lowercased()))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
