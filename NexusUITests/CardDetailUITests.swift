@@ -7,25 +7,26 @@ import XCTest
 /// drives the freeze round trip and its failure knob through the real view
 /// layer.
 ///
-/// The demo root (`Nexus/DemoRootView.swift`) shares one mock store graph
-/// for the session and installs the `MockCommandCoordinator` backend echo,
-/// so a freeze in detail persists to the status store and the dashboard
-/// reflects it on return. The `-demoActionState=error` knob makes the
-/// action repository throw, so the failure path leaves the card unchanged.
+/// The demo graph (`Nexus/AppContainer+Dependencies+Demo.swift`) shares one
+/// mock store graph for the session and installs the
+/// `MockCommandCoordinator` backend echo, so a freeze in detail persists to
+/// the status store and the dashboard reflects it on return. The
+/// `-demoActionState=error` knob makes the action repository throw, so the
+/// failure path leaves the card unchanged.
 ///
 /// Accessibility identifiers come from the shared `DashboardAccessibility`
 /// / `CardDetailAccessibility` namespaces and entity ids from the domain
 /// mocks, never from literals; dialog buttons are matched by copy because
 /// system alerts expose no identifier contract.
 final class CardDetailUITests: XCTestCase {
-    /// The `-demoState` values the demo root understands — mirrors
-    /// `DemoRootView.DemoState` (Nexus/DemoRootView.swift).
+    /// The `-demoState` values the demo graph understands — mirrors
+    /// `LaunchArguments.DemoState` (Nexus/AppContainer+Dependencies+Demo.swift).
     private enum DemoState: String {
         case ready
     }
 
-    /// The `-demoActionState` values the demo root understands — mirrors
-    /// `DemoRootView.DemoActionState`.
+    /// The `-demoActionState` values the demo graph understands — mirrors
+    /// `LaunchArguments.DemoActionState`.
     private enum DemoActionState: String {
         case ready
         case error
@@ -44,7 +45,7 @@ final class CardDetailUITests: XCTestCase {
             "-demoActionState=\(actionState.rawValue)",
         ]
         if let openCardID {
-            // Deep-link: the demo root starts with the card's detail pushed,
+            // Deep-link: the demo graph starts with the card's detail pushed,
             // so these tests never tap through the cold dashboard (fresh CI
             // simulators can drop the very first tap — the app is rendered
             // but hit-testing is not settled).

@@ -8,12 +8,12 @@ import XCTest
 /// card's detail, and drives the account-activity screen — balance header,
 /// filtered history, and the transaction detail deep view.
 ///
-/// The demo graph (`Nexus/DemoRootView.swift`) seeds the shared mock
-/// balance/transaction repositories, so the screens exercise the real
-/// model/view orchestration over the mocks. Accessibility identifiers come
-/// from the shared `…Accessibility` namespaces and domain mock ids, never
-/// from literals; system search fields are matched by type because they
-/// expose no identifier contract.
+/// The demo graph (`Nexus/AppContainer+Dependencies+Demo.swift`) seeds the
+/// shared mock balance/transaction repositories, so the screens exercise the
+/// real model/view orchestration over the mocks. Accessibility identifiers
+/// come from the shared `…Accessibility` namespaces and domain mock ids,
+/// never from literals; system search fields are matched by type because
+/// they expose no identifier contract.
 final class TransactionsUITests: XCTestCase {
     /// `XCUIApplication` is main-actor-isolated, so the helpers must be too.
     @MainActor
