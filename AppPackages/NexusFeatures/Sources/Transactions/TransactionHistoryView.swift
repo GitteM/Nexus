@@ -94,6 +94,15 @@ private struct HistoryContent: View {
                         .onTapGesture {
                             onSelectTransaction(transaction)
                         }
+                        // The row opens the transaction detail: VoiceOver
+                        // announces it as a button and activates it on
+                        // double-tap, not just visually (the list otherwise
+                        // reads rows as static text no screen-reader user
+                        // can open).
+                        .accessibilityAddTraits(.isButton)
+                        .accessibilityAction {
+                            onSelectTransaction(transaction)
+                        }
                         .accessibilityIdentifier(
                             TransactionsAccessibility.transactionRow(transaction.id),
                         )
