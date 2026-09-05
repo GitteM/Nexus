@@ -43,6 +43,27 @@ struct AppContainerTests {
         #expect(container.sessionStatus == .connected)
     }
 
+    @Test func `reset demo drives the replacement dashboard to loaded content`() async throws {
+        let container = AppContainer(mode: .demo)
+        await container.start()
+
+        // Mimic the view's initial load so the first model is settled.
+        let originalModel = try #require(container.dashboardModel)
+        await originalModel.load()
+        #expect(originalModel.viewState == .loaded)
+
+        await container.resetDemo()
+
+        // resetDemo rebuilds the graph: a brand-new dashboard model…
+        let replacement = try #require(container.dashboardModel)
+        #expect(replacement !== originalModel)
+
+        // …and that replacement must be settled, not stranded in `.loading`
+        // waiting on a view `.task` that may never re-fire. Regression for
+        // the reset that left the dashboard on "Loading your cards".
+        #expect(replacement.viewState == .loaded)
+    }
+
     @Test func `live container without a backend reports the configuration gap`() async {
         // baseURL nil means "read the (empty) config" — no backend exists
         // in current builds.
