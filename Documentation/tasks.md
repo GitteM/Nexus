@@ -138,11 +138,12 @@
 
 ### Day 15 — v1.0 hardening (M8)
 
-- [ ] Full test sweep: unit + integration + UI via the workspace TestPlan; CI green (architecture.md §10).
-- [ ] Verify architecture invariants (§13 Step 8): no upward imports/cycles; zero `@unchecked Sendable`; one `AppError`; no `Result` at boundaries; models own + cancel subscription tasks; no sensitive data in logs/caches/configs.
-- [ ] Accessibility pass (Dynamic Type, VoiceOver) across the v1.0 screens.
-- [ ] Write `README.md` and `CHANGELOG.md` (v1.0 section).
+- [x] Full test sweep: unit + integration + UI via the workspace TestPlan; CI green (architecture.md §10).
+- [x] Verify architecture invariants (§13 Step 8): no upward imports/cycles; zero `@unchecked Sendable`; one `AppError`; no `Result` at boundaries; models own + cancel subscription tasks; no sensitive data in logs/caches/configs.
+- [x] Accessibility pass (Dynamic Type, VoiceOver) across the v1.0 screens.
+- [x] Write `README.md` and `CHANGELOG.md` (v1.0 section).
 - **Exit:** **v1.0 shippable** — core cards, controls, balances, transactions, demo mode all working with no backend.
+- **Verify:** full workspace TestPlan green on iPhone 17 (Domain 161/20, Data 179/20, Features 87/9 — incl. the new empty-feed test — NexusTests 7/2, 11 UI tests across the 4 UI suites incl. Localization canaries), zero build warnings on the captured run log, `swiftformat` clean. Notes for review: the branch opens by closing the read-only architecture (§13 Step 8) and accessibility audits whose findings landed earlier on this branch — VoiceOver activation on transaction history rows (`.isButton` trait + activate action), the added-offer marker announces "<offer> added" instead of a nonexistent "Add <offer>" action (new `%@ added` catalog key, en/et/ru), TransactionDetail `.loading`/`.error` preview factories plus the history empty-feed preview/test, Dynamic Type `minimumScaleFactor` on merchant and offer-card copy, and the deliberate card-art cap comment on CardDetail; residuals for on-device human QA: the spoken form of the "Card ••4821" nav-title bullets and the composition root's per-route model cache (deliberate per PR #26; cleared on demo reset). Root `README.md` created and `Documentation/CHANGELOG.md` written at v1.0 per plan; the per-PR CI gate result follows on the hardening PR (workflow mirrors this local sweep).
 
 ### Day 16 — String Catalog localization en/et/ru (M9)
 

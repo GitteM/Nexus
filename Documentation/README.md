@@ -18,7 +18,7 @@ table below, then the narrower maps in `AGENTS.md` and
 | `CONTRIBUTING.md` | Conventional Commits spec, branches, PR process, setup, testing | Writing a commit or opening a PR |
 | `README.md` | This index | Orientation |
 | `appspec.md` | App **behavior** spec: per-feature rules, flows, acceptance criteria | Feature work needing behavior detail — read only the § for your feature; §2.2 (Card Controls) is the worked example |
-| `CHANGELOG.md` | Release notes | **Empty on purpose** — written at v1.0 (Day 15, tasks.md M8) |
+| `CHANGELOG.md` | Release notes | v1.0 and later release notes |
 
 ## Decision table (short form)
 
@@ -52,5 +52,5 @@ table below, then the narrower maps in `AGENTS.md` and
 
 The app code lives at the workspace root: `Nexus.xcworkspace`,
 `AppPackages/` (the three SPM packages), the `Nexus/` app target, and
-`TestPlan.xctestplan`. Root `README.md` and `CHANGELOG.md` are created at
-v1.0 (see `tasks.md`).
+`TestPlan.xctestplan`. Root `README.md` is the project readme (written at
+v1.0, Day 15); release notes live in `CHANGELOG.md` (this folder).
