@@ -488,6 +488,10 @@ private struct DetailCardFront: View {
             }
         }
         .padding(Spacing.lg)
+        // The art is a fixed-shape card (1.586 ratio), so on-art text stops
+        // growing at `.accessibility1`; beyond it the fixed height cannot
+        // keep the name/status row inside the card. Text below the cap that
+        // still cannot fit shrinks via `minimumScaleFactor`.
         .dynamicTypeSize(...DynamicTypeSize.accessibility1)
         .frame(maxWidth: .infinity)
         .foregroundStyle(CardArtwork.foreground)

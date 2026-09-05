@@ -124,6 +124,10 @@ private struct OfferCardView: View {
                     .font(.headline)
                     .foregroundStyle(ColorPalette.label)
                     .lineLimit(2)
+                    // The offer cards are fixed-width; shrink instead of
+                    // ellipsizing mid-word so titles stay readable at
+                    // accessibility sizes.
+                    .minimumScaleFactor(0.85)
                     .accessibilityAddTraits(.isHeader)
                 // The subtitle block always reserves two caption lines: a
                 // hidden, accessibility-deaf placeholder sizes it, so every
@@ -139,6 +143,7 @@ private struct OfferCardView: View {
                         .font(.caption)
                         .foregroundStyle(ColorPalette.secondaryLabel)
                         .lineLimit(2)
+                        .minimumScaleFactor(0.85)
                 }
             }
 
@@ -151,7 +156,7 @@ private struct OfferCardView: View {
                     Label(Strings.Common.added, systemImage: Icons.added)
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(ColorPalette.success)
-                        .accessibilityLabel(Strings.Dashboard.addOffer(offer.title))
+                        .accessibilityLabel(Strings.Dashboard.offerAdded(offer.title))
                         .accessibilityIdentifier(DashboardAccessibility.addedOffer(offer.id))
                 }
             } else {

@@ -88,5 +88,41 @@
                 ),
             )
         }
+
+        /// Loading preview: the feed fetch parks forever
+        /// (`shouldNeverComplete`), so `load()` never leaves `.loading`.
+        static func loadingPreview(
+            cardID: String,
+            transactionID: String,
+        ) -> TransactionDetailModel {
+            let transactionRepository = MockTransactionRepository(
+                seed: [cardID: cardID == Card.mockCreditCard.id ? Transaction.mockDefaults : []],
+            )
+            transactionRepository.shouldNeverComplete = true
+            return TransactionDetailModel(
+                cardID: cardID,
+                transactionID: transactionID,
+                transactionRepository: transactionRepository,
+            )
+        }
+
+        /// Error preview: the feed fetch throws (default
+        /// `.apiConnectionFailed`), so `load()` lands in `.error`.
+        static func errorPreview(
+            cardID: String,
+            transactionID: String,
+            error: AppError = .apiConnectionFailed(),
+        ) -> TransactionDetailModel {
+            let transactionRepository = MockTransactionRepository(
+                seed: [cardID: cardID == Card.mockCreditCard.id ? Transaction.mockDefaults : []],
+            )
+            transactionRepository.shouldThrowError = true
+            transactionRepository.thrownError = error
+            return TransactionDetailModel(
+                cardID: cardID,
+                transactionID: transactionID,
+                transactionRepository: transactionRepository,
+            )
+        }
     }
 #endif

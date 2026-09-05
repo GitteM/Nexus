@@ -143,6 +143,19 @@ struct TransactionHistoryModelTests {
         await waitUntil { transactionRepository.subscribeToTransactionsCallCount == 1 }
     }
 
+    @Test func `a card with no activity loads an empty feed`() async {
+        // The debit card carries no seeded transactions: the feed fetch
+        // resolves empty, the screen still lands `.loaded` (the view shows
+        // its empty state rather than an error).
+        let (model, _, _) = makeModel(cardID: Card.mockDebitCard.id, transactions: [])
+
+        await model.load()
+
+        #expect(model.viewState == .loaded)
+        #expect(model.transactions.isEmpty)
+        #expect(model.filteredTransactions.isEmpty)
+    }
+
     @Test func `load is idempotent once the screen is loaded`() async {
         let (model, balanceRepository, transactionRepository) = makeModel()
 
@@ -271,6 +284,7 @@ struct TransactionDetailModelTests {
             transactionRepository: repository,
         )
 
+        #expect(model.viewState == .loading)
         await model.load()
 
         #expect(model.viewState == .loaded(Transaction.mockFlightPurchase))

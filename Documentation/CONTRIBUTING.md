@@ -170,12 +170,13 @@ Configs live in `Configs/` (`Debug.xcconfig`, `Release.xcconfig`,
 Keep docs in sync with the change:
 
 - Root `README.md` / `Documentation/CHANGELOG.md` — user-facing features
-  (both are empty placeholders until v1.0, Day 15 — see tasks.md).
+  (written at the v1.0 Day-15 hardening — see tasks.md).
 - `Documentation/architecture.md` — when a pattern, target, or invariant
   changes.
 - `Documentation/AGENTS.md` and `.codewhale/instructions.md` — when
   workflows or agent conventions change.
-- `Documentation/tasks.md` / `ROADMAP.md` — day/milestone status.
+- `Documentation/tasks.md` — day/milestone status; `ROADMAP.md` — release
+  framing + decision log.
 - `Documentation/features.md` — product scope; resolve scope conflicts in
   `ROADMAP.md` §5 (architecture.md wins).
 

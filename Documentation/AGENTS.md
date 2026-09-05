@@ -10,7 +10,8 @@
 > [features.md](features.md) (product) · [appspec.md](appspec.md) (feature
 > behavior/acceptance) · [CONTRIBUTING.md](CONTRIBUTING.md) (commits/PRs) ·
 > [README.md](README.md) (index for this folder & read-when map) ·
-> [tasks.md](tasks.md) / [ROADMAP.md](ROADMAP.md) (day/milestone state).
+> [tasks.md](tasks.md) (day state) / [ROADMAP.md](ROADMAP.md) (release
+> framing + decision log).
 
 ## 1. Repo at a glance
 
@@ -51,7 +52,7 @@ touch:
 | Verify you kept the rules | architecture.md §13 Step 8 (invariants checklist) |
 | Commit / PR rules | CONTRIBUTING.md |
 | Product scope vs. decisions | features.md (scope); the feature's appspec.md §2.x for rules/acceptance; conflicts resolved in ROADMAP.md §5 (architecture.md wins) |
-| Current day/milestone state | tasks.md (checkboxes) + ROADMAP.md; confirm with `git log` |
+| Current day/milestone state | tasks.md (checkboxes); confirm with `git log` |
 
 ## 3. Trunk-based workflow (critical)
 

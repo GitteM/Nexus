@@ -6,18 +6,19 @@ import XCTest
 /// Dashboard UI suite: launches the app with `-demoMode` and asserts the
 /// ready, loading, and error states render on the real view layer.
 ///
-/// The demo root (`Nexus/DemoRootView.swift`) parses the `-demoState` knob
-/// and builds the dashboard over the shared mock repositories, so these
-/// tests exercise the same orchestration code previews and demo mode run —
-/// only the transport/persistence edges are faked. Replaces the launch
-/// smoke test, which only proved the runner installed.
+/// The demo graph (`Nexus/AppContainer+Dependencies+Demo.swift`,
+/// `LaunchArguments`) parses the `-demoState` knob and builds the dashboard
+/// over the shared mock repositories, so these tests exercise the same
+/// orchestration code previews and demo mode run — only the
+/// transport/persistence edges are faked. Replaces the launch smoke test,
+/// which only proved the runner installed.
 ///
 /// Accessibility identifiers come from the shared `DashboardAccessibility`
 /// namespace (and entity ids from the domain mocks), never from literals —
 /// the views set exactly what these tests query.
 final class DashboardUITests: XCTestCase {
-    /// The `-demoState` values the demo root understands — mirrors
-    /// `DemoRootView.DemoState` (Nexus/DemoRootView.swift).
+    /// The `-demoState` values the demo graph understands — mirrors
+    /// `LaunchArguments.DemoState` (Nexus/AppContainer+Dependencies+Demo.swift).
     ///
     /// UI tests launch the app as a black box and cannot import the app's
     /// type, so the raw values are the process-boundary contract and must
@@ -30,7 +31,7 @@ final class DashboardUITests: XCTestCase {
         case loading
         case error
 
-        /// The launch-argument element the demo root parses,
+        /// The launch-argument element the demo graph parses,
         /// e.g. "-demoState=error".
         var launchArgument: String {
             "-demoState=\(rawValue)"

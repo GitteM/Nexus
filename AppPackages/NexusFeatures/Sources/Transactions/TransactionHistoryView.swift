@@ -94,6 +94,15 @@ private struct HistoryContent: View {
                         .onTapGesture {
                             onSelectTransaction(transaction)
                         }
+                        // The row opens the transaction detail: VoiceOver
+                        // announces it as a button and activates it on
+                        // double-tap, not just visually (the list otherwise
+                        // reads rows as static text no screen-reader user
+                        // can open).
+                        .accessibilityAddTraits(.isButton)
+                        .accessibilityAction {
+                            onSelectTransaction(transaction)
+                        }
                         .accessibilityIdentifier(
                             TransactionsAccessibility.transactionRow(transaction.id),
                         )
@@ -449,6 +458,10 @@ struct TransactionRowView: View {
                 Text(transaction.merchant)
                     .font(.body.weight(.medium))
                     .lineLimit(1)
+                    // One line keeps the row height stable; shrink instead
+                    // of truncating so long merchant names stay readable at
+                    // accessibility sizes.
+                    .minimumScaleFactor(0.7)
                 HStack(spacing: Spacing.xs) {
                     Text(transaction.date.formatted(date: .abbreviated, time: .omitted))
                     if transaction.amount > 0 {
@@ -487,6 +500,14 @@ struct TransactionRowView: View {
         NavigationStack {
             TransactionHistoryView()
                 .environment(TransactionHistoryModel.preview(cardID: Card.mockCreditCard.id))
+                .environment(Router())
+        }
+    }
+
+    #Preview("Loaded — no activity") {
+        NavigationStack {
+            TransactionHistoryView()
+                .environment(TransactionHistoryModel.preview(cardID: Card.mockDebitCard.id))
                 .environment(Router())
         }
     }

@@ -124,6 +124,30 @@ private struct DetailContent: View {
 }
 
 #if DEBUG
+    #Preview("Loading") {
+        NavigationStack {
+            TransactionDetailView()
+                .environment(
+                    TransactionDetailModel.loadingPreview(
+                        cardID: Transaction.mockFlightPurchase.cardId,
+                        transactionID: Transaction.mockFlightPurchase.id,
+                    ),
+                )
+        }
+    }
+
+    #Preview("Error") {
+        NavigationStack {
+            TransactionDetailView()
+                .environment(
+                    TransactionDetailModel.errorPreview(
+                        cardID: Transaction.mockFlightPurchase.cardId,
+                        transactionID: Transaction.mockFlightPurchase.id,
+                    ),
+                )
+        }
+    }
+
     #Preview("Loaded") {
         NavigationStack {
             TransactionDetailView()

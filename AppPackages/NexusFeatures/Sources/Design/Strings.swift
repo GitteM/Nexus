@@ -47,6 +47,13 @@ public enum Strings {
             String(localized: "Add \(title)")
         }
 
+        /// Accessibility label for the managed-card marker on an offer that
+        /// was already added, e.g. "Cashback Card added" — a status readout,
+        /// not the add action (the marker is not a control).
+        public static func offerAdded(_ title: String) -> String {
+            String(localized: "\(title) added")
+        }
+
         /// Title of the alert shown when adding an offer fails.
         public static let addOfferFailedTitle = String(localized: "Couldn't Add Card")
 
