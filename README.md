@@ -71,8 +71,9 @@ Documentation/             operating guide, architecture, specs, roadmap
 Start at `Documentation/README.md` — the index maps every file to the
 task that needs it. Highlights: `AGENTS.md` (operating guide, gates,
 invariants), `architecture.md` (blueprint; §14 is the one-paragraph
-summary), `features.md` / `appspec.md` (scope and behavior), `tasks.md` /
-`ROADMAP.md` (day and milestone state), `CONTRIBUTING.md` (commits/PRs).
+summary), `features.md` / `appspec.md` (scope and behavior), `tasks.md`
+(day state), `ROADMAP.md` (release framing + decision log),
+`CONTRIBUTING.md` (commits/PRs).
 
 ## Scope notes
 

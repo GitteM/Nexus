@@ -35,7 +35,7 @@ authority chain lives in `Documentation/README.md` (Conventions).
    logs/caches/configs.
 5. **Docs stay in sync.** User-facing change → README/CHANGELOG; pattern or
    target change → `architecture.md`; workflow change → `AGENTS.md`;
-   milestone/day state → `tasks.md` / `ROADMAP.md`.
+   milestone/day state → `tasks.md`; release/scope decisions → `ROADMAP.md`.
 
 ## Reality beats prose
 
@@ -54,7 +54,7 @@ authority chain lives in `Documentation/README.md` (Conventions).
 | Architecture-sensitive code | `architecture.md`: §2 layering; the § for the layer you touch — §3 module map, §4 Domain, §5 `AppError`, §6 Data, §7 config/logging, §8 navigation, §9 presentation, §11 app target; §14 for one-paragraph recall; §13 Step 8 to verify invariants |
 | Commit / PR rules | `Documentation/CONTRIBUTING.md` |
 | Product scope + behavior | `Documentation/features.md` (scope overview) → `appspec.md` §2.x (rules/acceptance for the feature you touch); conflicts → `ROADMAP.md` §5 (architecture.md wins on patterns) |
-| Day / milestone status | `Documentation/tasks.md` + `ROADMAP.md` |
+| Day / milestone status | `Documentation/tasks.md` (checkboxes) + `git log` |
 | Which doc does what | `Documentation/README.md` |
 
 ## Repo at a glance

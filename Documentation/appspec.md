@@ -5,9 +5,12 @@
 > code must satisfy. It refines the scope overview in
 > [features.md](features.md) — it does not restate it.
 >
-> **Status (2026-09-03):** skeleton with one worked example — **Card
-> Controls** (§2.2). Remaining sections fill in the same PR that implements
-> each feature; see the status tag at the top of every section.
+> **Status (2026-09-05):** the shipped v1.0 features are filled — §2.1
+> (M4), §2.2 (M5), §2.3 (M6), §2.9 (M7) settled, each recorded in its
+> milestone PR; §2.8 fills per feature as UX decisions land; §2.4–§2.7 are
+> deferred placeholders (not in the active plan). Updates land in the same
+> PR that implements or changes the behavior; see the status tag at the top
+> of every section.
 >
 > **Precedence.** `features.md` wins on *scope*; this file wins on *behavior
 > detail*; `architecture.md` wins on *patterns* (how things are built);
@@ -275,7 +278,7 @@ namespace, previews); Route cases + app-target AppContainer wiring; `Strings`
 
 ### 2.4 Payments
 - **Status:** deferred — not in the active plan; retained for reference
-  (tasks.md/ROADMAP.md now stop at v1.0, Day 15).
+  (deferred indefinitely — see ROADMAP.md §2).
 - **Scope pointer:** features.md §Payments.
 - **Open decisions to record here if reactivated:** minimum/full/custom
   validation rules, confirmation + receipt content, insufficient-funds
@@ -283,7 +286,7 @@ namespace, previews); Route cases + app-target AppContainer wiring; `Strings`
 
 ### 2.5 Security — biometrics, app lock, timeout, PIN
 - **Status:** deferred — not in the active plan; retained for reference
-  (tasks.md/ROADMAP.md now stop at v1.0, Day 15).
+  (deferred indefinitely — see ROADMAP.md §2).
 - **Scope pointer:** features.md §Security.
 - **Open decisions to record here if reactivated:** PIN length/retry
   policy, timeout duration (features.md says "e.g. 2 minutes"), which
@@ -295,14 +298,14 @@ namespace, previews); Route cases + app-target AppContainer wiring; `Strings`
 
 ### 2.6 iOS Integrations — Apple Pay, Wallet extension
 - **Status:** deferred — not in the active plan; retained for reference
-  (tasks.md/ROADMAP.md now stop at v1.0, Day 15).
+  (deferred indefinitely — see ROADMAP.md §2).
 - **Scope pointer:** features.md §iOS-Specific Integrations. If reactivated,
   this adds the `NexusWalletExtension` target — update architecture.md §3
   then.
 
 ### 2.7 Alerts & Insights
 - **Status:** deferred — not in the active plan; retained for reference
-  (tasks.md/ROADMAP.md now stop at v1.0, Day 15).
+  (deferred indefinitely — see ROADMAP.md §2).
 - **Scope pointer:** features.md §Controls & Alerts, §Insights & Tools.
 - **Open decisions to record here if reactivated:** alert thresholds ("large
   purchase" = what amount?), low-balance rule, alert center behavior.
@@ -341,5 +344,5 @@ namespace, previews); Route cases + app-target AppContainer wiring; `Strings`
 
 Real backend, real push infrastructure, third-party banking SDK, App Store
 submission, additional locales beyond English/Estonian/Russian,
-macOS/multi-platform — same list as ROADMAP.md §4 (out of scope); keep that
-list single-sourced there.
+macOS/multi-platform — the same list as ROADMAP.md §2 (out of scope); keep
+that list single-sourced there.

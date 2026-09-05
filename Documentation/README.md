@@ -13,7 +13,7 @@ table below, then the narrower maps in `AGENTS.md` and
 | `AGENTS.md` | Agent operating guide: repo at a glance, workflow, commit rules, Definition of Done, invariants | Start of any task (Codewhale: `.codewhale/instructions.md` is the short injected summary) |
 | `architecture.md` | Architecture blueprint / porting guide (1,300+ lines). §14 = one-paragraph summary; §13 Step 8 = invariants checklist | Any architecture-sensitive change — read only the § for the layer you touch |
 | `features.md` | Product scope ("the what") | Feature work, scope questions |
-| `ROADMAP.md` | Releases, milestones, scope decisions (§5 resolves doc conflicts — architecture.md wins) | Milestone/planning questions |
+| `ROADMAP.md` | Release framing + decision log (§5 resolves doc conflicts — architecture.md wins) | Release/scope questions |
 | `tasks.md` | Day-by-day task breakdown with checkboxes; the live project state | "Where are we / what is next?" — confirm with `git log` |
 | `CONTRIBUTING.md` | Conventional Commits spec, branches, PR process, setup, testing | Writing a commit or opening a PR |
 | `README.md` | This index | Orientation |

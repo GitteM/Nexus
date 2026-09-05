@@ -174,7 +174,7 @@
   `xcstringstool extract` to enumerate them; never merge its output
   blindly — it is not type-aware, architecture.md §9.4); the set-limit
   sheet title lowercases the period label for sentence case ("Set daily
-  limit"); ROADMAP §4 moves en/et/ru localization into v1.0 scope and
+  limit"); ROADMAP §2 adds en/et/ru localization to v1.0 scope and
   limits the out-of-scope note to additional locales.
 
 ---
@@ -184,5 +184,7 @@
 ## Notes
 
 - If a day overflows, split the branch and carry the remainder to the next day — never merge red, never stretch a branch past one day.
-- The milestone table in `ROADMAP.md` is the source of truth for scope; keep `tasks.md` in sync when either changes.
+- Day and milestone state lives here (checkboxes + `git log`); the scope
+  catalog lives in `features.md`; `ROADMAP.md` holds release framing and
+  the decision log (§5). Keep this file in sync when any of them change.
 - Git is initialized by the user **after** ROADMAP.md and tasks.md are approved — Day 1 assumes the repo exists.
