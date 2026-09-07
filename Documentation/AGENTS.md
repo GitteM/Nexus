@@ -120,6 +120,32 @@ that you did, and confirm nothing but docs changed.
 > Xcode 26.6's package-graph dependency scan on first generation. Do not
 > chase them as a gate violation; ignore or re-run once.
 
+> **Known tooling noise — UIKit internal asserts from SwiftUI system
+> controls (not a DoD failure).** Two error-level `com.apple.UIKit` console
+> lines appear on the iOS 26 simulator (verified iOS 26.5 / Xcode 26.6).
+> Both are UIKit-internal ordering asserts from *SwiftUI's own* system
+> controls — Nexus has no manual `UITextView`/`UITextField` code, so there
+> is no app-side fix and no lifecycle to reorder:
+> - `_dictationButton not yet initialized when setting up for the large
+>   content viewer.` (`UIKit:Assert`) — ×2 every time Transaction History
+>   is pushed. The screen's `.searchable` field (`TransactionHistoryView`)
+>   is registered for the Large Content Viewer during search-controller
+>   setup, before any interaction. The CardDetail limit-setter `TextField`
+>   does **not** trigger it (verified by driving the sheet).
+> - `Called -[UIContextMenuInteraction updateVisibleMenuWithBlock:] while
+>   no context menu is visible. This won't do anything.` (`UIKit:UILog`) —
+>   ×1 per item selection in the Filters sheet's SwiftUI `Menu` rows
+>   (`FilterSheetView` in `TransactionHistoryView`); SwiftUI calls the
+>   update one beat after the selection already dismissed the menu.
+> Do not chase these or reach for `OS_ACTIVITY_MODE=suppress` — it silences
+> all os_log, including Nexus's own diagnostics. Full-log sweeps during
+> XCUITest runs add the same-verdict simulator/instrumentation noise:
+> MapKit AX-bundle dlopen failures on every launch (`Symbol not found:
+> _MNGetHoursAndMinutesForTimeInterval`), `com.apple.dt.xctest`
+> automation/idle-animation messages, and CoreHaptics
+> `hapticpatternlibrary.plist`-missing errors. Verified on the iOS 26.5
+> simulator only; behavior on older OS versions or devices is unconfirmed.
+
 ## 6. Architecture invariants (from architecture.md §13 Step 8)
 
 Verify these when you touch architecture-sensitive code:
