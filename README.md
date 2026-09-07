@@ -39,6 +39,14 @@ UI tests additionally understand `-demoState`, `-demoActionState`, and
 `-demoOpenCard` launch knobs (parsed in
 `Nexus/AppContainer+Dependencies+Demo.swift`).
 
+## Demo
+
+App feature examples of the demo:
+
+<video src="Documentation/transactions.mp4" controls="controls" width="320"></video>
+
+<video src="Documentation/freeze.mp4" controls="controls" width="320"></video>
+
 ## Test
 
 The workspace TestPlan aggregates the unit, integration, and UI suites:
