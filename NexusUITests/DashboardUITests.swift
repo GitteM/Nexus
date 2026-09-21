@@ -15,7 +15,9 @@ import XCTest
 ///
 /// Accessibility identifiers come from the shared `DashboardAccessibility`
 /// namespace (and entity ids from the domain mocks), never from literals —
-/// the views set exactly what these tests query.
+/// the views set exactly what these tests query. Copy that is not a stable
+/// identifier (the navigation title, the retry label) is read from the shared
+/// `Strings` catalog rather than retyped here.
 final class DashboardUITests: XCTestCase {
     /// The `-demoState` values the demo graph understands — mirrors
     /// `LaunchArguments.DemoState` (Nexus/AppContainer+Dependencies+Demo.swift).
@@ -53,7 +55,7 @@ final class DashboardUITests: XCTestCase {
     func testReadyStateRendersCarouselAndOffers() {
         let app = launchApp(state: .ready)
 
-        XCTAssertTrue(app.navigationBars["Dashboard"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.navigationBars[Strings.Dashboard.title].waitForExistence(timeout: 10))
         XCTAssertTrue(app.descendants(matching: .any)[DashboardAccessibility.carousel]
             .waitForExistence(timeout: 10))
 
@@ -97,7 +99,8 @@ final class DashboardUITests: XCTestCase {
     func testLoadingStateRendersLoadingSurface() {
         let app = launchApp(state: .loading)
 
-        XCTAssertTrue(app.staticTexts["Loading your cards"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.descendants(matching: .any)[DashboardAccessibility.loadingSurface]
+            .waitForExistence(timeout: 10))
         XCTAssertFalse(app.descendants(matching: .any)[DashboardAccessibility.carousel].exists)
     }
 
@@ -107,9 +110,9 @@ final class DashboardUITests: XCTestCase {
     func testErrorStateRendersErrorSurfaceWithRetry() {
         let app = launchApp(state: .error)
 
-        XCTAssertTrue(app.staticTexts["We couldn't reach the server."]
+        XCTAssertTrue(app.descendants(matching: .any)[DashboardAccessibility.errorSurface]
             .waitForExistence(timeout: 10))
-        XCTAssertTrue(app.buttons["Retry"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons[Strings.Common.retry].waitForExistence(timeout: 5))
         XCTAssertFalse(app.descendants(matching: .any)[DashboardAccessibility.carousel].exists)
     }
 
@@ -132,6 +135,7 @@ final class DashboardUITests: XCTestCase {
         // The dashboard must come back to loaded content — not stay on the
         // loading surface after the model swap.
         XCTAssertTrue(card.waitForExistence(timeout: 10))
-        XCTAssertFalse(app.staticTexts["Loading your cards"].exists)
+        XCTAssertFalse(app.descendants(matching: .any)[DashboardAccessibility.loadingSurface]
+            .exists)
     }
 }

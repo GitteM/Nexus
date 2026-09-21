@@ -35,4 +35,10 @@ public enum DashboardAccessibility {
     public static func addedOffer(_ offerID: String) -> String {
         "dashboard.offer.added.\(offerID)"
     }
+
+    /// The loading surface shown while the dashboard's first fetch runs.
+    public static let loadingSurface = "dashboard.loading"
+
+    /// The error surface shown when the dashboard's fetch fails.
+    public static let errorSurface = "dashboard.error"
 }
