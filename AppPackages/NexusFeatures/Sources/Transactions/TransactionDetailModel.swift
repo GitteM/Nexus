@@ -18,12 +18,12 @@ public final class TransactionDetailModel {
 
     private let cardID: String
     private let transactionID: String
-    private let transactionRepository: TransactionRepositoryProtocol
+    private let transactionRepository: any TransactionRepositoryProtocol
 
     public init(
         cardID: String,
         transactionID: String,
-        transactionRepository: TransactionRepositoryProtocol
+        transactionRepository: any TransactionRepositoryProtocol
     ) {
         self.cardID = cardID
         self.transactionID = transactionID

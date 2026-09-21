@@ -70,17 +70,17 @@ public final class CardDetailModel {
     public private(set) var lastActionSequence = 0
 
     private let cardID: String
-    private let cardRepository: CardRepositoryProtocol
-    private let statusRepository: CardStatusRepositoryProtocol
-    private let actionRepository: CardActionRepositoryProtocol
+    private let cardRepository: any CardRepositoryProtocol
+    private let statusRepository: any CardStatusRepositoryProtocol
+    private let actionRepository: any CardActionRepositoryProtocol
 
     private let subscriptionBox = CardDetailSubscriptionBox()
 
     public init(
         cardID: String,
-        cardRepository: CardRepositoryProtocol,
-        statusRepository: CardStatusRepositoryProtocol,
-        actionRepository: CardActionRepositoryProtocol
+        cardRepository: any CardRepositoryProtocol,
+        statusRepository: any CardStatusRepositoryProtocol,
+        actionRepository: any CardActionRepositoryProtocol
     ) {
         self.cardID = cardID
         self.cardRepository = cardRepository

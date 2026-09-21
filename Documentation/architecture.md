@@ -123,7 +123,7 @@ umbrella modules**.
 |---|---|---|
 | **NexusDomain** | `Entities`, `RepositoryProtocols`, `ServiceProtocols` | nothing |
 | **NexusData** | `Session`, `DataSources`, `Repositories`, `Persistence`, `Logging`, `Mocks` (`#if DEBUG`) | NexusDomain, networking SDK (only in `Session`) |
-| **NexusFeatures** | `Design`, `SharedUI`, `Navigation`, `Dashboard`, `CardDetail` | NexusDomain, NexusData |
+| **NexusFeatures** | `Design`, `SharedUI`, `Navigation`, `Dashboard`, `CardDetail`, `Transactions` | NexusDomain, NexusData |
 | **Nexus app target** | `Nexus`, `NexusTests`, `NexusUITests` | all three packages |
 
 Notes on the map:
@@ -231,9 +231,10 @@ public protocol CardStatusRepositoryProtocol {
 }
 ```
 
-Nexus has four repository protocols: `CardRepositoryProtocol`
+Nexus has six repository protocols: `CardRepositoryProtocol`
 (add/remove/list cards), `CardOffersRepositoryProtocol`,
-`CardStatusRepositoryProtocol`, `CardActionRepositoryProtocol`.
+`CardStatusRepositoryProtocol`, `CardActionRepositoryProtocol`,
+`BalanceRepositoryProtocol`, and `TransactionRepositoryProtocol`.
 
 Each protocol is **`Sendable`**: repositories are stateless boundaries that
 models hand to async child tasks (`async let`, subscriptions) from the
@@ -857,11 +858,10 @@ target holds the design language, `SharedUI` holds components.
   (log/support text, never rendered as end-user copy), and demo/server
   content (offer titles, merchant names) is data, not catalog copy.
 - **Components (`SharedUI` target):** `LoadingView`, `EmptyStateView`,
-  `ErrorView`, `SessionStatusIndicator`, `WarningRow`, `InfoRow`,
-  `DestructiveButton`, `BackToolbarItem`, `DisconnectedView` (shown when
-  the session drops), `AppLoadingView`, `AppErrorView`.
-- **Extensions (`SharedUI`):** `View+Extensions` (row-tap helper, etc.),
-  `Date+Extensions`.
+  `ErrorView`, `WarningRow`, `InfoRow`, `DestructiveButton`,
+  `BackToolbarItem`, `DisconnectedView` (shown when the session drops),
+  `AppLoadingView`, `AppErrorView`.
+- **Extensions (`SharedUI`):** `View+Extensions` (row-tap helper, etc.).
 - **Accessibility identifier contract** — every screen that UI tests query
   sets `.accessibilityIdentifier` from a public namespace in the module that
   owns the view (e.g., `DashboardAccessibility.carousel` / `.card(_:)` in
@@ -949,7 +949,7 @@ per-preview state — compose with the same mock strategy; no new machinery.
 ```swift
 @main
 struct NexusApp: App {
-    private let appContainer = AppContainer()   // one container for the app's life
+    @State private var appContainer = AppContainer()   // one container for the app's life
 
     var body: some Scene {
         WindowGroup {
@@ -966,9 +966,11 @@ struct NexusApp: App {
 built and injected**. Responsibilities:
 
 - Construct the `APISessionManager` (the one SDK-touching object) from config.
-- `createDependencies()` builds the graph **inline, with plain
-  initializers** — there is no factory ladder (§12.1 explains why it was
-  cut): repositories → models → done.
+- Builds the repository/model graph in a concrete `AppDependenciesFactory` —
+  two static factories (`live`, and `demo` under `#if DEBUG`) that return an
+  `AppDependencies` struct holding the session, the six repositories, and the
+  dashboard model. The mode is read once here; consumers never switch on it
+  (§12.1 explains why there is no protocol factory ladder).
 - Exposes `appState: AppState` and owns the state machine.
 - Reacts to **observation, not polling**: `ContentView` calls
   `handleSessionStatusChange(_:)` from `.onChange(of: container.sessionStatus)`
@@ -978,26 +980,46 @@ built and injected**. Responsibilities:
   object, so views never depend on the concrete session class — live and
   demo are interchangeable at the environment boundary (§11.3).
 - Selects **live vs. demo mode** at init — one `Mode` enum, defaulted from
-  the `-demoMode` launch argument; `createDependencies()` switches on it
+  the `-demoMode` launch argument; `AppDependenciesFactory` switches on it
   (demo mode below).
 - Owns the **screen models** for pushed routes: the shell materializes them
   from `.onChange(of: router.routes, initial: true)` — never during body
   evaluation — and the container evicts the ones whose route is gone, so the
   live subscription tasks a model owns end with the screen (§9.1, §13
   Step 8).
-- Provides `retry()` → `reinitialize()` for error recovery.
-- Has a `#if DEBUG` `init(previewState:)` for previews.
+- Provides `retry()` → `start()` for error recovery.
+- Has a `#if DEBUG` `configurePreview(state:)` for previews.
 
 ```swift
-private func createDependencies() {
-    let logger = LoggingService()
-    session = APISessionManager(config: .live)
-    let cardRepository = SwiftDataCardRepository(container: container)
-    dashboardModel = DashboardModel(
-        cardRepository: cardRepository,
-        offersRepository: CardOffersRepository(...),
-        statusRepository: CardStatusRepository(...),
-        logger: logger)
+// AppContainer holds the resolved graph; construction lives in the factory.
+var dependencies: AppDependencies?   // nil only for live-without-a-backend
+
+public init(mode: Mode = AppContainer.defaultMode(), baseURL: URL? = nil) {
+    self.mode = mode
+    router = Router()
+    switch mode {
+    case .demo:
+        #if DEBUG
+            dependencies = AppDependenciesFactory.demo(logger: logger)   // mock graph
+        #else
+            dependencies = nil   // release cannot reach .demo via defaultMode()
+        #endif
+    case .live:
+        dependencies = AppDependenciesFactory.live(
+            baseURL: baseURL ?? APIConfig.baseURL,
+            logger: logger
+        )   // nil when no base URL is configured
+    }
+}
+
+// AppDependencies is a plain struct of protocol surfaces — the session, the
+// six repositories, and the dashboard model — so live and demo differ only in
+// how it is built; consumers never switch on the mode.
+struct AppDependencies {
+    let session: any SessionManagerProtocol
+    let cardRepository: CardRepositoryProtocol
+    // … offers, status, action, balance, transaction …
+    let dashboardModel: DashboardModel
 }
 ```
 
@@ -1019,27 +1041,12 @@ final class AppContainer {
         return environment == "demo" ? .demo : .live
     }
 
-    init(mode: Mode = AppContainer.defaultMode) {
+    init(mode: Mode = AppContainer.defaultMode, baseURL: URL? = nil) {
         self.mode = mode
-        createDependencies()
-    }
-
-    private func createDependencies() {
-        switch mode {
-        case .live:
-            session = APISessionManager(config: .live)
-            dashboardModel = DashboardModel(
-                cardRepository: SwiftDataCardRepository(container: container),
-                offersRepository: CardOffersRepository(...),
-                statusRepository: CardStatusRepository(...),
-                logger: logger)
-        case .demo:
-            session = MockSessionManager()                 // connects instantly
-            dashboardModel = DashboardModel(
-                cardRepository: MockCardRepository(seed: .mockDefaults),
-                offersRepository: MockOffersRepository(seed: .mockDefaults),
-                statusRepository: MockStatusRepository(...),
-                logger: logger)
+        // The factory is the only place the mode is read.
+        dependencies = switch mode {
+        case .live: AppDependenciesFactory.live(baseURL: baseURL ?? APIConfig.baseURL, logger: logger)
+        case .demo: AppDependenciesFactory.demo(logger: logger)   // DEBUG-only mock graph
         }
     }
 }
@@ -1133,7 +1140,7 @@ contract.
 
 **What the app-side adapters must implement (the checklist):**
 
-- The four repository protocols (§4.2), each backed by URLSession REST
+- The six repository protocols (§4.2), each backed by URLSession REST
   calls: decode wire JSON into **DTO structs** (in NexusData), map them to
   domain entities, and surface failures as `AppError` — reuse the
   `JSONDecoder` extension (§6.4) so every decode error is contextualized.
@@ -1426,7 +1433,7 @@ not polling. A `-demoMode` launch argument — or an `API_ENVIRONMENT = demo` bu
 configuration — swaps the composition root to in-memory mocks (no network,
 Keychain, or disk), so the app demos itself on synthetic live events through
 the real stream→model→view pipeline. A future backend plugs in at the
-protocol seam (§11.4): implement the four repository protocols and
+protocol seam (§11.4): implement the six repository protocols and
 `SessionManagerProtocol` against URLSession, and the app goes live with no
 changes above the Data layer. Tests use Swift Testing per package plus a UI
 test target, aggregated in a workspace TestPlan, run in CI with `xcodebuild`.

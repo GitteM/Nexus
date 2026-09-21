@@ -31,6 +31,7 @@ public struct DashboardView: View {
         switch model.viewState {
         case .loading:
             LoadingView(message: Strings.Dashboard.loadingMessage)
+                .accessibilityIdentifier(DashboardAccessibility.loadingSurface)
         case .empty:
             EmptyStateView(
                 systemImage: Icons.card,
@@ -43,6 +44,7 @@ public struct DashboardView: View {
             ErrorView(error: error) {
                 Task { await model.load() }
             }
+            .accessibilityIdentifier(DashboardAccessibility.errorSurface)
         case .loaded:
             DashboardContentView(model: model) { card in
                 router.navigateTo(.cardDetail(cardID: card.id))

@@ -9,7 +9,7 @@ import Entities
 /// `AsyncStream`s.
 public protocol SessionManagerProtocol: Sendable {
     /// Current connection state, observed by the UI through the container
-    /// (`SessionStatusIndicator`, `DisconnectedView`).
+    /// (`DisconnectedView`).
     var sessionStatus: SessionStatus { get }
 
     /// Establishes an authenticated session.

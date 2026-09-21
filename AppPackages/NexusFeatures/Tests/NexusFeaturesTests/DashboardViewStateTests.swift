@@ -3,26 +3,22 @@ import Entities
 import Testing
 
 /// `DashboardViewState` semantics: equality across cases/payloads and the
-/// error projections the view uses.
+/// `error` projection.
 @Suite("Dashboard view state")
 struct DashboardViewStateTests {
-    @Test func `non error states carry no error surfaces`() {
+    @Test func `non error states carry no error`() {
         let states: [DashboardViewState] = [.loading, .loaded, .empty]
 
         for state in states {
             #expect(state.error == nil)
-            #expect(state.errorMessage == nil)
-            #expect(state.recoverySuggestion == nil)
         }
     }
 
-    @Test func `error carries its AppError through every projection`() {
+    @Test func `error carries its AppError through the projection`() {
         let expected = AppError.cardNotFound(cardId: "card-1")
         let state = DashboardViewState.error(expected)
 
         #expect(state.error == expected)
-        #expect(state.errorMessage == expected.errorDescription)
-        #expect(state.recoverySuggestion == expected.recoverySuggestion)
     }
 
     @Test func `equality follows the case and the payload`() {

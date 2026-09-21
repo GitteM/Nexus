@@ -10,7 +10,7 @@ struct SessionManagerProtocolTests {
     /// Pins the protocol surface: sync status read, one-shot throws, and a
     /// stream-based event channel — no completion handlers, no `Result`.
     @Test func `protocol surface holds`() {
-        let session: SessionManagerProtocol = TestSessionManager()
+        let session: any SessionManagerProtocol = TestSessionManager()
         let _: SessionStatus = session.sessionStatus
         let _: (String) -> AsyncStream<BankingEvent> = session.events(for:)
     }

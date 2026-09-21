@@ -2,8 +2,8 @@ import Entities
 import Foundation
 
 /// The date window a transaction-history filter applies to. Presets
-/// relative to "now" — the model passes an explicit `now` so the pure
-/// filter stays testable.
+/// relative to "now" — the caller passes an explicit `now` (and calendar)
+/// so the pure filter stays deterministic under test.
 public enum TransactionDateRange: String, CaseIterable, Sendable, Equatable {
     case all
     case last7Days
@@ -13,9 +13,9 @@ public enum TransactionDateRange: String, CaseIterable, Sendable, Equatable {
 
 extension TransactionDateRange {
     /// The inclusive lower bound of the window relative to `now`; `nil`
-    /// for `.all` (UI copy lives in `Strings.Transactions`).
-    public func lowerBound(relativeTo now: Date) -> Date? {
-        let calendar = Calendar.current
+    /// for `.all` (UI copy lives in `Strings.Transactions`). The calendar is
+    /// injectable so the rule is deterministic under test.
+    public func lowerBound(relativeTo now: Date, calendar: Calendar = .current) -> Date? {
         switch self {
         case .all:
             return nil
@@ -85,7 +85,8 @@ public struct TransactionQuery: Equatable, Sendable {
     public static func filter(
         _ transactions: [Transaction],
         by query: TransactionQuery,
-        now: Date = .now
+        now: Date = .now,
+        calendar: Calendar = .current
     ) -> [Transaction] {
         transactions.filter { transaction in
             if !query.searchText.isEmpty {
@@ -101,7 +102,7 @@ public struct TransactionQuery: Equatable, Sendable {
             if let status = query.status, transaction.status != status {
                 return false
             }
-            if let lowerBound = query.dateRange.lowerBound(relativeTo: now),
+            if let lowerBound = query.dateRange.lowerBound(relativeTo: now, calendar: calendar),
                transaction.date < lowerBound
             {
                 return false

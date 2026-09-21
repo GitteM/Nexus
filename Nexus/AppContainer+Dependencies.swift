@@ -20,12 +20,12 @@ import Transactions
 /// how this struct is built — consumers never switch on the mode.
 struct AppDependencies {
     let session: any SessionManagerProtocol
-    let cardRepository: CardRepositoryProtocol
-    let offersRepository: CardOffersRepositoryProtocol
-    let statusRepository: CardStatusRepositoryProtocol
-    let actionRepository: CardActionRepositoryProtocol
-    let balanceRepository: BalanceRepositoryProtocol
-    let transactionRepository: TransactionRepositoryProtocol
+    let cardRepository: any CardRepositoryProtocol
+    let offersRepository: any CardOffersRepositoryProtocol
+    let statusRepository: any CardStatusRepositoryProtocol
+    let actionRepository: any CardActionRepositoryProtocol
+    let balanceRepository: any BalanceRepositoryProtocol
+    let transactionRepository: any TransactionRepositoryProtocol
     let dashboardModel: DashboardModel
     #if DEBUG
         /// The demo command coordinator (backend echo). Retained here so it
@@ -71,9 +71,8 @@ enum AppDependenciesFactory {
             logger: logger
         )
 
-        let cardRepository: CardRepositoryProtocol = if let container = try? SwiftDataCardRepository
-            .makeContainer()
-        {
+        let container = try? SwiftDataCardRepository.makeContainer()
+        let cardRepository: any CardRepositoryProtocol = if let container {
             CardRepository(store: SwiftDataCardRepository(container: container))
         } else {
             // No persistence available (e.g. entitlements in a bare test

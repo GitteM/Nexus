@@ -1,6 +1,6 @@
 # ``SharedUI``
 
-Reusable, token-driven components shared by the Nexus screens. The module provides full-area states — loading, empty, error, and disconnected — compact components such as destructive action buttons, the session-status badge, and the back toolbar item, and the card-front artwork composition that renders a domain `CardType` as art. View and Date extensions add shared row-tap and date-formatting affordances used across screens.
+Reusable, token-driven components shared by the Nexus screens. The module provides full-area states — loading, empty, error, and disconnected — compact components such as destructive action buttons and the back toolbar item, and the card-front artwork composition that renders a domain `CardType` as art. A `View` extension adds a shared row-tap affordance used across screens.
 
 ## Topics
 
@@ -14,6 +14,5 @@ Reusable, token-driven components shared by the Nexus screens. The module provid
 ### Components & Artwork
 
 - ``DestructiveButton``
-- ``SessionStatusIndicator``
 - ``BackToolbarItem``
 - ``CardArtwork``

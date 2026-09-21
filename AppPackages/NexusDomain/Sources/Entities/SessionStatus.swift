@@ -3,7 +3,7 @@ import Foundation
 /// The connection state of the app session.
 ///
 /// Exposed by `SessionManagerProtocol.sessionStatus` and consumed by the UI:
-/// `SessionStatusIndicator` renders it and `AppContainer` reacts to changes.
+/// `AppContainer` reacts to changes.
 /// `.connecting` covers the in-flight
 /// `connect()` handshake; `.error` means the last attempt failed and the
 /// session is not usable.
