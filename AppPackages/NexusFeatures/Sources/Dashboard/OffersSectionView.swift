@@ -164,7 +164,7 @@ private struct OfferCardView: View {
             }
         }
         .padding(Spacing.md)
-        .frame(width: 248, alignment: .leading)
+        .frame(width: Dimensions.offerCardWidth, alignment: .leading)
         .background(
             ColorPalette.secondaryBackground,
             in: RoundedRectangle(cornerRadius: Self.cornerRadius, style: .continuous)
