@@ -23,7 +23,7 @@ public final class TransactionDetailModel {
     public init(
         cardID: String,
         transactionID: String,
-        transactionRepository: TransactionRepositoryProtocol,
+        transactionRepository: TransactionRepositoryProtocol
     ) {
         self.cardID = cardID
         self.transactionID = transactionID

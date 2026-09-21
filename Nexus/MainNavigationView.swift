@@ -52,7 +52,7 @@ struct MainNavigationView: View {
         case let .transactionDetail(cardID, transactionID):
             TransactionDetailView()
                 .environment(
-                    container.transactionDetailModel(cardID: cardID, transactionID: transactionID),
+                    container.transactionDetailModel(cardID: cardID, transactionID: transactionID)
                 )
         }
     }

@@ -42,7 +42,7 @@ final class TestCardRepository: CardRepositoryProtocol {
             type: offer.type,
             status: .active,
             currency: offer.currency,
-            spendingLimit: nil,
+            spendingLimit: nil
         )
         cards.append(card)
         return card

@@ -17,8 +17,10 @@
 > polling), and the app is three packages plus a thin app target. §12
 > documents what was cut and why.
 >
-> **Toolchain note (Xcode 26).** This revision targets **Xcode 26.6 / Swift
-> 6.3** (iOS 26.5 SDK) with an **iOS 17 deployment floor**: every pattern here
+> **Toolchain note (Xcode 26 CI pin).** This revision targets **Xcode 26.6 /
+> Swift 6.3** (iOS 26.5 SDK) — the version CI is pinned to (the latest stable
+> runner image; local development may use a newer Xcode) — with an **iOS 17
+> deployment floor**: every pattern here
 > works on iOS 17, and iOS 18+ additionally unlocks SwiftData macros
 > (`#Index`, `#Unique`, `@ModelActor`) and `@Entry`. Swift 6.2+'s opt-in
 > **default actor isolation** can remove most `@MainActor` annotations; this
@@ -902,7 +904,8 @@ per-preview state — compose with the same mock strategy; no new machinery.
 - **Integration tests** exercise real `CacheManager` + `CardRepository`
   (and/or the SwiftData repository) end to end, clearing state between tests.
 - **CI** (`.github/workflows/ci.yml`, `pr-checks.yml`): Xcode 26.6 (Swift
-  6.3), iPhone 17 simulator (iOS 26.5), `xcodebuild build-for-testing` then
+  6.3), pinned to the latest stable runner image, iPhone 17 simulator (iOS 26.5),
+  `xcodebuild build-for-testing` then
   `test-without-building` against the workspace TestPlan, with SPM/DerivedData
   caching and PR pass/fail comments.
 
@@ -1354,7 +1357,8 @@ Use this as an ordered recipe. Replace the card/banking domain with your own
 - [ ] Runs with no backend: `API_ENVIRONMENT = demo` (or `-demoMode`)
       yields the full demo experience; switching to live is config plus the
       §11.4 adapters — zero changes above the Data layer.
-- [ ] Build + full TestPlan green, CI mirrors the local commands.
+- [ ] Build + full TestPlan green, CI runs the same commands on its pinned
+      Xcode (see the toolchain note at the top of this document).
 
 ---
 

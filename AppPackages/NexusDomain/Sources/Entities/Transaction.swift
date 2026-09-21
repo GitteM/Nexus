@@ -8,10 +8,10 @@ public enum TransactionStatus: String, Codable, CaseIterable, Sendable, Equatabl
     case cleared
 }
 
-public extension TransactionStatus {
+extension TransactionStatus {
     /// Human-readable label for UI, e.g. "Pending". Localized through the
     /// app's String Catalog at lookup time.
-    var displayName: String {
+    public var displayName: String {
         switch self {
         case .pending: String(localized: "Pending")
         case .cleared: String(localized: "Cleared")
@@ -19,7 +19,7 @@ public extension TransactionStatus {
     }
 
     /// SF Symbol name used by the UI for this status.
-    var icon: String {
+    public var icon: String {
         switch self {
         case .pending: "clock"
         case .cleared: "checkmark.circle"
@@ -42,10 +42,10 @@ public enum TransactionCategory: String, Codable, CaseIterable, Sendable, Equata
     case other
 }
 
-public extension TransactionCategory {
+extension TransactionCategory {
     /// Human-readable label for UI, e.g. "Groceries". Localized through
     /// the app's String Catalog at lookup time.
-    var displayName: String {
+    public var displayName: String {
         switch self {
         case .dining: String(localized: "Dining")
         case .groceries: String(localized: "Groceries")
@@ -59,7 +59,7 @@ public extension TransactionCategory {
     }
 
     /// SF Symbol name used by the UI for this category.
-    var icon: String {
+    public var icon: String {
         switch self {
         case .dining: "fork.knife"
         case .groceries: "cart"
@@ -98,7 +98,7 @@ public struct Transaction: Codable, Sendable, Equatable, Identifiable {
         currency: String,
         category: TransactionCategory,
         status: TransactionStatus,
-        location: String?,
+        location: String?
     ) {
         self.id = id
         self.cardId = cardId
@@ -112,8 +112,8 @@ public struct Transaction: Codable, Sendable, Equatable, Identifiable {
     }
 }
 
-public extension Transaction {
-    static let mockCoffeePurchase = Transaction(
+extension Transaction {
+    public static let mockCoffeePurchase = Transaction(
         id: "txn-001",
         cardId: "card-credit-001",
         date: Date(timeIntervalSinceReferenceDate: 799_200_000),
@@ -122,10 +122,10 @@ public extension Transaction {
         currency: "EUR",
         category: .dining,
         status: .pending,
-        location: "Berlin",
+        location: "Berlin"
     )
 
-    static let mockGroceriesPurchase = Transaction(
+    public static let mockGroceriesPurchase = Transaction(
         id: "txn-002",
         cardId: "card-credit-001",
         date: Date(timeIntervalSinceReferenceDate: 798_900_000),
@@ -134,10 +134,10 @@ public extension Transaction {
         currency: "EUR",
         category: .groceries,
         status: .cleared,
-        location: "Berlin",
+        location: "Berlin"
     )
 
-    static let mockOnlineShoppingPurchase = Transaction(
+    public static let mockOnlineShoppingPurchase = Transaction(
         id: "txn-003",
         cardId: "card-credit-001",
         date: Date(timeIntervalSinceReferenceDate: 798_300_000),
@@ -146,10 +146,10 @@ public extension Transaction {
         currency: "EUR",
         category: .shopping,
         status: .cleared,
-        location: nil,
+        location: nil
     )
 
-    static let mockFlightPurchase = Transaction(
+    public static let mockFlightPurchase = Transaction(
         id: "txn-004",
         cardId: "card-credit-001",
         date: Date(timeIntervalSinceReferenceDate: 797_500_000),
@@ -158,10 +158,10 @@ public extension Transaction {
         currency: "EUR",
         category: .travel,
         status: .cleared,
-        location: "Berlin",
+        location: "Berlin"
     )
 
-    static let mockStreamingSubscription = Transaction(
+    public static let mockStreamingSubscription = Transaction(
         id: "txn-005",
         cardId: "card-credit-001",
         date: Date(timeIntervalSinceReferenceDate: 797_100_000),
@@ -170,10 +170,10 @@ public extension Transaction {
         currency: "EUR",
         category: .entertainment,
         status: .pending,
-        location: nil,
+        location: nil
     )
 
-    static let mockUtilityBill = Transaction(
+    public static let mockUtilityBill = Transaction(
         id: "txn-006",
         cardId: "card-credit-001",
         date: Date(timeIntervalSinceReferenceDate: 796_400_000),
@@ -182,10 +182,10 @@ public extension Transaction {
         currency: "EUR",
         category: .bills,
         status: .cleared,
-        location: "Berlin",
+        location: "Berlin"
     )
 
-    static let mockPeerTransfer = Transaction(
+    public static let mockPeerTransfer = Transaction(
         id: "txn-007",
         cardId: "card-credit-001",
         date: Date(timeIntervalSinceReferenceDate: 795_800_000),
@@ -194,10 +194,10 @@ public extension Transaction {
         currency: "EUR",
         category: .transfer,
         status: .cleared,
-        location: nil,
+        location: nil
     )
 
-    static let mockRefund = Transaction(
+    public static let mockRefund = Transaction(
         id: "txn-008",
         cardId: "card-credit-001",
         date: Date(timeIntervalSinceReferenceDate: 795_200_000),
@@ -206,10 +206,10 @@ public extension Transaction {
         currency: "EUR",
         category: .groceries,
         status: .cleared,
-        location: "Berlin",
+        location: "Berlin"
     )
 
-    static let mockParkingCharge = Transaction(
+    public static let mockParkingCharge = Transaction(
         id: "txn-009",
         cardId: "card-credit-001",
         date: Date(timeIntervalSinceReferenceDate: 794_600_000),
@@ -218,13 +218,13 @@ public extension Transaction {
         currency: "EUR",
         category: .other,
         status: .cleared,
-        location: "Berlin",
+        location: "Berlin"
     )
 
     /// Demo/default transaction set for previews and tests: covers every
     /// `TransactionCategory`, both statuses, a pending purchase, a refund,
     /// and one transaction without a location.
-    static var mockDefaults: [Transaction] {
+    public static var mockDefaults: [Transaction] {
         [
             .mockCoffeePurchase,
             .mockGroceriesPurchase,

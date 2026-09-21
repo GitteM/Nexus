@@ -1,0 +1,7 @@
+# Test targets: fixtures legitimately force-unwrap and lay out multi-line calls
+# compactly, so those two rules are off here. This config is nested, so it
+# overrides the root `.swiftlint.yml` only for files under this Tests directory;
+# the rest of the root rule set still applies.
+disabled_rules:
+  - force_unwrapping
+  - multiline_call_arguments

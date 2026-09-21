@@ -98,7 +98,7 @@
                 type: offer.type,
                 status: .active,
                 currency: offer.currency,
-                spendingLimit: nil,
+                spendingLimit: nil
             )
         }
 

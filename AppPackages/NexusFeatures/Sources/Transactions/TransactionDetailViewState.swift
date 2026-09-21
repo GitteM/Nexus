@@ -14,8 +14,8 @@ public enum TransactionDetailViewState: Equatable {
     case error(AppError)
 }
 
-public extension TransactionDetailViewState {
-    var error: AppError? {
+extension TransactionDetailViewState {
+    public var error: AppError? {
         if case let .error(error) = self {
             return error
         }

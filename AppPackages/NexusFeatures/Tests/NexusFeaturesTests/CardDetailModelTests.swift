@@ -23,12 +23,12 @@ struct CardDetailModelTests {
     private func makeModel(
         cardID: String = Card.mockCreditCard.id,
         cards: [Card] = Card.mockDefaults,
-        states: [CardState] = CardState.mockDefaults,
+        states: [CardState] = CardState.mockDefaults
     ) -> (
         model: CardDetailModel,
         cardRepository: MockCardRepository,
         statusRepository: MockStatusRepository,
-        actionRepository: MockActionRepository,
+        actionRepository: MockActionRepository
     ) {
         let cardRepository = MockCardRepository(seed: cards)
         let statusRepository = MockStatusRepository(seed: states)
@@ -37,7 +37,7 @@ struct CardDetailModelTests {
             cardID: cardID,
             cardRepository: cardRepository,
             statusRepository: statusRepository,
-            actionRepository: actionRepository,
+            actionRepository: actionRepository
         )
         return (model, cardRepository, statusRepository, actionRepository)
     }
@@ -235,7 +235,10 @@ struct CardDetailModelTests {
         await model.load()
         await model.reportLost()
 
-        #expect(actionRepository.lastCommand == CardCommand(cardId: Card.mockCreditCard.id, type: .reportLost))
+        #expect(actionRepository.lastCommand == CardCommand(
+            cardId: Card.mockCreditCard.id,
+            type: .reportLost
+        ))
         #expect(model.card?.status == .lost)
     }
 
@@ -245,7 +248,10 @@ struct CardDetailModelTests {
         await model.load()
         await model.reportStolen()
 
-        #expect(actionRepository.lastCommand == CardCommand(cardId: Card.mockCreditCard.id, type: .reportStolen))
+        #expect(actionRepository.lastCommand == CardCommand(
+            cardId: Card.mockCreditCard.id,
+            type: .reportStolen
+        ))
         #expect(model.card?.status == .lost)
     }
 
@@ -300,7 +306,10 @@ struct CardDetailModelTests {
         await model.requestReplacement() // second request refused
 
         #expect(actionRepository.executeCallCount == 1)
-        #expect(actionRepository.lastCommand == CardCommand(cardId: Card.mockLostCard.id, type: .requestReplacement))
+        #expect(actionRepository.lastCommand == CardCommand(
+            cardId: Card.mockLostCard.id,
+            type: .requestReplacement
+        ))
         #expect(model.replacementRequested == true)
         #expect(model.card?.status == .lost) // the old card stays lost
         #expect(model.lastActionSequence == 1)
@@ -326,8 +335,17 @@ struct CardDetailModelTests {
         await model.load()
         await model.setSpendingLimit(period: .daily, amount: 250)
 
-        #expect(actionRepository.lastCommand == .setSpendingLimit(cardId: Card.mockCreditCard.id, period: .daily, amount: 250))
-        #expect(model.limit(for: .daily) == SpendingLimit(cardId: Card.mockCreditCard.id, period: .daily, amount: 250, currency: "EUR"))
+        #expect(actionRepository.lastCommand == .setSpendingLimit(
+            cardId: Card.mockCreditCard.id,
+            period: .daily,
+            amount: 250
+        ))
+        #expect(model.limit(for: .daily) == SpendingLimit(
+            cardId: Card.mockCreditCard.id,
+            period: .daily,
+            amount: 250,
+            currency: "EUR"
+        ))
         #expect(model.card?.spendingLimit == 250) // card-level current limit mirrors it
         #expect(model.lastActionSequence == 1)
     }
@@ -382,7 +400,7 @@ struct CardDetailModelTests {
 
 @MainActor
 private func waitUntil(_ condition: @MainActor () -> Bool) async {
-    for _ in 0 ..< 200 {
+    for _ in 0..<200 {
         if condition() {
             return
         }

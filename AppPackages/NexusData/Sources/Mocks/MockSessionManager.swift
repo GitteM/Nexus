@@ -60,7 +60,7 @@
         ///     `startDemoEvents()` emits its plan on a timer.
         public init(
             initialStatus: SessionStatus = .disconnected,
-            eventGenerator: MockEventGenerator? = nil,
+            eventGenerator: MockEventGenerator? = nil
         ) {
             sessionStatus = initialStatus
             self.eventGenerator = eventGenerator
@@ -129,13 +129,13 @@
             }
             guard sessionStatus == .connected else {
                 throw AppError.apiConnectionFailed(
-                    details: "Cannot send while \(sessionStatus.displayName).",
+                    details: "Cannot send while \(sessionStatus.displayName)."
                 )
             }
             guard !channel.isEmpty else {
                 throw AppError.validationError(
                     field: "channel",
-                    reason: "Channel must not be empty.",
+                    reason: "Channel must not be empty."
                 )
             }
             sent.append((channel, payload))

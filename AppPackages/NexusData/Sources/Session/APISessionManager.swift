@@ -166,13 +166,13 @@ public final class APISessionManager: @preconcurrency SessionManagerProtocol {
     public func send(to channel: String, payload: String) async throws {
         guard sessionStatus == .connected else {
             throw AppError.apiConnectionFailed(
-                details: "Cannot send while \(sessionStatus.displayName).",
+                details: "Cannot send while \(sessionStatus.displayName)."
             )
         }
         guard !channel.isEmpty else {
             throw AppError.validationError(
                 field: "channel",
-                reason: "Channel must not be empty.",
+                reason: "Channel must not be empty."
             )
         }
         let event = BankingEvent(channel: channel, payload: payload)
@@ -182,13 +182,13 @@ public final class APISessionManager: @preconcurrency SessionManagerProtocol {
         } catch {
             throw AppError.serializationError(
                 type: "BankingEvent",
-                details: error.localizedDescription,
+                details: error.localizedDescription
             )
         }
         guard let text = String(data: data, encoding: .utf8) else {
             throw AppError.serializationError(
                 type: "BankingEvent",
-                details: "Encoded payload is not valid UTF-8.",
+                details: "Encoded payload is not valid UTF-8."
             )
         }
         do {
@@ -204,7 +204,10 @@ public final class APISessionManager: @preconcurrency SessionManagerProtocol {
 
     // MARK: - Subscription registry (the pending-subscription queue)
 
-    private func register(_ continuation: AsyncStream<BankingEvent>.Continuation, for channel: String) {
+    private func register(
+        _ continuation: AsyncStream<BankingEvent>.Continuation,
+        for channel: String
+    ) {
         let id = UUID()
         subscriptions[channel, default: []].append(Subscription(id: id, continuation: continuation))
         continuation.onTermination = { [weak self] _ in
@@ -269,8 +272,8 @@ public final class APISessionManager: @preconcurrency SessionManagerProtocol {
     private func decodeEvent(_ text: String) -> BankingEvent? {
         guard
             let data = text.data(using: .utf8),
-            let event = try? decoder.decode(BankingEvent.self, from: data)
-        else {
+            let event = try? decoder.decode(BankingEvent.self, from: data) else
+        {
             // Malformed frames are dropped here. Contextualized
             // deserialization errors (with logging) land with the
             // `JSONDecoder` AppError extension.

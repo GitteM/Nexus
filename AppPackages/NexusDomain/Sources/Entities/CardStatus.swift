@@ -10,10 +10,10 @@ public enum CardStatus: String, Codable, CaseIterable, Sendable, Equatable {
     case lost
 }
 
-public extension CardStatus {
+extension CardStatus {
     /// Human-readable label for UI, e.g. "Frozen". Localized through the
     /// app's String Catalog at lookup time.
-    var displayName: String {
+    public var displayName: String {
         switch self {
         case .active: String(localized: "Active")
         case .frozen: String(localized: "Frozen")
@@ -23,7 +23,7 @@ public extension CardStatus {
     }
 
     /// SF Symbol name used by the UI for this status.
-    var icon: String {
+    public var icon: String {
         switch self {
         case .active: "checkmark.circle.fill"
         case .frozen: "snowflake"

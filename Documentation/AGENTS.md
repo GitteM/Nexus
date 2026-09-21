@@ -20,11 +20,16 @@
   payments, security, Apple Pay). See [features.md](features.md).
 - **Remote**: `git@github.com:GitteM/Nexus.git`. Default branch `main` is
   the only permanent branch — no `develop`/`release`.
-- **Stack**: Swift 6.3 (Swift 6 mode, `swift-tools-version: 6.3`), Xcode
-  26.6, iOS 17.0+ floor. Workspace `Nexus.xcworkspace`; three SPM packages
+- **Stack**: Swift 6.3 language mode (`swift-tools-version: 6.3`), iOS 17.0+
+  floor. **CI is pinned to Xcode 26.6** (the latest stable runner image); local
+  development may use a newer Xcode — e.g. 27, which ships Swift 6.4 — so code
+  must build on both (§5). Workspace `Nexus.xcworkspace`; three SPM packages
   under `AppPackages/` (`NexusDomain`, `NexusData`, `NexusFeatures`) plus a
   thin `Nexus` app target (composition root). No umbrella modules — import
   concrete targets.
+- **Tooling**: SwiftFormat (the only writer) + SwiftLint (the reporter), via
+  the committed `Brewfile` / `.swiftformat` / `.swiftlint.yml`; a pre-commit
+  hook and `scripts/` wrap them (CONTRIBUTING.md §4).
 - **Architecture**: MV (Model-View). SwiftUI views driven by `@MainActor
   @Observable` models publishing explicit `viewState` enums. No ViewModels,
   no Combine, no completion handlers. One `AppError`. SwiftData + Keychain +
@@ -86,7 +91,11 @@ type(scope): subject        # feat | fix | docs | style | refactor | perf |
 
 ## 5. Definition of done — run before submitting any code
 
-1. `swiftformat .` leaves no diffs (CI runs `swiftformat --lint .`).
+1. Formatting and lint clean — `scripts/lint.sh` (SwiftFormat `--lint` +
+   SwiftLint `--strict`). The committed pre-commit hook runs this (and
+   `swiftformat` on staged files) once activated with
+   `git config core.hooksPath .githooks`; CI still runs `swiftformat --lint .`
+   as the backstop.
 2. Full workspace TestPlan green:
    ```bash
    xcodebuild test -workspace Nexus.xcworkspace \
@@ -96,8 +105,11 @@ type(scope): subject        # feat | fix | docs | style | refactor | perf |
 3. Build with zero warnings.
 4. Commits conventional + atomic; branch pushed; PR opened.
 5. Docs updated where relevant (Non-negotiables #5 in `.codewhale/instructions.md`).
-6. CI mirrors local (Xcode 26.6, iPhone 17 simulator, iOS 26.5 SDK).
-   The per-PR CI gate runs the **full workspace TestPlan, UI suite
+6. CI is pinned to the latest **stable** runner image — Xcode 26.6 (Swift 6.3),
+   iOS 26.5 SDK — **not** mirrored to your local Xcode: local may be newer
+   (e.g. 27, whose toolchain is Swift 6.4), so a change must build on both. The
+   project is `LastUpgradeCheck 2700`; Xcode 26.6 ignores build settings it
+   doesn't recognise. The per-PR CI gate runs the **full workspace TestPlan, UI suite
    included** (a failed test is retried once in-place). If free-tier
    cold-runner UI flakes appear, reproduce locally on a warm simulator
    before treating them as regressions; the on-demand "UI Tests" workflow

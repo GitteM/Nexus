@@ -23,7 +23,10 @@ struct BankingEventTests {
     }
 
     @Test func `codable round trip preserves all fields`() throws {
-        let event = BankingEvent(channel: "card.status", payload: #"{"cardId":"c1","status":"frozen"}"#)
+        let event = BankingEvent(
+            channel: "card.status",
+            payload: #"{"cardId":"c1","status":"frozen"}"#
+        )
         let data = try JSONEncoder().encode(event)
         let decoded = try JSONDecoder().decode(BankingEvent.self, from: data)
         #expect(decoded == event)
@@ -36,7 +39,7 @@ struct BankingEventTests {
     @Test func `card status event payload decodes to CardState`() throws {
         let state = try JSONDecoder().decode(
             CardState.self,
-            from: Data(BankingEvent.mockCardStatusEvent.payload.utf8),
+            from: Data(BankingEvent.mockCardStatusEvent.payload.utf8)
         )
         #expect(state == CardState(cardId: "card-credit-001", status: .frozen))
     }
@@ -44,7 +47,7 @@ struct BankingEventTests {
     @Test func `balance event payload decodes to Balance`() throws {
         let balance = try JSONDecoder().decode(
             Balance.self,
-            from: Data(BankingEvent.mockBalanceEvent.payload.utf8),
+            from: Data(BankingEvent.mockBalanceEvent.payload.utf8)
         )
         #expect(balance == Balance.mockCreditBalance)
     }
@@ -52,7 +55,7 @@ struct BankingEventTests {
     @Test func `transaction event payload decodes to Transaction`() throws {
         let transaction = try JSONDecoder().decode(
             Transaction.self,
-            from: Data(BankingEvent.mockTransactionEvent.payload.utf8),
+            from: Data(BankingEvent.mockTransactionEvent.payload.utf8)
         )
         #expect(transaction.id == "txn-event-001")
         #expect(transaction.cardId == "card-credit-001")
@@ -68,7 +71,7 @@ struct BankingEventTests {
     @Test func `spending limit event payload decodes to SpendingLimit`() throws {
         let limit = try JSONDecoder().decode(
             SpendingLimit.self,
-            from: Data(BankingEvent.mockSpendingLimitEvent.payload.utf8),
+            from: Data(BankingEvent.mockSpendingLimitEvent.payload.utf8)
         )
         #expect(limit == SpendingLimit.mockWeeklyLimit)
     }
@@ -77,7 +80,8 @@ struct BankingEventTests {
 
     @Test func `mock defaults are non empty and unique by channel`() {
         #expect(!BankingEvent.mockDefaults.isEmpty)
-        #expect(Set(BankingEvent.mockDefaults.map(\.channel)).count == BankingEvent.mockDefaults.count)
+        #expect(Set(BankingEvent.mockDefaults.map(\.channel)).count == BankingEvent.mockDefaults
+            .count)
     }
 
     @Test func `mock payloads are valid json`() throws {

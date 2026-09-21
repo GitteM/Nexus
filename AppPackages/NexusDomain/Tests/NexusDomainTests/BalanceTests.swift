@@ -12,7 +12,7 @@ struct BalanceTests {
             current: 100,
             available: 90,
             creditLimit: 500,
-            currency: "EUR",
+            currency: "EUR"
         )
         #expect(balance.cardId == "card-1")
         #expect(balance.current == 100)
@@ -28,7 +28,7 @@ struct BalanceTests {
             current: 100,
             available: 100,
             creditLimit: nil,
-            currency: "EUR",
+            currency: "EUR"
         )
         #expect(balance.creditLimit == nil)
     }
@@ -41,21 +41,21 @@ struct BalanceTests {
             current: 100,
             available: 90,
             creditLimit: 500,
-            currency: "EUR",
+            currency: "EUR"
         )
         let same = Balance(
             cardId: "card-1",
             current: 100,
             available: 90,
             creditLimit: 500,
-            currency: "EUR",
+            currency: "EUR"
         )
         let different = Balance(
             cardId: "card-9",
             current: 100,
             available: 90,
             creditLimit: 500,
-            currency: "EUR",
+            currency: "EUR"
         )
         #expect(a == same)
         #expect(a != different)
@@ -69,7 +69,7 @@ struct BalanceTests {
             current: 1240.75,
             available: 1259.25,
             creditLimit: Decimal(string: "2500.00"),
-            currency: "EUR",
+            currency: "EUR"
         )
         let data = try JSONEncoder().encode(balance)
         let decoded = try JSONDecoder().decode(Balance.self, from: data)
@@ -83,7 +83,7 @@ struct BalanceTests {
             current: 482.30,
             available: 482.30,
             creditLimit: nil,
-            currency: "EUR",
+            currency: "EUR"
         )
         let data = try JSONEncoder().encode(balance)
         let decoded = try JSONDecoder().decode(Balance.self, from: data)
@@ -95,7 +95,7 @@ struct BalanceTests {
         let json = Data(
             #"""
             {"cardId":"c1","current":100,"available":100,"currency":"EUR"}
-            """#.utf8,
+            """#.utf8
         )
         let decoded = try JSONDecoder().decode(Balance.self, from: json)
         #expect(decoded.creditLimit == nil)

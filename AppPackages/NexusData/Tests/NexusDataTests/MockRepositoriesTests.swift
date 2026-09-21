@@ -116,10 +116,16 @@ struct MockRepositoriesTests {
         let stream = try await mock.subscribeToOffers()
         mock.publish([CardOffer.mockCashbackOffer, CardOffer.mockTravelOffer])
 
-        #expect(try await mock.getAvailableOffers() == [CardOffer.mockCashbackOffer, CardOffer.mockTravelOffer])
+        #expect(try await mock.getAvailableOffers() == [
+            CardOffer.mockCashbackOffer,
+            CardOffer.mockTravelOffer,
+        ])
         #expect(mock.getAvailableOffersCallCount == 2)
         #expect(mock.subscribeToOffersCallCount == 1)
-        #expect(mock.publishedSnapshots == [[CardOffer.mockCashbackOffer, CardOffer.mockTravelOffer]])
+        #expect(mock.publishedSnapshots == [[
+            CardOffer.mockCashbackOffer,
+            CardOffer.mockTravelOffer,
+        ]])
 
         // The subscription saw the current list first, then the replacement.
         // (Collection is bounded: mock streams stay open until terminated.)
@@ -210,7 +216,10 @@ struct MockRepositoriesTests {
     @Test
     func `status repository rejects an empty card id like the live boundary`() async {
         let mock = MockStatusRepository()
-        await #expect(throws: AppError.validationError(field: "cardId", reason: "Card id must not be empty.")) {
+        await #expect(throws: AppError.validationError(
+            field: "cardId",
+            reason: "Card id must not be empty."
+        )) {
             _ = try await mock.subscribeToCardStatus(cardId: "")
         }
     }
@@ -256,7 +265,8 @@ struct MockRepositoriesTests {
     func `mock seeds mirror the domain mockDefaults sets`() {
         #expect(MockCardRepository().cards == Card.mockDefaults)
         #expect(MockOffersRepository().offers == CardOffer.mockDefaults)
-        #expect(MockStatusRepository().statesByCardId["card-credit-001"] == CardState.mockActiveState)
+        #expect(MockStatusRepository().statesByCardId["card-credit-001"] == CardState
+            .mockActiveState)
     }
 
     // MARK: - MockCardRepository.updateCard
@@ -284,7 +294,7 @@ struct MockRepositoriesTests {
             type: .credit,
             status: .active,
             currency: "EUR",
-            spendingLimit: nil,
+            spendingLimit: nil
         )
 
         mock.updateCard(unknown)
@@ -349,10 +359,16 @@ struct MockRepositoriesTests {
         #expect(graph.status.statesByCardId[Card.mockFrozenCard.id]?.status == .active)
         #expect(graph.card.cards.first { $0.id == Card.mockFrozenCard.id }?.status == .active)
 
-        try await graph.action.execute(CardCommand(cardId: Card.mockCreditCard.id, type: .reportLost))
+        try await graph.action.execute(CardCommand(
+            cardId: Card.mockCreditCard.id,
+            type: .reportLost
+        ))
         #expect(graph.status.statesByCardId[Card.mockCreditCard.id]?.status == .lost)
 
-        try await graph.action.execute(CardCommand(cardId: Card.mockDebitCard.id, type: .reportStolen))
+        try await graph.action.execute(CardCommand(
+            cardId: Card.mockDebitCard.id,
+            type: .reportStolen
+        ))
         #expect(graph.status.statesByCardId[Card.mockDebitCard.id]?.status == .lost)
     }
 
@@ -361,7 +377,11 @@ struct MockRepositoriesTests {
         let graph = makeCoordinatorGraph()
 
         try await graph.action.execute(
-            CardCommand.setSpendingLimit(cardId: Card.mockCreditCard.id, period: .daily, amount: 250),
+            CardCommand.setSpendingLimit(
+                cardId: Card.mockCreditCard.id,
+                period: .daily,
+                amount: 250
+            )
         )
 
         #expect(graph.card.cards.first { $0.id == Card.mockCreditCard.id }?.spendingLimit == 250)
@@ -373,9 +393,14 @@ struct MockRepositoriesTests {
     func `coordinator mints a replacement offer for a lost card`() async throws {
         let graph = makeCoordinatorGraph()
 
-        try await graph.action.execute(CardCommand(cardId: Card.mockLostCard.id, type: .requestReplacement))
+        try await graph.action.execute(CardCommand(
+            cardId: Card.mockLostCard.id,
+            type: .requestReplacement
+        ))
 
-        let replacement = graph.offers.offers.first { $0.id == "offer-replacement-\(Card.mockLostCard.id)" }
+        let replacement = graph.offers
+            .offers
+            .first { $0.id == "offer-replacement-\(Card.mockLostCard.id)" }
         #expect(replacement != nil)
         #expect(replacement?.type == Card.mockLostCard.type)
         #expect(replacement?.currency == Card.mockLostCard.currency)
@@ -384,7 +409,10 @@ struct MockRepositoriesTests {
         #expect(graph.offers.offers.count == CardOffer.mockDefaults.count + 1)
 
         // A second request is a no-op — the offer already exists.
-        try await graph.action.execute(CardCommand(cardId: Card.mockLostCard.id, type: .requestReplacement))
+        try await graph.action.execute(CardCommand(
+            cardId: Card.mockLostCard.id,
+            type: .requestReplacement
+        ))
         #expect(graph.offers.offers.count == CardOffer.mockDefaults.count + 1)
     }
 
@@ -423,7 +451,7 @@ struct MockRepositoriesTests {
         card: MockCardRepository,
         status: MockStatusRepository,
         offers: MockOffersRepository,
-        coordinator: MockCommandCoordinator,
+        coordinator: MockCommandCoordinator
     ) {
         let card = MockCardRepository(seed: Card.mockDefaults)
         let status = MockStatusRepository(seed: CardState.mockDefaults)
@@ -433,7 +461,7 @@ struct MockRepositoriesTests {
             actionRepository: action,
             cardRepository: card,
             statusRepository: status,
-            offersRepository: offers,
+            offersRepository: offers
         )
         coordinator.start()
         return (action, card, status, offers, coordinator)
@@ -452,7 +480,13 @@ struct MockRepositoriesTests {
         var iterator = stream.makeAsyncIterator()
         #expect(await iterator.next() == .mockCreditBalance) // seeds current first
 
-        let updated = Balance(cardId: Card.mockCreditCard.id, current: 900, available: 900, creditLimit: 2500, currency: "EUR")
+        let updated = Balance(
+            cardId: Card.mockCreditCard.id,
+            current: 900,
+            available: 900,
+            creditLimit: 2500,
+            currency: "EUR"
+        )
         mock.publish(updated)
         #expect(await iterator.next() == updated)
         #expect(mock.balancesByCardId[Card.mockCreditCard.id] == updated) // store updated
@@ -463,10 +497,16 @@ struct MockRepositoriesTests {
     func `balance repository rejects an empty card id like the live boundary`() async {
         let mock = MockBalanceRepository()
 
-        await #expect(throws: AppError.validationError(field: "cardId", reason: "Card id must not be empty.")) {
+        await #expect(throws: AppError.validationError(
+            field: "cardId",
+            reason: "Card id must not be empty."
+        )) {
             _ = try await mock.getBalance(cardId: "")
         }
-        await #expect(throws: AppError.validationError(field: "cardId", reason: "Card id must not be empty.")) {
+        await #expect(throws: AppError.validationError(
+            field: "cardId",
+            reason: "Card id must not be empty."
+        )) {
             _ = try await mock.subscribeToBalance(cardId: "")
         }
     }
@@ -475,9 +515,11 @@ struct MockRepositoriesTests {
 
     @Test
     func `transaction repository serves seeds and folds publishes newest-first`() async throws {
-        let mock = MockTransactionRepository(seed: [Card.mockCreditCard.id: Transaction.mockDefaults])
+        let mock =
+            MockTransactionRepository(seed: [Card.mockCreditCard.id: Transaction.mockDefaults])
 
-        #expect(try await mock.getTransactions(cardId: Card.mockCreditCard.id) == Transaction.mockDefaults)
+        #expect(try await mock.getTransactions(cardId: Card.mockCreditCard.id) == Transaction
+            .mockDefaults)
         #expect(try await mock.getTransactions(cardId: Card.mockDebitCard.id) == [])
 
         let stream = try await mock.subscribeToTransactions(cardId: Card.mockCreditCard.id)
@@ -494,7 +536,7 @@ struct MockRepositoriesTests {
             currency: "EUR",
             category: .shopping,
             status: .pending,
-            location: nil,
+            location: nil
         )
         mock.publish(newer)
         let folded = await iterator.next()
@@ -505,7 +547,8 @@ struct MockRepositoriesTests {
 
     @Test
     func `transaction repository publish replaces a same-id frame`() async throws {
-        let mock = MockTransactionRepository(seed: [Card.mockCreditCard.id: Transaction.mockDefaults])
+        let mock =
+            MockTransactionRepository(seed: [Card.mockCreditCard.id: Transaction.mockDefaults])
         let cleared = Transaction(
             id: Transaction.mockCoffeePurchase.id,
             cardId: Card.mockCreditCard.id,
@@ -515,13 +558,14 @@ struct MockRepositoriesTests {
             currency: "EUR",
             category: .dining,
             status: .cleared,
-            location: "Berlin",
+            location: "Berlin"
         )
 
         mock.publish(cleared)
 
         let list = try await mock.getTransactions(cardId: Card.mockCreditCard.id)
         #expect(list.count == Transaction.mockDefaults.count) // replaced, not appended
-        #expect(list.contains { $0.id == Transaction.mockCoffeePurchase.id && $0.status == .cleared })
+        #expect(list
+            .contains { $0.id == Transaction.mockCoffeePurchase.id && $0.status == .cleared })
     }
 }

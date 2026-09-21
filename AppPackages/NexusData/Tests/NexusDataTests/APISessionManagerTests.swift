@@ -1,12 +1,14 @@
 import Entities
 import Foundation
-@testable import Session
 import Testing
+@testable import Session
 
 @Suite("APISessionManager")
 @MainActor
 struct APISessionManagerTests {
-    private func makeManager(client: FakeWebSocketClient = FakeWebSocketClient()) -> APISessionManager {
+    private func makeManager(client: FakeWebSocketClient = FakeWebSocketClient())
+        -> APISessionManager
+    {
         APISessionManager(client: client)
     }
 
@@ -25,7 +27,7 @@ struct APISessionManagerTests {
     /// Yields the main actor a few times so queued `Task`s (receive loop,
     /// `onTermination` cleanup) can run.
     private func flushMainActor() async {
-        for _ in 0 ..< 10 {
+        for _ in 0..<10 {
             await Task.yield()
         }
     }
@@ -118,7 +120,8 @@ struct APISessionManagerTests {
             try await manager.connect()
             Issue.record("Expected connect to throw")
         } catch {
-            #expect(error as? AppError == .apiConnectionFailed(details: rawError.localizedDescription))
+            #expect(error as? AppError ==
+                .apiConnectionFailed(details: rawError.localizedDescription))
         }
         #expect(manager.sessionStatus == .error)
     }
@@ -216,7 +219,8 @@ struct APISessionManagerTests {
         #expect(manager.sessionStatus == .connected)
     }
 
-    @Test func `cancelling a consumer unregisters it and other subscribers keep receiving`() async throws {
+    @Test func `cancelling a consumer unregisters it and other subscribers keep receiving`(
+    ) async throws {
         let client = FakeWebSocketClient()
         let manager = makeManager(client: client)
         try await manager.connect()
@@ -240,7 +244,7 @@ struct APISessionManagerTests {
         // The remaining subscriber is untouched by the cleanup.
         let secondEvent = BankingEvent(
             channel: "card.status",
-            payload: #"{"cardId":"card-credit-001","status":"active"}"#,
+            payload: #"{"cardId":"card-credit-001","status":"active"}"#
         )
         try client.inject(frame(secondEvent))
         #expect(await nextEvent(second) == secondEvent)
@@ -248,7 +252,8 @@ struct APISessionManagerTests {
 
     // MARK: - Pending subscriptions & reconnect
 
-    @Test func `subscriptions made while disconnected queue and deliver after connect`() async throws {
+    @Test func `subscriptions made while disconnected queue and deliver after connect`(
+    ) async throws {
         let client = FakeWebSocketClient()
         let manager = makeManager(client: client)
 
@@ -283,7 +288,8 @@ struct APISessionManagerTests {
         #expect(await nextEvent(stream) == .mockCardStatusEvent)
     }
 
-    @Test func `transport drop marks disconnected, ends streams, and reconnect delivers to new subscriptions`() async throws {
+    @Test func `transport drop marks disconnected, ends streams, and reconnect delivers to new subscriptions`(
+    ) async throws {
         let client = FakeWebSocketClient()
         let manager = makeManager(client: client)
         try await manager.connect()
@@ -349,7 +355,7 @@ struct APISessionManagerTests {
         #expect(client.sentTexts.count == 1)
         let sent = try JSONDecoder().decode(
             BankingEvent.self,
-            from: Data(client.sentTexts[0].utf8),
+            from: Data(client.sentTexts[0].utf8)
         )
         #expect(sent.channel == "card.command")
         #expect(sent.payload == payload)
@@ -359,7 +365,9 @@ struct APISessionManagerTests {
         let client = FakeWebSocketClient()
         let manager = makeManager(client: client)
 
-        await #expect(throws: AppError.apiConnectionFailed(details: "Cannot send while Disconnected.")) {
+        await #expect(throws: AppError
+            .apiConnectionFailed(details: "Cannot send while Disconnected."))
+        {
             try await manager.send(to: "card.command", payload: #"{"type":"freeze"}"#)
         }
         #expect(client.sentTexts.isEmpty)
@@ -388,7 +396,8 @@ struct APISessionManagerTests {
             try await manager.send(to: "card.command", payload: #"{"type":"freeze"}"#)
             Issue.record("Expected send to throw")
         } catch {
-            #expect(error as? AppError == .apiConnectionFailed(details: rawError.localizedDescription))
+            #expect(error as? AppError ==
+                .apiConnectionFailed(details: rawError.localizedDescription))
         }
         #expect(client.sentTexts.isEmpty)
     }
@@ -398,7 +407,10 @@ struct APISessionManagerTests {
         let manager = makeManager(client: client)
         try await manager.connect()
 
-        await #expect(throws: AppError.validationError(field: "channel", reason: "Channel must not be empty.")) {
+        await #expect(throws: AppError.validationError(
+            field: "channel",
+            reason: "Channel must not be empty."
+        )) {
             try await manager.send(to: "", payload: #"{"type":"freeze"}"#)
         }
         #expect(client.sentTexts.isEmpty)

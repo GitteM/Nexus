@@ -56,11 +56,11 @@
         }
     }
 
-    public extension MockEventGenerator {
+    extension MockEventGenerator {
         /// The standard demo plan: one full `card.offers` snapshot
         /// followed by one status frame per `CardState.mockDefaults` card,
         /// cycling at the given interval.
-        static func demoDefaults(interval: Duration = .seconds(5)) -> MockEventGenerator {
+        public static func demoDefaults(interval: Duration = .seconds(5)) -> MockEventGenerator {
             MockEventGenerator(events: demoEvents(), interval: interval)
         }
 
@@ -68,7 +68,7 @@
         /// first, then each card's current status frame — a subscriber that
         /// joins mid-cycle still sees every channel's canonical first frame
         /// within one lap.
-        static func demoEvents() -> [BankingEvent] {
+        public static func demoEvents() -> [BankingEvent] {
             var events: [BankingEvent] = [offersSnapshotEvent]
             events += CardState.mockDefaults.map { cardStateEvent(for: $0) }
             return events
@@ -77,18 +77,18 @@
         /// The `card.offers` snapshot the demo opens with, seeded from
         /// `CardOffer.mockDefaults` inside the real `OffersSnapshotDTO`
         /// envelope.
-        static var offersSnapshotEvent: BankingEvent {
+        public static var offersSnapshotEvent: BankingEvent {
             BankingEvent(
                 channel: EventChannels.offers,
-                payload: payload(OffersSnapshotDTO(offers: CardOffer.mockDefaults)),
+                payload: payload(OffersSnapshotDTO(offers: CardOffer.mockDefaults))
             )
         }
 
         /// A `card.events.{cardId}` frame carrying one `CardState`.
-        static func cardStateEvent(for state: CardState) -> BankingEvent {
+        public static func cardStateEvent(for state: CardState) -> BankingEvent {
             BankingEvent(
                 channel: EventChannels.cardEvents(cardId: state.cardId),
-                payload: payload(state),
+                payload: payload(state)
             )
         }
 
@@ -106,7 +106,7 @@
             guard let data = try? encoder.encode(value) else {
                 fatalError(
                     "MockEventGenerator: payload encoding failed for "
-                        + "\(type(of: value)) — fix the demo plan.",
+                        + "\(type(of: value)) — fix the demo plan."
                 )
             }
             return String(decoding: data, as: UTF8.self)

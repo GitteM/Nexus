@@ -20,15 +20,22 @@ struct DashboardModelTests {
     private func makeModel(
         cards: [Card] = Card.mockDefaults,
         offers: [CardOffer] = CardOffer.mockDefaults,
-        states: [CardState] = CardState.mockDefaults,
-    ) -> (model: DashboardModel, cardRepository: MockCardRepository, offersRepository: MockOffersRepository, statusRepository: MockStatusRepository) {
+        states: [CardState] = CardState.mockDefaults
+    )
+        -> (
+            model: DashboardModel,
+            cardRepository: MockCardRepository,
+            offersRepository: MockOffersRepository,
+            statusRepository: MockStatusRepository
+        )
+    {
         let cardRepository = MockCardRepository(seed: cards)
         let offersRepository = MockOffersRepository(seed: offers)
         let statusRepository = MockStatusRepository(seed: states)
         let model = DashboardModel(
             cardRepository: cardRepository,
             offersRepository: offersRepository,
-            statusRepository: statusRepository,
+            statusRepository: statusRepository
         )
         return (model, cardRepository, offersRepository, statusRepository)
     }
@@ -58,7 +65,9 @@ struct DashboardModelTests {
         #expect(offersRepository.getAvailableOffersCallCount == 1)
 
         // One live subscription per managed card…
-        await waitUntil { statusRepository.subscribeToCardStatusCallCount == Card.mockDefaults.count }
+        await waitUntil {
+            statusRepository.subscribeToCardStatusCallCount == Card.mockDefaults.count
+        }
         // …and each seeded state lands in the ledger.
         await waitUntil {
             model.cardStates["card-credit-001"] == .mockActiveState
@@ -136,7 +145,7 @@ struct DashboardModelTests {
         let model = DashboardModel(
             cardRepository: cardRepository,
             offersRepository: offersRepository,
-            statusRepository: statusRepository,
+            statusRepository: statusRepository
         )
 
         await model.load()
@@ -219,20 +228,26 @@ struct DashboardModelTests {
     @Test func `live status updates flow into cardStates and the card list`() async {
         let (model, _, _, statusRepository) = makeModel()
         await model.load()
-        await waitUntil { statusRepository.subscribeToCardStatusCallCount == Card.mockDefaults.count }
+        await waitUntil {
+            statusRepository.subscribeToCardStatusCallCount == Card.mockDefaults.count
+        }
 
         let frozen = CardState(cardId: "card-credit-001", status: .frozen)
         statusRepository.publish(frozen)
 
         await waitUntil { model.cardStates["card-credit-001"] == frozen }
         #expect(model.cards.first { $0.id == "card-credit-001" }?.status == .frozen)
-        #expect(model.cards.first { $0.id == "card-credit-002" }?.status == .frozen) // untouched card
+        #expect(model.cards
+            .first { $0.id == "card-credit-002" }?
+            .status == .frozen) // untouched card
     }
 
     @Test func `refresh stops following cards that left the list`() async throws {
         let (model, cardRepository, _, statusRepository) = makeModel()
         await model.load()
-        await waitUntil { statusRepository.subscribeToCardStatusCallCount == Card.mockDefaults.count }
+        await waitUntil {
+            statusRepository.subscribeToCardStatusCallCount == Card.mockDefaults.count
+        }
 
         try await cardRepository.removeCard(cardId: Card.mockCreditCard.id)
         await model.refresh()
@@ -249,7 +264,9 @@ struct DashboardModelTests {
     @Test func `refresh starts subscriptions for cards that joined the list`() async throws {
         let (model, cardRepository, _, statusRepository) = makeModel()
         await model.load()
-        await waitUntil { statusRepository.subscribeToCardStatusCallCount == Card.mockDefaults.count }
+        await waitUntil {
+            statusRepository.subscribeToCardStatusCallCount == Card.mockDefaults.count
+        }
 
         _ = try await cardRepository.addCard(CardOffer.mockCashbackOffer)
         await model.refresh()
@@ -267,7 +284,9 @@ struct DashboardModelTests {
     @Test func `adding an offer creates a managed card and drops the offer`() async {
         let (model, cardRepository, _, statusRepository) = makeModel()
         await model.load()
-        await waitUntil { statusRepository.subscribeToCardStatusCallCount == Card.mockDefaults.count }
+        await waitUntil {
+            statusRepository.subscribeToCardStatusCallCount == Card.mockDefaults.count
+        }
 
         await model.addOffer(CardOffer.mockCashbackOffer)
 
@@ -351,9 +370,12 @@ struct DashboardModelTests {
             type: .credit,
             status: .active,
             currency: "EUR",
-            spendingLimit: nil,
+            spendingLimit: nil
         )
-        let (model, cardRepository, _, _) = makeModel(cards: [alreadyManaged], offers: CardOffer.mockDefaults)
+        let (model, cardRepository, _, _) = makeModel(
+            cards: [alreadyManaged],
+            offers: CardOffer.mockDefaults
+        )
         await model.load()
         #expect(model.cards.count == 1)
 
@@ -384,7 +406,7 @@ struct DashboardModelTests {
         let model = DashboardModel(
             cardRepository: cardRepository,
             offersRepository: MockOffersRepository(seed: CardOffer.mockDefaults),
-            statusRepository: MockStatusRepository(seed: CardState.mockDefaults),
+            statusRepository: MockStatusRepository(seed: CardState.mockDefaults)
         )
         await model.load()
 
@@ -424,7 +446,7 @@ private struct AddFailingUnknownErrorCardRepository: CardRepositoryProtocol {
 /// follow-up expectation failure.
 @MainActor
 private func waitUntil(_ condition: () -> Bool) async {
-    for _ in 0 ..< 200 {
+    for _ in 0..<200 {
         if condition() {
             return
         }

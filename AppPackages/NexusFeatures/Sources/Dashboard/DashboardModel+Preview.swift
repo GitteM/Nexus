@@ -12,49 +12,51 @@
     ///
     /// Release builds compile this file to nothing: the `Mocks` module
     /// itself is empty outside DEBUG.
-    public extension DashboardModel {
+    extension DashboardModel {
         /// Default demo content: `load()` lands in `.loaded` with the mock
         /// card and offer sets.
-        static func preview() -> DashboardModel {
+        public static func preview() -> DashboardModel {
             DashboardModel(
                 cardRepository: MockCardRepository(seed: Card.mockDefaults),
                 offersRepository: MockOffersRepository(seed: CardOffer.mockDefaults),
-                statusRepository: MockStatusRepository(seed: CardState.mockDefaults),
+                statusRepository: MockStatusRepository(seed: CardState.mockDefaults)
             )
         }
 
         /// Fresh-account preview: `load()` lands in `.empty` (no cards, no
         /// offers).
-        static func emptyPreview() -> DashboardModel {
+        public static func emptyPreview() -> DashboardModel {
             DashboardModel(
                 cardRepository: MockCardRepository(seed: []),
                 offersRepository: MockOffersRepository(seed: []),
-                statusRepository: MockStatusRepository(seed: []),
+                statusRepository: MockStatusRepository(seed: [])
             )
         }
 
         /// Loading preview: the card fetch parks forever
         /// (`shouldNeverComplete`), so `load()` never leaves `.loading`.
-        static func loadingPreview() -> DashboardModel {
+        public static func loadingPreview() -> DashboardModel {
             let cardRepository = MockCardRepository(seed: Card.mockDefaults)
             cardRepository.shouldNeverComplete = true
             return DashboardModel(
                 cardRepository: cardRepository,
                 offersRepository: MockOffersRepository(seed: CardOffer.mockDefaults),
-                statusRepository: MockStatusRepository(seed: CardState.mockDefaults),
+                statusRepository: MockStatusRepository(seed: CardState.mockDefaults)
             )
         }
 
         /// Error preview: the card fetch throws `error` (default
         /// `.apiConnectionFailed`), so `load()` lands in `.error(error)`.
-        static func errorPreview(error: AppError = .apiConnectionFailed()) -> DashboardModel {
+        public static func errorPreview(error: AppError = .apiConnectionFailed())
+            -> DashboardModel
+        {
             let cardRepository = MockCardRepository(seed: Card.mockDefaults)
             cardRepository.shouldThrowError = true
             cardRepository.thrownError = error
             return DashboardModel(
                 cardRepository: cardRepository,
                 offersRepository: MockOffersRepository(seed: CardOffer.mockDefaults),
-                statusRepository: MockStatusRepository(seed: CardState.mockDefaults),
+                statusRepository: MockStatusRepository(seed: CardState.mockDefaults)
             )
         }
     }

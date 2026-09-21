@@ -16,9 +16,18 @@ struct CardStateTests {
     // MARK: - Equality
 
     @Test func `equality compares all properties`() {
-        #expect(CardState(cardId: "card-1", status: .frozen) == CardState(cardId: "card-1", status: .frozen))
-        #expect(CardState(cardId: "card-1", status: .frozen) != CardState(cardId: "card-1", status: .active))
-        #expect(CardState(cardId: "card-1", status: .frozen) != CardState(cardId: "card-2", status: .frozen))
+        #expect(CardState(cardId: "card-1", status: .frozen) == CardState(
+            cardId: "card-1",
+            status: .frozen
+        ))
+        #expect(CardState(cardId: "card-1", status: .frozen) != CardState(
+            cardId: "card-1",
+            status: .active
+        ))
+        #expect(CardState(cardId: "card-1", status: .frozen) != CardState(
+            cardId: "card-2",
+            status: .frozen
+        ))
     }
 
     // MARK: - Codable

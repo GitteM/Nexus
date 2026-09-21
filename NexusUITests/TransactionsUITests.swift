@@ -31,7 +31,8 @@ final class TransactionsUITests: XCTestCase {
         let carousel = app.descendants(matching: .any)[DashboardAccessibility.carousel]
         XCTAssertTrue(carousel.waitForExistence(timeout: 20))
 
-        let firstCard = app.descendants(matching: .any)[DashboardAccessibility.card(Card.mockCreditCard.id)]
+        let firstCard = app
+            .descendants(matching: .any)[DashboardAccessibility.card(Card.mockCreditCard.id)]
         XCTAssertTrue(firstCard.waitForExistence(timeout: 10))
         XCTAssertTrue(UITestInteraction.tapWhenReady(firstCard))
 
@@ -44,7 +45,7 @@ final class TransactionsUITests: XCTestCase {
 
         XCTAssertTrue(
             app.descendants(matching: .any)[TransactionsAccessibility.historyScreen]
-                .waitForExistence(timeout: 20),
+                .waitForExistence(timeout: 20)
         )
     }
 
@@ -62,11 +63,13 @@ final class TransactionsUITests: XCTestCase {
         let compactLabel = balance.label.replacingOccurrences(of: " ", with: "")
         XCTAssertTrue(
             compactLabel.contains("240,75") || compactLabel.contains("240.75"),
-            "label was: \(balance.label)",
+            "label was: \(balance.label)"
         )
 
         // A seeded transaction row exists (pending coffee purchase).
-        let row = app.descendants(matching: .any)[TransactionsAccessibility.transactionRow(Transaction.mockCoffeePurchase.id)]
+        let row = app
+            .descendants(matching: .any)[TransactionsAccessibility
+                .transactionRow(Transaction.mockCoffeePurchase.id)]
         XCTAssertTrue(row.waitForExistence(timeout: 10))
         XCTAssertTrue(row.label.contains("Cafe Central"), "label was: \(row.label)")
 
@@ -74,15 +77,18 @@ final class TransactionsUITests: XCTestCase {
         XCTAssertTrue(UITestInteraction.tapWhenReady(row))
         XCTAssertTrue(
             app.descendants(matching: .any)[TransactionsAccessibility.detailScreen]
-                .waitForExistence(timeout: 20),
+                .waitForExistence(timeout: 20)
         )
         // The id row can surface as several accessibility elements; the
         // first match carries the id text.
         let detailID = app.descendants(matching: .any)
-            .matching(identifier: TransactionsAccessibility.detailTransactionID).firstMatch
+            .matching(identifier: TransactionsAccessibility.detailTransactionID)
+            .firstMatch
         XCTAssertTrue(detailID.waitForExistence(timeout: 10))
-        XCTAssertTrue(detailID.label.contains(Transaction.mockCoffeePurchase.id),
-                      "label was: \(detailID.label)")
+        XCTAssertTrue(
+            detailID.label.contains(Transaction.mockCoffeePurchase.id),
+            "label was: \(detailID.label)"
+        )
     }
 
     /// The search field filters the feed: matching rows stay, non-matching
@@ -92,8 +98,12 @@ final class TransactionsUITests: XCTestCase {
         let app = launchApp()
         openHistory(in: app)
 
-        let coffeeRow = app.descendants(matching: .any)[TransactionsAccessibility.transactionRow(Transaction.mockCoffeePurchase.id)]
-        let groceriesRow = app.descendants(matching: .any)[TransactionsAccessibility.transactionRow(Transaction.mockGroceriesPurchase.id)]
+        let coffeeRow = app
+            .descendants(matching: .any)[TransactionsAccessibility
+                .transactionRow(Transaction.mockCoffeePurchase.id)]
+        let groceriesRow = app
+            .descendants(matching: .any)[TransactionsAccessibility
+                .transactionRow(Transaction.mockGroceriesPurchase.id)]
         XCTAssertTrue(coffeeRow.waitForExistence(timeout: 10))
         XCTAssertTrue(groceriesRow.waitForExistence(timeout: 10))
 
@@ -113,9 +123,14 @@ final class TransactionsUITests: XCTestCase {
         XCTAssertTrue(banner.waitForExistence(timeout: 10))
         let filtersActive = app.staticTexts["Filters active"]
         XCTAssertTrue(filtersActive.waitForExistence(timeout: 10))
-        let showingCount = app.staticTexts.matching(
-            NSPredicate(format: "label CONTAINS %@", "Showing 1 of \(Transaction.mockDefaults.count)"),
-        ).firstMatch
+        let showingCount = app.staticTexts
+            .matching(
+                NSPredicate(
+                    format: "label CONTAINS %@",
+                    "Showing 1 of \(Transaction.mockDefaults.count)"
+                )
+            )
+            .firstMatch
         XCTAssertTrue(showingCount.exists, "count line was missing")
 
         // Reset restores the whole feed and removes the banner.

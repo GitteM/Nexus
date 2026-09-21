@@ -37,7 +37,7 @@ public struct DashboardView: View {
                 title: Strings.Dashboard.emptyTitle,
                 message: Strings.Dashboard.emptyMessage,
                 actionTitle: Strings.Common.refresh,
-                action: { Task { await model.refresh() } },
+                action: { Task { await model.refresh() } }
             )
         case let .error(error):
             ErrorView(error: error) {
@@ -92,7 +92,7 @@ private struct DashboardContentView: View {
         .alert(
             Strings.Dashboard.addOfferFailedTitle,
             isPresented: addErrorPresented,
-            presenting: model.addOfferError,
+            presenting: model.addOfferError
         ) { _ in
             Button(Strings.Common.ok) {
                 model.dismissAddOfferError()
@@ -123,7 +123,7 @@ private struct DashboardContentView: View {
                 if !presented {
                     model.dismissAddOfferError()
                 }
-            },
+            }
         )
     }
 

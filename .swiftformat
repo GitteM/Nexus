@@ -1,0 +1,83 @@
+# SwiftFormat configuration.
+#
+# Owns the mechanical side of Swift sources — shape (indentation, line length, wrapping,
+# braces, commas, spacing, blank lines, import order) and the language-practice cleanups
+# a formatter can make mechanically (final leaf classes, case-less enum namespaces, Void
+# usage, extension/access-control placement). SwiftLint (.swiftlint.yml) owns the
+# semantic checks a formatter can't make, and never reformats. Run SwiftFormat first,
+# then SwiftLint.
+#
+# `--disable all` plus an explicit `--enable` list pins the rule set, so an upstream
+# default change can't silently reshape the code. Adding a rule is a deliberate act.
+
+--swift-version 6.3
+--indent 4
+--max-width 100
+--allow-partial-wrapping false
+--ranges no-space
+--semicolons never
+--import-grouping alpha,testable-last
+--extension-acl on-declarations
+--guard-else same-line
+--trailing-commas collections-only
+--wrap-ternary before-operators
+--wrap-parameters before-first
+--wrap-arguments before-first
+--wrap-collections before-first
+
+# Only the rules named below run; everything else stays off.
+--disable all
+--enable blankLineAfterImports
+--enable blankLinesAroundMark
+--enable blankLinesAtEndOfScope
+--enable blankLinesAtStartOfScope
+--enable blankLinesBetweenScopes
+--enable braces
+--enable consecutiveBlankLines
+--enable consecutiveSpaces
+--enable docComments
+--enable duplicateImports
+--enable elseOnSameLine
+--enable enumNamespaces
+--enable extensionAccessControl
+--enable indent
+--enable leadingDelimiters
+--enable linebreakAtEndOfFile
+--enable modifierOrder
+--enable numberFormatting
+--enable preferFinalClasses
+--enable preferForLoop
+--enable redundantExtensionACL
+--enable redundantFileprivate
+--enable redundantGet
+--enable redundantInternal
+--enable redundantParens
+--enable redundantPublic
+--enable redundantReturn
+--enable redundantVoidReturnType
+--enable semicolons
+--enable sortImports
+--enable trailingCommas
+--enable trailingSpace
+--enable typeSugar
+--enable void
+--enable spaceAroundBraces
+--enable spaceAroundBrackets
+--enable spaceAroundComments
+--enable spaceAroundGenerics
+--enable spaceAroundOperators
+--enable spaceAroundParens
+--enable spaceInsideBraces
+--enable spaceInsideBrackets
+--enable spaceInsideComments
+--enable spaceInsideGenerics
+--enable spaceInsideParens
+--enable wrap
+--enable wrapArguments
+--enable wrapAttributes
+--enable wrapFunctionBodies
+--enable wrapMultilineFunctionChains
+--enable wrapMultilineStatementBraces
+--enable wrapPropertyBodies
+
+--exclude DerivedData,.build,Pods

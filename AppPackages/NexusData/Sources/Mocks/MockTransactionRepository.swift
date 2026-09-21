@@ -52,7 +52,7 @@
             guard !cardId.isEmpty else {
                 throw AppError.validationError(
                     field: "cardId",
-                    reason: "Card id must not be empty.",
+                    reason: "Card id must not be empty."
                 )
             }
             return transactionsByCardId[cardId] ?? []
@@ -61,13 +61,15 @@
         /// Subscribes to one card's transaction feed; the stream yields the
         /// current list first, then the updated list after every `publish`
         /// for that card.
-        public func subscribeToTransactions(cardId: String) async throws -> AsyncStream<[Transaction]> {
+        public func subscribeToTransactions(cardId: String) async throws
+            -> AsyncStream<[Transaction]>
+        {
             subscribeToTransactionsCallCount += 1
             try await checkFailureMode()
             guard !cardId.isEmpty else {
                 throw AppError.validationError(
                     field: "cardId",
-                    reason: "Card id must not be empty.",
+                    reason: "Card id must not be empty."
                 )
             }
             let (stream, continuation) = AsyncStream<[Transaction]>.makeStream()
@@ -101,7 +103,10 @@
             }
         }
 
-        private func register(cardId: String, continuation: AsyncStream<[Transaction]>.Continuation) -> Int {
+        private func register(
+            cardId: String,
+            continuation: AsyncStream<[Transaction]>.Continuation
+        ) -> Int {
             let id = nextSubscriberID
             nextSubscriberID += 1
             subscribers[cardId, default: [:]][id] = continuation

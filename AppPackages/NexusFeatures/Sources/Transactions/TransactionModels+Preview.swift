@@ -9,37 +9,37 @@
     /// preview appears, exactly as in the running app. Release builds
     /// compile this file to nothing: the `Mocks` module is empty outside
     /// DEBUG.
-    public extension TransactionHistoryModel {
+    extension TransactionHistoryModel {
         /// Default demo content for one card: seeded balance + the standard
         /// transaction set (the credit-card mock feed; other cards preview
         /// with an empty feed and no balance).
-        static func preview(cardID: String) -> TransactionHistoryModel {
+        public static func preview(cardID: String) -> TransactionHistoryModel {
             detailModel(
                 cardID: cardID,
                 balances: Balance.mockDefaults,
-                transactions: seededTransactions(for: cardID),
+                transactions: seededTransactions(for: cardID)
             )
         }
 
         /// Loading preview: the balance fetch parks forever
         /// (`shouldNeverComplete`), so `load()` never leaves `.loading`.
-        static func loadingPreview(cardID: String) -> TransactionHistoryModel {
+        public static func loadingPreview(cardID: String) -> TransactionHistoryModel {
             let balanceRepository = MockBalanceRepository(seed: Balance.mockDefaults)
             balanceRepository.shouldNeverComplete = true
             return TransactionHistoryModel(
                 cardID: cardID,
                 balanceRepository: balanceRepository,
                 transactionRepository: MockTransactionRepository(
-                    seed: [cardID: Self.seededTransactions(for: cardID)],
-                ),
+                    seed: [cardID: Self.seededTransactions(for: cardID)]
+                )
             )
         }
 
         /// Error preview: the balance fetch throws (default
         /// `.apiConnectionFailed`), so `load()` lands in `.error`.
-        static func errorPreview(
+        public static func errorPreview(
             cardID: String,
-            error: AppError = .apiConnectionFailed(),
+            error: AppError = .apiConnectionFailed()
         ) -> TransactionHistoryModel {
             let balanceRepository = MockBalanceRepository(seed: Balance.mockDefaults)
             balanceRepository.shouldThrowError = true
@@ -48,8 +48,8 @@
                 cardID: cardID,
                 balanceRepository: balanceRepository,
                 transactionRepository: MockTransactionRepository(
-                    seed: [cardID: Self.seededTransactions(for: cardID)],
-                ),
+                    seed: [cardID: Self.seededTransactions(for: cardID)]
+                )
             )
         }
 
@@ -62,66 +62,66 @@
         private static func detailModel(
             cardID: String,
             balances: [Balance],
-            transactions: [Transaction],
+            transactions: [Transaction]
         ) -> TransactionHistoryModel {
             TransactionHistoryModel(
                 cardID: cardID,
                 balanceRepository: MockBalanceRepository(seed: balances),
                 transactionRepository: MockTransactionRepository(
-                    seed: [cardID: transactions],
-                ),
+                    seed: [cardID: transactions]
+                )
             )
         }
     }
 
-    public extension TransactionDetailModel {
+    extension TransactionDetailModel {
         /// Default detail preview over the shared transaction mock feed.
-        static func preview(
+        public static func preview(
             cardID: String,
-            transactionID: String,
+            transactionID: String
         ) -> TransactionDetailModel {
             TransactionDetailModel(
                 cardID: cardID,
                 transactionID: transactionID,
                 transactionRepository: MockTransactionRepository(
-                    seed: [cardID: cardID == Card.mockCreditCard.id ? Transaction.mockDefaults : []],
-                ),
+                    seed: [cardID: cardID == Card.mockCreditCard.id ? Transaction.mockDefaults : []]
+                )
             )
         }
 
         /// Loading preview: the feed fetch parks forever
         /// (`shouldNeverComplete`), so `load()` never leaves `.loading`.
-        static func loadingPreview(
+        public static func loadingPreview(
             cardID: String,
-            transactionID: String,
+            transactionID: String
         ) -> TransactionDetailModel {
             let transactionRepository = MockTransactionRepository(
-                seed: [cardID: cardID == Card.mockCreditCard.id ? Transaction.mockDefaults : []],
+                seed: [cardID: cardID == Card.mockCreditCard.id ? Transaction.mockDefaults : []]
             )
             transactionRepository.shouldNeverComplete = true
             return TransactionDetailModel(
                 cardID: cardID,
                 transactionID: transactionID,
-                transactionRepository: transactionRepository,
+                transactionRepository: transactionRepository
             )
         }
 
         /// Error preview: the feed fetch throws (default
         /// `.apiConnectionFailed`), so `load()` lands in `.error`.
-        static func errorPreview(
+        public static func errorPreview(
             cardID: String,
             transactionID: String,
-            error: AppError = .apiConnectionFailed(),
+            error: AppError = .apiConnectionFailed()
         ) -> TransactionDetailModel {
             let transactionRepository = MockTransactionRepository(
-                seed: [cardID: cardID == Card.mockCreditCard.id ? Transaction.mockDefaults : []],
+                seed: [cardID: cardID == Card.mockCreditCard.id ? Transaction.mockDefaults : []]
             )
             transactionRepository.shouldThrowError = true
             transactionRepository.thrownError = error
             return TransactionDetailModel(
                 cardID: cardID,
                 transactionID: transactionID,
-                transactionRepository: transactionRepository,
+                transactionRepository: transactionRepository
             )
         }
     }

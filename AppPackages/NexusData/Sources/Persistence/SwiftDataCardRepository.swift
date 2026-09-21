@@ -34,13 +34,13 @@ public struct SwiftDataCardRepository: Sendable {
     ///   never constructs this store at all — demo state is in-memory mocks,
     ///   as persistence is a live-mode concern.
     public static func makeContainer(
-        storedInMemoryOnly: Bool = false,
+        storedInMemoryOnly: Bool = false
     ) throws -> ModelContainer {
         let schema = Schema([StoredCard.self])
         let configuration = ModelConfiguration(
             "Nexus",
             schema: schema,
-            isStoredInMemoryOnly: storedInMemoryOnly,
+            isStoredInMemoryOnly: storedInMemoryOnly
         )
         return try ModelContainer(for: schema, configurations: [configuration])
     }

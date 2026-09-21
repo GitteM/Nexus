@@ -54,20 +54,24 @@ final class DashboardUITests: XCTestCase {
         let app = launchApp(state: .ready)
 
         XCTAssertTrue(app.navigationBars["Dashboard"].waitForExistence(timeout: 10))
-        XCTAssertTrue(app.descendants(matching: .any)[DashboardAccessibility.carousel].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.descendants(matching: .any)[DashboardAccessibility.carousel]
+            .waitForExistence(timeout: 10))
 
         // The first managed card (mock credit card, ending 4821, active)
         // is one combined accessibility element whose label names the tail
         // and the status — the data the carousel must expose to VoiceOver.
-        let firstCard = app.descendants(matching: .any)[DashboardAccessibility.card(Card.mockCreditCard.id)]
+        let firstCard = app
+            .descendants(matching: .any)[DashboardAccessibility.card(Card.mockCreditCard.id)]
         XCTAssertTrue(firstCard.waitForExistence(timeout: 5))
         XCTAssertTrue(firstCard.label.contains("4821"), "label was: \(firstCard.label)")
         XCTAssertTrue(firstCard.label.contains("Active"), "label was: \(firstCard.label)")
         XCTAssertEqual(firstCard.value as? String, "Card 1 of 6")
 
         // The offers row lists the demo offers with add actions.
-        XCTAssertTrue(app.buttons[DashboardAccessibility.addOffer(CardOffer.mockCashbackOffer.id)].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.buttons[DashboardAccessibility.addOffer(CardOffer.mockTravelOffer.id)].exists)
+        XCTAssertTrue(app.buttons[DashboardAccessibility.addOffer(CardOffer.mockCashbackOffer.id)]
+            .waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons[DashboardAccessibility.addOffer(CardOffer.mockTravelOffer.id)]
+            .exists)
     }
 
     /// Adding an offer turns it into a managed card: the repository accepts
@@ -83,7 +87,8 @@ final class DashboardUITests: XCTestCase {
 
         XCTAssertTrue(addButton.waitForNonExistence(timeout: 10))
         // The other offers are untouched.
-        XCTAssertTrue(app.buttons[DashboardAccessibility.addOffer(CardOffer.mockTravelOffer.id)].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons[DashboardAccessibility.addOffer(CardOffer.mockTravelOffer.id)]
+            .waitForExistence(timeout: 5))
     }
 
     /// The `-demoState=loading` knob parks the card fetch, so the loading
@@ -102,7 +107,8 @@ final class DashboardUITests: XCTestCase {
     func testErrorStateRendersErrorSurfaceWithRetry() {
         let app = launchApp(state: .error)
 
-        XCTAssertTrue(app.staticTexts["We couldn't reach the server."].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["We couldn't reach the server."]
+            .waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["Retry"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.descendants(matching: .any)[DashboardAccessibility.carousel].exists)
     }
@@ -115,7 +121,8 @@ final class DashboardUITests: XCTestCase {
     func testResetDemoReturnsDashboardToLoadedContent() {
         let app = launchApp(state: .ready)
 
-        let card = app.descendants(matching: .any)[DashboardAccessibility.card(Card.mockCreditCard.id)]
+        let card = app
+            .descendants(matching: .any)[DashboardAccessibility.card(Card.mockCreditCard.id)]
         XCTAssertTrue(card.waitForExistence(timeout: 10))
 
         let resetButton = app.buttons[Strings.App.resetDemo]

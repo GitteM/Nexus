@@ -14,7 +14,7 @@ struct CardOfferTests {
             type: .credit,
             currency: "EUR",
             annualFee: nil,
-            benefits: ["2% cashback"],
+            benefits: ["2% cashback"]
         )
         #expect(offer.id == "offer-1")
         #expect(offer.title == "Cashback Card")
@@ -35,7 +35,7 @@ struct CardOfferTests {
             type: .credit,
             currency: "EUR",
             annualFee: nil,
-            benefits: ["2% cashback"],
+            benefits: ["2% cashback"]
         )
         let same = CardOffer(
             id: "offer-1",
@@ -44,7 +44,7 @@ struct CardOfferTests {
             type: .credit,
             currency: "EUR",
             annualFee: nil,
-            benefits: ["2% cashback"],
+            benefits: ["2% cashback"]
         )
         let different = CardOffer(
             id: "offer-2",
@@ -53,7 +53,7 @@ struct CardOfferTests {
             type: .credit,
             currency: "EUR",
             annualFee: 99,
-            benefits: ["2% cashback"],
+            benefits: ["2% cashback"]
         )
         #expect(a == same)
         #expect(a != different)
@@ -69,7 +69,7 @@ struct CardOfferTests {
             type: .credit,
             currency: "EUR",
             annualFee: 95,
-            benefits: ["3x points", "Lounge access"],
+            benefits: ["3x points", "Lounge access"]
         )
         let data = try JSONEncoder().encode(offer)
         let decoded = try JSONDecoder().decode(CardOffer.self, from: data)
@@ -85,7 +85,7 @@ struct CardOfferTests {
             type: .prepaid,
             currency: "EUR",
             annualFee: nil,
-            benefits: [],
+            benefits: []
         )
         let data = try JSONEncoder().encode(offer)
         let decoded = try JSONDecoder().decode(CardOffer.self, from: data)
@@ -98,7 +98,7 @@ struct CardOfferTests {
             #"""
             {"id":"o1","title":"Cashback Card","subtitle":"2% back",
              "type":"credit","currency":"EUR","benefits":["2% cashback"]}
-            """#.utf8,
+            """#.utf8
         )
         let decoded = try JSONDecoder().decode(CardOffer.self, from: json)
         #expect(decoded.annualFee == nil)

@@ -17,7 +17,7 @@ extension AppContainer {
             cardID: cardID,
             cardRepository: dependencies.cardRepository,
             statusRepository: dependencies.statusRepository,
-            actionRepository: dependencies.actionRepository,
+            actionRepository: dependencies.actionRepository
         )
         cardDetailModels[cardID] = model
         return model
@@ -34,7 +34,7 @@ extension AppContainer {
         let model = TransactionHistoryModel(
             cardID: cardID,
             balanceRepository: dependencies.balanceRepository,
-            transactionRepository: dependencies.transactionRepository,
+            transactionRepository: dependencies.transactionRepository
         )
         historyModels[cardID] = model
         return model
@@ -53,7 +53,7 @@ extension AppContainer {
         let model = TransactionDetailModel(
             cardID: cardID,
             transactionID: transactionID,
-            transactionRepository: dependencies.transactionRepository,
+            transactionRepository: dependencies.transactionRepository
         )
         transactionDetailModels[key] = model
         return model

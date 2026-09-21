@@ -35,7 +35,8 @@ public enum Strings {
         public static let cardsSection = String(localized: "Your cards")
         public static let offersSection = String(localized: "Explore offers")
         public static let emptyTitle = String(localized: "No cards yet")
-        public static let emptyMessage = String(localized: "Cards you add and offers you can browse will appear here.")
+        public static let emptyMessage =
+            String(localized: "Cards you add and offers you can browse will appear here.")
 
         /// Accessibility value for one carousel page: "Card 1 of 3".
         public static func cardPage(_ page: Int, of total: Int) -> String {
@@ -65,7 +66,11 @@ public enum Strings {
 
         /// VoiceOver label for one card-front page with a number tail,
         /// e.g. "Credit card ending in 4821, Active".
-        public static func cardAccessibility(typeName: String, lastFour: String, status: String) -> String {
+        public static func cardAccessibility(
+            typeName: String,
+            lastFour: String,
+            status: String
+        ) -> String {
             String(localized: "\(typeName) card ending in \(lastFour), \(status)")
         }
     }
@@ -81,21 +86,32 @@ public enum Strings {
         public static let freeze = String(localized: "Freeze card")
         public static let unfreeze = String(localized: "Unfreeze card")
         public static let freezeConfirmTitle = String(localized: "Freeze this card?")
-        public static let freezeConfirmMessage = String(localized: "New purchases and withdrawals will be blocked until you unfreeze.")
+        public static let freezeConfirmMessage =
+            String(localized: "New purchases and withdrawals will be blocked until you unfreeze.")
         public static let unfreezeConfirmTitle = String(localized: "Unfreeze this card?")
-        public static let unfreezeConfirmMessage = String(localized: "The card will work again immediately.")
+        public static let unfreezeConfirmMessage =
+            String(localized: "The card will work again immediately.")
         public static let reportLostOrStolen = String(localized: "Report lost or stolen")
         public static let reportLost = String(localized: "Report lost")
         public static let reportStolen = String(localized: "Report stolen")
         public static let reportConfirmTitle = String(localized: "Report this card lost or stolen?")
-        public static let reportConfirmMessage = String(localized: "The card will be blocked right away. You can request a replacement next.")
+        public static let reportConfirmMessage =
+            String(
+                localized: "The card will be blocked right away. You can request a replacement next."
+            )
         public static let lostCardTitle = String(localized: "This card is lost")
-        public static let lostCardMessage = String(localized: "The card is blocked. Request a replacement card.")
+        public static let lostCardMessage =
+            String(localized: "The card is blocked. Request a replacement card.")
         public static let requestReplacement = String(localized: "Request replacement")
-        public static let requestReplacementConfirmTitle = String(localized: "Request a replacement card?")
-        public static let requestReplacementConfirmMessage = String(localized: "A replacement offer will appear on your Dashboard. The lost card stays blocked.")
+        public static let requestReplacementConfirmTitle =
+            String(localized: "Request a replacement card?")
+        public static let requestReplacementConfirmMessage =
+            String(
+                localized: "A replacement offer will appear on your Dashboard. The lost card stays blocked."
+            )
         public static let replacementRequestedTitle = String(localized: "Replacement requested")
-        public static let replacementRequestedMessage = String(localized: "Find your new card offer on the Dashboard and add it.")
+        public static let replacementRequestedMessage =
+            String(localized: "Find your new card offer on the Dashboard and add it.")
         public static let limitsSection = String(localized: "Spending limits")
         public static let currentLimit = String(localized: "Current limit")
         public static let notSet = String(localized: "Not set")
@@ -150,9 +166,11 @@ public enum Strings {
         public static let last30Days = String(localized: "Last 30 days")
         public static let last90Days = String(localized: "Last 90 days")
         public static let emptyTitle = String(localized: "No transactions yet")
-        public static let emptyMessage = String(localized: "Transactions for this card will appear here.")
+        public static let emptyMessage =
+            String(localized: "Transactions for this card will appear here.")
         public static let noResultsTitle = String(localized: "No matching transactions")
-        public static let noResultsMessage = String(localized: "Try clearing a filter or searching for something else.")
+        public static let noResultsMessage =
+            String(localized: "Try clearing a filter or searching for something else.")
         public static let pending = String(localized: "Pending")
         public static let refund = String(localized: "Refund")
         public static let merchant = String(localized: "Merchant")
@@ -169,14 +187,16 @@ public enum Strings {
 
     public enum Connection {
         public static let title = String(localized: "You're offline")
-        public static let message = String(localized: "Reconnect to keep your cards and balances up to date.")
+        public static let message =
+            String(localized: "Reconnect to keep your cards and balances up to date.")
         public static let reconnect = String(localized: "Reconnect")
     }
 
     public enum App {
         public static let title = String(localized: "Nexus")
-        public static let errorTitle = String(localized: "Something went wrong")
-        public static let errorMessage = String(localized: "Nexus couldn't start. Please try again.")
+        public static let errorTitle = String(localized: "Something went wrong.")
+        public static let errorMessage =
+            String(localized: "Nexus couldn't start. Please try again.")
 
         /// Demo-only reset action.
         public static let resetDemo = String(localized: "Reset demo")

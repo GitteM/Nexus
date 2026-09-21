@@ -19,7 +19,7 @@ public struct EmptyStateView: View {
         title: String,
         message: String? = nil,
         actionTitle: String? = nil,
-        action: (() -> Void)? = nil,
+        action: (() -> Void)? = nil
     ) {
         self.systemImage = systemImage
         self.title = title
@@ -50,13 +50,13 @@ public struct EmptyStateView: View {
         title: "No cards yet",
         message: "Add a card to start managing it here.",
         actionTitle: "Browse offers",
-        action: {},
+        action: {}
     )
 }
 
 #Preview("Minimal") {
     EmptyStateView(
         systemImage: "tray",
-        title: "Nothing here",
+        title: "Nothing here"
     )
 }

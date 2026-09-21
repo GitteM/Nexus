@@ -38,7 +38,7 @@ public struct WarningRow: View {
     VStack(alignment: .leading, spacing: Spacing.lg) {
         WarningRow(
             title: "Spending limit reached",
-            message: "Your daily limit is 90% used. It resets at midnight.",
+            message: "Your daily limit is 90% used. It resets at midnight."
         )
         WarningRow(title: "Card expiring soon")
     }

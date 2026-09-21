@@ -16,7 +16,7 @@ public struct CardCommand: Codable, Sendable, Equatable {
         cardId: String,
         type: CardCommandType,
         amount: Decimal? = nil,
-        period: SpendingLimitPeriod? = nil,
+        period: SpendingLimitPeriod? = nil
     ) {
         self.cardId = cardId
         self.type = type
@@ -25,19 +25,19 @@ public struct CardCommand: Codable, Sendable, Equatable {
     }
 }
 
-public extension CardCommand {
-    static func freeze(cardId: String) -> CardCommand {
+extension CardCommand {
+    public static func freeze(cardId: String) -> CardCommand {
         CardCommand(cardId: cardId, type: .freeze)
     }
 
-    static func unfreeze(cardId: String) -> CardCommand {
+    public static func unfreeze(cardId: String) -> CardCommand {
         CardCommand(cardId: cardId, type: .unfreeze)
     }
 
-    static func setSpendingLimit(
+    public static func setSpendingLimit(
         cardId: String,
         period: SpendingLimitPeriod,
-        amount: Decimal,
+        amount: Decimal
     ) -> CardCommand {
         CardCommand(cardId: cardId, type: .setSpendingLimit, amount: amount, period: period)
     }

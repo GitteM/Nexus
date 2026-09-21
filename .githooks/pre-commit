@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+#
+# Pre-commit hook: keep formatting and linting out of CI by doing them here.
+#
+#   1. SwiftFormat *writes* — format the Swift files in this commit and
+#      re-stage them, so the commit always contains formatted code.
+#   2. SwiftFormat --lint + SwiftLint — report only; fail the commit on any
+#      violation so CI never sees one.
+#
+# Activate once per clone (committed hook, not .git/hooks):
+#
+#   git config core.hooksPath .githooks
+#
+# Bypass for a single commit (use sparingly):  git commit --no-verify
+#
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+
+for tool in swiftformat swiftlint; do
+  if ! command -v "$tool" >/dev/null 2>&1; then
+    printf 'pre-commit: %s not found on PATH.\n' "$tool" >&2
+    printf '%s\n' "Run 'brew bundle' from the repo root (see Brewfile), then retry." >&2
+    exit 1
+  fi
+done
+
+# Swift files staged for this commit, except deletions.
+files=()
+while IFS= read -r path; do
+  [ -n "$path" ] && files+=("$path")
+done < <(git diff --cached --name-only --diff-filter=ACMR -- '*.swift')
+
+if [ "${#files[@]}" -gt 0 ]; then
+  swiftformat "${files[@]}"
+  git add -- "${files[@]}"
+fi
+
+# Report-only over the whole tree: same commands the CI gate would run.
+# SwiftLint `--quiet` hides its per-file progress list but still prints every
+# violation; SwiftFormat keeps its (short) detail, which only appears when the
+# tree has drifted.
+swiftformat --lint .
+swiftlint --strict --quiet

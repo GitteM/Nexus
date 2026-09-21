@@ -80,7 +80,7 @@ public final class CardDetailModel {
         cardID: String,
         cardRepository: CardRepositoryProtocol,
         statusRepository: CardStatusRepositoryProtocol,
-        actionRepository: CardActionRepositoryProtocol,
+        actionRepository: CardActionRepositoryProtocol
     ) {
         self.cardID = cardID
         self.cardRepository = cardRepository
@@ -179,7 +179,11 @@ public final class CardDetailModel {
     /// command keeps the backend record distinct even though the domain has
     /// no separate `stolen` status).
     public func reportStolen() async {
-        await performStatusTransition(.reportStolen, allowed: canReportIssue, resultingStatus: .lost)
+        await performStatusTransition(
+            .reportStolen,
+            allowed: canReportIssue,
+            resultingStatus: .lost
+        )
     }
 
     /// Requests a replacement for a lost card (transition: `lost` →
@@ -192,7 +196,7 @@ public final class CardDetailModel {
         defer { pendingAction = nil }
         do {
             try await actionRepository.execute(
-                CardCommand(cardId: cardID, type: .requestReplacement),
+                CardCommand(cardId: cardID, type: .requestReplacement)
             )
             replacementRequested = true
             lastActionSequence += 1
@@ -215,7 +219,7 @@ public final class CardDetailModel {
         defer { pendingAction = nil }
         do {
             try await actionRepository.execute(
-                CardCommand.setSpendingLimit(cardId: cardID, period: period, amount: amount),
+                CardCommand.setSpendingLimit(cardId: cardID, period: period, amount: amount)
             )
             spendingLimits.removeAll { $0.period == period }
             spendingLimits.append(
@@ -223,8 +227,8 @@ public final class CardDetailModel {
                     cardId: cardID,
                     period: period,
                     amount: amount,
-                    currency: card.currency,
-                ),
+                    currency: card.currency
+                )
             )
             self.card = CardDetailModel.copy(card, spendingLimit: amount)
             lastActionSequence += 1
@@ -250,7 +254,7 @@ public final class CardDetailModel {
     private func performStatusTransition(
         _ type: CardCommandType,
         allowed: Bool,
-        resultingStatus: CardStatus,
+        resultingStatus: CardStatus
     ) async {
         guard allowed, !isExecuting else { return }
         pendingAction = type
@@ -285,8 +289,7 @@ public final class CardDetailModel {
         let repository = statusRepository
         subscriptionBox.task = Task { @MainActor [weak self] in
             guard let stream = try? await repository
-                .subscribeToCardStatus(cardId: subscribedCardID)
-            else { return }
+                .subscribeToCardStatus(cardId: subscribedCardID) else { return }
             for await state in stream {
                 guard !Task.isCancelled else { break }
                 self?.apply(state)
@@ -314,7 +317,7 @@ public final class CardDetailModel {
             type: card.type,
             status: card.status,
             currency: card.currency,
-            spendingLimit: spendingLimit,
+            spendingLimit: spendingLimit
         )
     }
 }

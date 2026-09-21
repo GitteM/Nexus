@@ -12,31 +12,31 @@
     ///
     /// Release builds compile this file to nothing: the `Mocks` module
     /// itself is empty outside DEBUG.
-    public extension CardDetailModel {
+    extension CardDetailModel {
         /// Default demo content for one card: `load()` lands in `.loaded`
         /// with the mock card set and the standard per-card status seeds.
-        static func preview(cardID: String) -> CardDetailModel {
+        public static func preview(cardID: String) -> CardDetailModel {
             detailModel(cardID: cardID, seed: Card.mockDefaults, states: CardState.mockDefaults)
         }
 
         /// Loading preview: the card fetch parks forever
         /// (`shouldNeverComplete`), so `load()` never leaves `.loading`.
-        static func loadingPreview(cardID: String) -> CardDetailModel {
+        public static func loadingPreview(cardID: String) -> CardDetailModel {
             let cardRepository = MockCardRepository(seed: Card.mockDefaults)
             cardRepository.shouldNeverComplete = true
             return CardDetailModel(
                 cardID: cardID,
                 cardRepository: cardRepository,
                 statusRepository: MockStatusRepository(seed: CardState.mockDefaults),
-                actionRepository: MockActionRepository(),
+                actionRepository: MockActionRepository()
             )
         }
 
         /// Error preview: the card fetch throws `error` (default
         /// `.apiConnectionFailed`), so `load()` lands in `.error(error)`.
-        static func errorPreview(
+        public static func errorPreview(
             cardID: String,
-            error: AppError = .apiConnectionFailed(),
+            error: AppError = .apiConnectionFailed()
         ) -> CardDetailModel {
             let cardRepository = MockCardRepository(seed: Card.mockDefaults)
             cardRepository.shouldThrowError = true
@@ -45,7 +45,7 @@
                 cardID: cardID,
                 cardRepository: cardRepository,
                 statusRepository: MockStatusRepository(seed: CardState.mockDefaults),
-                actionRepository: MockActionRepository(),
+                actionRepository: MockActionRepository()
             )
         }
 
@@ -53,13 +53,13 @@
         private static func detailModel(
             cardID: String,
             seed: [Card],
-            states: [CardState],
+            states: [CardState]
         ) -> CardDetailModel {
             CardDetailModel(
                 cardID: cardID,
                 cardRepository: MockCardRepository(seed: seed),
                 statusRepository: MockStatusRepository(seed: states),
-                actionRepository: MockActionRepository(),
+                actionRepository: MockActionRepository()
             )
         }
     }

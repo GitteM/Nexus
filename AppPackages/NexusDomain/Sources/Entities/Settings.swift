@@ -13,7 +13,7 @@ public struct Settings: Codable, Sendable, Equatable {
     }
 }
 
-public extension Settings {
+extension Settings {
     /// Demo/default preferences for previews and tests.
-    static let mockDefaults = Settings()
+    public static let mockDefaults = Settings()
 }

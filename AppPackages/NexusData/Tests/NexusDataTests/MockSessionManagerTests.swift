@@ -119,7 +119,7 @@ struct MockSessionManagerTests {
         let generator = MockEventGenerator.demoDefaults(interval: .milliseconds(20))
         let session = MockSessionManager(
             initialStatus: .connected,
-            eventGenerator: generator,
+            eventGenerator: generator
         )
 
         session.startDemoEvents()
@@ -137,7 +137,7 @@ struct MockSessionManagerTests {
         let generator = MockEventGenerator.demoDefaults(interval: .milliseconds(20))
         let session = MockSessionManager(
             initialStatus: .connected,
-            eventGenerator: generator,
+            eventGenerator: generator
         )
 
         session.startDemoEvents()
@@ -170,7 +170,7 @@ struct MockSessionManagerTests {
         let facade = EventSubscriptionManager(session: session)
         let source = CardStateDataSource(
             eventSubscriptionManager: facade,
-            logger: RecordingLogger(),
+            logger: RecordingLogger()
         )
 
         let stream = try await source.subscribeToCardStatus(cardId: "card-credit-002")
@@ -192,7 +192,7 @@ struct MockSessionManagerTests {
         let facade = EventSubscriptionManager(session: session)
         let source = OffersDataSource(
             eventSubscriptionManager: facade,
-            logger: RecordingLogger(),
+            logger: RecordingLogger()
         )
 
         let stream = await source.subscribeToOffers()
@@ -208,7 +208,7 @@ struct MockSessionManagerTests {
     /// First element of a stream, or `nil` when it ends / times out first.
     private func firstElement<Element: Sendable>(
         of stream: AsyncStream<Element>,
-        within timeout: Duration = .seconds(1),
+        within timeout: Duration = .seconds(1)
     ) async -> Element? {
         await element(of: stream, at: 1, within: timeout)
     }
@@ -216,7 +216,7 @@ struct MockSessionManagerTests {
     /// Second element of a stream, or `nil` when it ends / times out first.
     private func secondElement<Element: Sendable>(
         of stream: AsyncStream<Element>,
-        within timeout: Duration = .seconds(1),
+        within timeout: Duration = .seconds(1)
     ) async -> Element? {
         await element(of: stream, at: 2, within: timeout)
     }
@@ -224,7 +224,7 @@ struct MockSessionManagerTests {
     private func element<Element: Sendable>(
         of stream: AsyncStream<Element>,
         at position: Int,
-        within timeout: Duration,
+        within timeout: Duration
     ) async -> Element? {
         await withTaskGroup(of: Element?.self) { group in
             group.addTask {
@@ -251,7 +251,7 @@ struct MockSessionManagerTests {
     /// (bounded: live mock streams stay open until terminated).
     private func collect<Element: Sendable>(
         _ stream: AsyncStream<Element>,
-        upTo limit: Int,
+        upTo limit: Int
     ) async -> [Element] {
         var collected: [Element] = []
         for await element in stream {
@@ -267,7 +267,7 @@ struct MockSessionManagerTests {
     /// timeout elapses; returns the first published event, if any.
     private func waitForFirstPublish(
         on session: MockSessionManager,
-        within timeout: Duration,
+        within timeout: Duration
     ) async -> BankingEvent? {
         let step: Duration = .milliseconds(10)
         var waited: Duration = .zero

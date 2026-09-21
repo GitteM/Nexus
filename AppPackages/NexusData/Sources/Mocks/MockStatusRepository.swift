@@ -45,7 +45,10 @@
         /// - Parameter seed: The states known at start, keyed by `cardId`;
         ///   duplicates collapse to the last entry.
         public init(seed: [CardState] = CardState.mockDefaults) {
-            statesByCardId = Dictionary(seed.map { ($0.cardId, $0) }, uniquingKeysWith: { _, last in last })
+            statesByCardId = Dictionary(
+                seed.map { ($0.cardId, $0) },
+                uniquingKeysWith: { _, last in last }
+            )
         }
 
         /// The latest known state for one card, or `nil` when none is known.
@@ -63,7 +66,7 @@
             guard !cardId.isEmpty else {
                 throw AppError.validationError(
                     field: "cardId",
-                    reason: "Card id must not be empty.",
+                    reason: "Card id must not be empty."
                 )
             }
             let (stream, continuation) = AsyncStream<CardState>.makeStream()
@@ -92,7 +95,10 @@
             }
         }
 
-        private func register(cardId: String, continuation: AsyncStream<CardState>.Continuation) -> Int {
+        private func register(
+            cardId: String,
+            continuation: AsyncStream<CardState>.Continuation
+        ) -> Int {
             let id = nextSubscriberID
             nextSubscriberID += 1
             subscribers[cardId, default: [:]][id] = continuation

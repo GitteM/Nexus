@@ -1,0 +1,36 @@
+# SwiftLint configuration.
+#
+# SwiftFormat owns the mechanical side (.swiftformat): shape and the language-practice
+# cleanups a formatter can make. SwiftLint owns the checks that need judgement and never
+# reformats. Run SwiftFormat first, then SwiftLint, so a lint rule is never asked to fix
+# shape. The two rule sets below are disjoint, so neither undoes the other.
+#
+# `only_rules` replaces SwiftLint's default set deliberately: several defaults undo what
+# SwiftFormat produces, so the defaults must not run by accident. Adding a rule here is
+# a deliberate act.
+
+only_rules:
+  - multiline_call_arguments
+  - force_cast
+  - force_try
+  - force_unwrapping
+
+# Deliberately absent:
+#   trailing_comma — forbids the trailing commas SwiftFormat adds to multi-line
+#                    collection literals (`--trailing-commas`), so enabling it would
+#                    make the two tools oscillate.
+
+multiline_call_arguments:
+  # A call that fits on one line is fine — line length is SwiftFormat's job. Once a
+  # call spans lines, every argument starts on its own line. This matches SwiftFormat's
+  # `--wrap-arguments before-first`, so the two agree rather than alternate.
+  allows_single_line: true
+  severity: warning
+
+# force_unwrapping has no per-rule `excluded`, so exempt a subtree (tests, fixtures)
+# with a nested `.swiftlint.yml` that disables just this rule.
+
+excluded:
+  - DerivedData
+  - "**/.build"
+  - Pods

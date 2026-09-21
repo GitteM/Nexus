@@ -20,7 +20,8 @@ struct CardStatusRepositoryProtocolTests {
 
     @Test func `getCardStatus returns the known state and nil for unknown cards`() async throws {
         let repository = TestCardStatusRepository(states: [.mockFrozenState])
-        #expect(try await repository.getCardStatus(cardId: CardState.mockFrozenState.cardId) == .mockFrozenState)
+        #expect(try await repository
+            .getCardStatus(cardId: CardState.mockFrozenState.cardId) == .mockFrozenState)
         #expect(try await repository.getCardStatus(cardId: "card-unknown") == nil)
     }
 

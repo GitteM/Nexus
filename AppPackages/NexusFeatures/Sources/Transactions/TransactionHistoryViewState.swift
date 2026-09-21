@@ -13,20 +13,20 @@ public enum TransactionHistoryViewState: Equatable {
     case error(AppError)
 }
 
-public extension TransactionHistoryViewState {
+extension TransactionHistoryViewState {
     /// The `AppError` behind `.error`, or `nil` for every other state.
-    var error: AppError? {
+    public var error: AppError? {
         if case let .error(error) = self {
             return error
         }
         return nil
     }
 
-    var errorMessage: String? {
+    public var errorMessage: String? {
         error?.errorDescription
     }
 
-    var recoverySuggestion: String? {
+    public var recoverySuggestion: String? {
         error?.recoverySuggestion
     }
 }

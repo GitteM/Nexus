@@ -85,7 +85,10 @@ final class URLSessionWebSocketClient: WebSocketClientProtocol {
         task = newTask
         newTask.resume()
         do {
-            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<
+                Void,
+                Error
+            >) in
                 newTask.sendPing { error in
                     if let error {
                         continuation.resume(throwing: error)

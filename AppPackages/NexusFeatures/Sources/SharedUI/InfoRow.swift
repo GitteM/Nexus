@@ -38,7 +38,7 @@ public struct InfoRow: View {
     VStack(alignment: .leading, spacing: Spacing.lg) {
         InfoRow(
             title: "Replacement cards",
-            message: "A replacement keeps your card number and PIN.",
+            message: "A replacement keeps your card number and PIN."
         )
         InfoRow(title: "Statements arrive by email")
     }

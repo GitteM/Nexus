@@ -20,7 +20,7 @@ public struct CardOffer: Codable, Sendable, Equatable, Identifiable {
         type: CardType,
         currency: String,
         annualFee: Decimal?,
-        benefits: [String],
+        benefits: [String]
     ) {
         self.id = id
         self.title = title
@@ -32,39 +32,39 @@ public struct CardOffer: Codable, Sendable, Equatable, Identifiable {
     }
 }
 
-public extension CardOffer {
-    static let mockCashbackOffer = CardOffer(
+extension CardOffer {
+    public static let mockCashbackOffer = CardOffer(
         id: "offer-cashback-001",
         title: "Cashback Card",
         subtitle: "2% back on every purchase, no annual fee",
         type: .credit,
         currency: "EUR",
         annualFee: nil,
-        benefits: ["2% cashback on everything", "No foreign transaction fees"],
+        benefits: ["2% cashback on everything", "No foreign transaction fees"]
     )
 
-    static let mockTravelOffer = CardOffer(
+    public static let mockTravelOffer = CardOffer(
         id: "offer-travel-001",
         title: "Travel Rewards Card",
         subtitle: "Earn 3x points on travel and dining",
         type: .credit,
         currency: "EUR",
         annualFee: 95,
-        benefits: ["3x points on travel", "Airport lounge access"],
+        benefits: ["3x points on travel", "Airport lounge access"]
     )
 
-    static let mockPrepaidOffer = CardOffer(
+    public static let mockPrepaidOffer = CardOffer(
         id: "offer-prepaid-001",
         title: "Everyday Prepaid Card",
         subtitle: "Load and spend with no credit check",
         type: .prepaid,
         currency: "EUR",
         annualFee: nil,
-        benefits: ["No credit check", "Instant top-up"],
+        benefits: ["No credit check", "Instant top-up"]
     )
 
     /// Demo/default offer set for previews and tests.
-    static var mockDefaults: [CardOffer] {
+    public static var mockDefaults: [CardOffer] {
         [.mockCashbackOffer, .mockTravelOffer, .mockPrepaidOffer]
     }
 }

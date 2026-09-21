@@ -3,8 +3,10 @@
 > **TL;DR:** Conventional Commits: `type(scope): subject`. Subject ≤ 72
 > chars, imperative mood, capitalized, no trailing period. Branches:
 > `feature/` `bugfix/` `hotfix/` `chore/` `docs/`. You never merge your own
-> PR — the user does. Nothing here is enforced by a commit hook; CI and the
-> reviewer check, so agents must self-check against the rules below.
+> PR — the user does. Formatting/linting is enforced by the committed
+> pre-commit hook (activate once: `git config core.hooksPath .githooks`) and by
+> CI; commit messages and PR content are still checked by CI and the reviewer,
+> so agents must self-check against the rules below.
 
 ---
 
@@ -116,7 +118,7 @@ No long-lived or `develop`/`release` branches. Branches live < 1 day.
    - Screenshots: for UI changes
 4. **Checklist:**
    - [ ] Commit messages follow Conventional Commits
-   - [ ] `swiftformat .` clean
+   - [ ] Formatting and lint clean (`scripts/lint.sh`)
    - [ ] Workspace TestPlan green, zero build warnings
    - [ ] Tests added/updated for new logic
    - [ ] Docs updated (README/CHANGELOG, architecture.md, AGENTS.md,
@@ -128,27 +130,63 @@ No long-lived or `develop`/`release` branches. Branches live < 1 day.
 
 ## 4. Development setup
 
-```bash
-# Prerequisites: Xcode 26.6, iPhone 17 simulator (iOS 26.5), swiftformat
+### Toolchain
 
+Formatting and linting are two tools with one rule: **SwiftFormat writes,
+SwiftLint reports** — never the reverse, and neither writes during a build.
+Both are installed with Homebrew from the committed `Brewfile`:
+
+```bash
+brew bundle        # reads ./Brewfile; idempotent — run once, re-run after changes
+```
+
+- **SwiftFormat** (`.swiftformat`) — the **only writer**: shape and the
+  language cleanups a formatter can make.
+- **SwiftLint** (`.swiftlint.yml`, plus a nested `.swiftlint.yml` under each
+  `Tests/` directory) — the **reporter**: semantic checks; never reformats.
+
+`brew bundle` installs the current Homebrew formulae, so it guarantees the
+tools are *present*, not that they exactly match CI (CI pins SwiftFormat
+`0.63.0`). Keep the versions commented in `Brewfile` in step with CI.
+
+### Hook, scripts, editor
+
+```bash
+git config core.hooksPath .githooks   # once per clone: activate the pre-commit hook
+```
+
+The committed hook formats the staged Swift files, re-stages them, then runs the
+report-only checks and blocks the commit on any violation — so CI rarely sees
+one. The same two steps by hand:
+
+```bash
+scripts/format.sh    # SwiftFormat writes (whole tree, or the paths you pass)
+scripts/lint.sh      # SwiftFormat --lint + SwiftLint --strict (report only)
+```
+
+The app target has a **Run Script** build phase (`scripts/lint-buildphase.sh`)
+that surfaces SwiftLint violations inline in Xcode; it no-ops when `swiftlint`
+isn't on `PATH`, so it never runs on CI.
+
+### Build / test
+
+```bash
 open Nexus.xcworkspace            # full workspace (app + packages)
 
-# Build / test the whole workspace TestPlan:
+# Whole workspace TestPlan:
 xcodebuild test -workspace Nexus.xcworkspace \
   -scheme Nexus \
   -destination 'platform=iOS Simulator,name=iPhone 17'
 
-# Faster: build or test a single package:
+# Faster: a single package
 swift build --package-path AppPackages/NexusDomain
 swift test  --package-path AppPackages/NexusData
-
-# Format / lint:
-swiftformat .                     # format in place (run before submitting)
-swiftformat --lint .              # CI lint check
 ```
 
-Configs live in `Configs/` (`Debug.xcconfig`, `Release.xcconfig`,
-`Info.plist`); the scheme and TestPlan are shared at the workspace root.
+Prerequisites: Xcode 26.6 — the CI pin; a newer Xcode (e.g. 27, Swift 6.4) also
+builds the project (AGENTS.md §5) — and the iPhone 17 simulator (iOS 26.5).
+Configs live in `Configs/` (`Debug.xcconfig`, `Release.xcconfig`, `Info.plist`);
+the scheme and TestPlan are shared at the workspace root.
 
 ---
 

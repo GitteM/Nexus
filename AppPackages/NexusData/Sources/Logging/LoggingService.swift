@@ -28,7 +28,7 @@ public struct LoggingService: LoggerProtocol {
     ///     area name to separate concerns in the log stream.
     public init(
         subsystem: String = LoggingService.defaultSubsystem,
-        category: String = "default",
+        category: String = "default"
     ) {
         logger = Logger(subsystem: subsystem, category: category)
     }

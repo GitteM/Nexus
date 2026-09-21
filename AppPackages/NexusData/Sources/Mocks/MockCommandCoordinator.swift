@@ -39,7 +39,7 @@
             actionRepository: MockActionRepository,
             cardRepository: MockCardRepository,
             statusRepository: MockStatusRepository,
-            offersRepository: MockOffersRepository,
+            offersRepository: MockOffersRepository
         ) {
             self.actionRepository = actionRepository
             self.cardRepository = cardRepository
@@ -67,7 +67,9 @@
                 reflectStatus(.lost, for: command)
             case .setSpendingLimit:
                 guard let amount = command.amount else { return }
-                guard let index = cardRepository.cards.firstIndex(where: { $0.id == command.cardId }) else {
+                guard let index = cardRepository.cards
+                    .firstIndex(where: { $0.id == command.cardId }) else
+                {
                     return
                 }
                 let card = cardRepository.cards[index]
@@ -79,8 +81,8 @@
                         type: card.type,
                         status: card.status,
                         currency: card.currency,
-                        spendingLimit: amount,
-                    ),
+                        spendingLimit: amount
+                    )
                 )
             case .requestReplacement:
                 offerReplacement(for: command.cardId)
@@ -120,7 +122,7 @@
                 type: card.type,
                 currency: card.currency,
                 annualFee: nil,
-                benefits: ["Replaces your lost card"],
+                benefits: ["Replaces your lost card"]
             )
             offersRepository.publish([offer] + offersRepository.offers)
         }

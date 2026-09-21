@@ -43,10 +43,10 @@ public enum AppError: Error, Sendable, LocalizedError {
     case unknown(underlying: Error? = nil)
 }
 
-public extension AppError {
+extension AppError {
     /// User-facing message. Localized through the app's String Catalog at
     /// lookup time.
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case .apiConnectionFailed: String(localized: "We couldn't reach the server.")
         case .requestTimedOut: String(localized: "The request took too long.")
@@ -55,7 +55,9 @@ public extension AppError {
         case let .cardActionFailed(action, _): String(localized: "The '\(action)' action failed.")
         case .insufficientFunds: String(localized: "There aren't enough funds for this payment.")
         case .persistenceError: String(localized: "Your data couldn't be saved.")
-        case .serializationError: String(localized: "Something went wrong while preparing your data.")
+        case .serializationError: String(
+                localized: "Something went wrong while preparing your data."
+            )
         case .deserializationError: String(localized: "We couldn't read the data we received.")
         case .validationError: String(localized: "Some of the information you entered isn't valid.")
         case .systemUnavailable: String(localized: "A system service isn't available right now.")
@@ -67,7 +69,7 @@ public extension AppError {
     /// Short technical reason. Diagnostic text (log/support only) and
     /// intentionally not localized: it is never rendered as end-user copy
     /// and keeps logs language-independent.
-    var failureReason: String? {
+    public var failureReason: String? {
         switch self {
         case let .apiConnectionFailed(details): details ?? "The connection to the server failed."
         case .requestTimedOut: "The request exceeded the timeout."
@@ -87,7 +89,7 @@ public extension AppError {
 
     /// The action a user could take. Localized through the app's String
     /// Catalog at lookup time.
-    var recoverySuggestion: String? {
+    public var recoverySuggestion: String? {
         switch self {
         case .apiConnectionFailed: String(localized: "Check your connection and try again.")
         case .requestTimedOut: String(localized: "Try again in a moment.")
@@ -96,17 +98,23 @@ public extension AppError {
         case .cardActionFailed: String(localized: "Try the action again.")
         case .insufficientFunds: String(localized: "Add funds or use a different card.")
         case .persistenceError: String(localized: "Try saving again.")
-        case .serializationError: String(localized: "This is a technical issue — contact support if it keeps happening.")
-        case .deserializationError: String(localized: "The data we received couldn't be read — contact support if it keeps happening.")
+        case .serializationError: String(
+                localized: "This is a technical issue — contact support if it keeps happening."
+            )
+        case .deserializationError: String(
+                localized: "The data we received couldn't be read — contact support if it keeps happening."
+            )
         case .validationError: String(localized: "Review the highlighted fields and try again.")
-        case .systemUnavailable: String(localized: "A system service is unavailable — contact support if it keeps happening.")
+        case .systemUnavailable: String(
+                localized: "A system service is unavailable — contact support if it keeps happening."
+            )
         case .initializationFailed: String(localized: "Restart the app to try again.")
         case .unknown: String(localized: "Contact support if it keeps happening.")
         }
     }
 
     /// Analytics/grouping bucket.
-    var category: ErrorCategory {
+    public var category: ErrorCategory {
         switch self {
         case .apiConnectionFailed, .requestTimedOut: .network
         case .cardNotFound, .cardAlreadyExists, .cardActionFailed: .card
@@ -119,7 +127,7 @@ public extension AppError {
     }
 
     /// Whether retrying the same operation can plausibly succeed.
-    var isRecoverable: Bool {
+    public var isRecoverable: Bool {
         switch self {
         case .apiConnectionFailed, .requestTimedOut, .cardActionFailed: true
         case .persistenceError, .validationError, .initializationFailed: true
@@ -130,7 +138,7 @@ public extension AppError {
     }
 
     /// Whether this error is worth reporting to analytics/support.
-    var shouldReport: Bool {
+    public var shouldReport: Bool {
         switch self {
         case .apiConnectionFailed, .requestTimedOut: false
         case .cardNotFound, .cardAlreadyExists, .cardActionFailed: false
@@ -155,7 +163,8 @@ extension AppError: Equatable {
         case let (.insufficientFunds(a), .insufficientFunds(b)): a == b
         case let (.persistenceError(a1, a2), .persistenceError(b1, b2)): a1 == b1 && a2 == b2
         case let (.serializationError(a1, a2), .serializationError(b1, b2)): a1 == b1 && a2 == b2
-        case let (.deserializationError(a1, a2), .deserializationError(b1, b2)): a1 == b1 && a2 == b2
+        case let (.deserializationError(a1, a2), .deserializationError(b1, b2)): a1 == b1 && a2 ==
+            b2
         case let (.validationError(a1, a2), .validationError(b1, b2)): a1 == b1 && a2 == b2
         case let (.systemUnavailable(a), .systemUnavailable(b)): a == b
         case let (.initializationFailed(a), .initializationFailed(b)): a == b

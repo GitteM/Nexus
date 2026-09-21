@@ -45,7 +45,7 @@ public actor CardTransactionsDataSource {
     public init(
         eventSubscriptionManager: any EventSubscriptionManagerProtocol,
         logger: any LoggerProtocol,
-        feedLimit: Int = CardTransactionsDataSource.defaultFeedLimit,
+        feedLimit: Int = CardTransactionsDataSource.defaultFeedLimit
     ) {
         self.eventSubscriptionManager = eventSubscriptionManager
         self.logger = logger
@@ -69,7 +69,7 @@ public actor CardTransactionsDataSource {
         guard !cardId.isEmpty else {
             throw AppError.validationError(
                 field: "cardId",
-                reason: "Card id must not be empty.",
+                reason: "Card id must not be empty."
             )
         }
         let channel = EventChannels.cardEvents(cardId: cardId)
@@ -111,7 +111,7 @@ public actor CardTransactionsDataSource {
         guard let data = event.payload.data(using: .utf8) else {
             logger.log(
                 "Transaction from \(event.channel): payload is not UTF-8.",
-                level: .error,
+                level: .error
             )
             return nil
         }
@@ -119,7 +119,7 @@ public actor CardTransactionsDataSource {
             Transaction.self,
             from: data,
             logger: logger,
-            context: "Transaction from \(event.channel)",
+            context: "Transaction from \(event.channel)"
         )
     }
 
@@ -130,7 +130,7 @@ public actor CardTransactionsDataSource {
     private func process(
         _ event: BankingEvent,
         cardId: String,
-        continuation: AsyncStream<[Transaction]>.Continuation,
+        continuation: AsyncStream<[Transaction]>.Continuation
     ) {
         guard let transaction = parseEvent(event) else {
             return

@@ -15,7 +15,7 @@ struct CardActionDataSourceTests {
     private func execute(
         _ command: CardCommand,
         session: FakeEventSubscriptionManager,
-        logger: RecordingLogger = RecordingLogger(),
+        logger: RecordingLogger = RecordingLogger()
     ) async -> Outcome {
         let source = CardActionDataSource(eventSubscriptionManager: session, logger: logger)
         do {
@@ -49,7 +49,7 @@ struct CardActionDataSourceTests {
         let command = CardCommand.setSpendingLimit(
             cardId: "card-credit-001",
             period: .weekly,
-            amount: 500,
+            amount: 500
         )
         let outcome = await execute(command, session: session)
 
@@ -72,7 +72,7 @@ struct CardActionDataSourceTests {
         let session = FakeEventSubscriptionManager()
         let outcome = await execute(
             CardCommand(cardId: "card-credit-001", type: .unknown),
-            session: session,
+            session: session
         )
         guard case .validationError = outcome.error else {
             Issue.record("expected validationError, got \(String(describing: outcome.error))")
@@ -85,8 +85,13 @@ struct CardActionDataSourceTests {
         let session = FakeEventSubscriptionManager()
 
         let missingPeriod = await execute(
-            CardCommand(cardId: "card-credit-001", type: .setSpendingLimit, amount: 500, period: nil),
-            session: session,
+            CardCommand(
+                cardId: "card-credit-001",
+                type: .setSpendingLimit,
+                amount: 500,
+                period: nil
+            ),
+            session: session
         )
         guard case .validationError = missingPeriod.error else {
             Issue.record("expected validationError, got \(String(describing: missingPeriod.error))")
@@ -94,8 +99,13 @@ struct CardActionDataSourceTests {
         }
 
         let missingAmount = await execute(
-            CardCommand(cardId: "card-credit-001", type: .setSpendingLimit, amount: nil, period: .weekly),
-            session: session,
+            CardCommand(
+                cardId: "card-credit-001",
+                type: .setSpendingLimit,
+                amount: nil,
+                period: .weekly
+            ),
+            session: session
         )
         guard case .validationError = missingAmount.error else {
             Issue.record("expected validationError, got \(String(describing: missingAmount.error))")
@@ -108,7 +118,7 @@ struct CardActionDataSourceTests {
         let session = FakeEventSubscriptionManager()
         let outcome = await execute(
             CardCommand(cardId: "card-credit-001", type: .freeze, amount: 500, period: nil),
-            session: session,
+            session: session
         )
         guard case .validationError = outcome.error else {
             Issue.record("expected validationError, got \(String(describing: outcome.error))")
@@ -120,10 +130,17 @@ struct CardActionDataSourceTests {
     @Test func `a session AppError propagates and is logged`() async {
         let session = FakeEventSubscriptionManager()
         let logger = RecordingLogger()
-        let transportError = AppError.cardActionFailed(action: "freeze", details: "rejected by backend")
+        let transportError = AppError.cardActionFailed(
+            action: "freeze",
+            details: "rejected by backend"
+        )
         session.sendError = transportError
 
-        let outcome = await execute(.freeze(cardId: "card-credit-001"), session: session, logger: logger)
+        let outcome = await execute(
+            .freeze(cardId: "card-credit-001"),
+            session: session,
+            logger: logger
+        )
         #expect(outcome.error == transportError)
         #expect(logger.errorRecords.count == 1)
     }

@@ -52,7 +52,7 @@ struct DashboardCarouselView: View {
                         pageIndex: index,
                         pageCount: cards.count,
                         onSelectPage: selectPage,
-                        onSelectCard: { [card] in onSelectCard?(card) },
+                        onSelectCard: { [card] in onSelectCard?(card) }
                     )
                     .tag(card.id)
                 }
@@ -74,7 +74,7 @@ struct DashboardCarouselView: View {
                     .fill(index == selectedIndex ? ColorPalette.brand : ColorPalette.separator)
                     .frame(
                         width: index == selectedIndex ? selectedPageDotWidth : pageDotSize,
-                        height: pageDotSize,
+                        height: pageDotSize
                     )
                     .padding(.vertical, Spacing.xs)
                     .contentShape(Rectangle())
@@ -116,7 +116,7 @@ private struct CardFrontView: View {
         pageIndex: Int,
         pageCount: Int,
         onSelectPage: @escaping (Int) -> Void,
-        onSelectCard: @escaping () -> Void,
+        onSelectCard: @escaping () -> Void
     ) {
         self.card = card
         self.pageIndex = pageIndex
@@ -176,7 +176,7 @@ private struct CardFrontView: View {
         .foregroundStyle(CardArtwork.foreground)
         .background(
             CardArtwork.gradient(for: card.type),
-            in: RoundedRectangle(cornerRadius: 20, style: .continuous),
+            in: RoundedRectangle(cornerRadius: 20, style: .continuous)
         )
         .padding(.horizontal, Spacing.lg)
         .contentShape(Rectangle())
@@ -210,13 +210,13 @@ private struct CardFrontView: View {
         if card.lastFourDigits.isEmpty {
             return Strings.Dashboard.cardAccessibility(
                 typeName: card.type.displayName,
-                status: card.status.displayName,
+                status: card.status.displayName
             )
         }
         return Strings.Dashboard.cardAccessibility(
             typeName: card.type.displayName,
             lastFour: card.lastFourDigits,
-            status: card.status.displayName,
+            status: card.status.displayName
         )
     }
 

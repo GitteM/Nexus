@@ -21,8 +21,9 @@ authority chain lives in `Documentation/README.md` (Conventions).
 2. **Commits.** Conventional Commits: `type(scope): subject` — subject ≤ 72
    chars, imperative mood, capitalized, no trailing period. Full spec:
    `Documentation/CONTRIBUTING.md`.
-3. **Gates before submitting code.** `swiftformat .` clean, full workspace
-   TestPlan green, zero build warnings. Docs-only changes skip the test
+3. **Gates before submitting code.** Formatting + lint clean
+   (`scripts/lint.sh`; the pre-commit hook runs it), full workspace TestPlan
+   green, zero build warnings. Docs-only changes skip the test
    suite — say so and state what you did verify. Note: the first test build
    after a fresh DerivedData prints 12 Xcode dependency-scan "missing a
    dependency" warnings — known one-time tooling noise, never a gate
@@ -61,7 +62,8 @@ authority chain lives in `Documentation/README.md` (Conventions).
 
 - **Nexus**: SwiftUI iOS banking app — card issuing, freeze/unfreeze,
   spending limits, balances, transactions, payments, security, Apple Pay.
-- **Stack**: Swift 6.3 (Swift 6 mode), Xcode 26.6, iOS 17.0+; SPM packages
+- **Stack**: Swift 6.3 (Swift 6 mode), iOS 17.0+; CI pins Xcode 26.6 (local may
+  be newer); SPM packages
   `NexusDomain` / `NexusData` / `NexusFeatures` + thin app target
   (composition root); workspace `Nexus.xcworkspace`.
 - **Architecture**: MV — `@MainActor @Observable` models drive SwiftUI

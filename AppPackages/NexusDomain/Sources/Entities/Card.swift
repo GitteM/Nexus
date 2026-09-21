@@ -22,7 +22,7 @@ public struct Card: Codable, Sendable, Equatable, Identifiable {
         type: CardType,
         status: CardStatus,
         currency: String,
-        spendingLimit: Decimal?,
+        spendingLimit: Decimal?
     ) {
         self.id = id
         self.cardholderName = cardholderName
@@ -34,11 +34,11 @@ public struct Card: Codable, Sendable, Equatable, Identifiable {
     }
 }
 
-public extension Card {
+extension Card {
     /// A copy of this card with a new lifecycle status — the model's way to
     /// fold live `CardState` updates back into the managed-card list without
     /// reconstructing the whole entity at the call site.
-    func withStatus(_ status: CardStatus) -> Card {
+    public func withStatus(_ status: CardStatus) -> Card {
         Card(
             id: id,
             cardholderName: cardholderName,
@@ -46,75 +46,82 @@ public extension Card {
             type: type,
             status: status,
             currency: currency,
-            spendingLimit: spendingLimit,
+            spendingLimit: spendingLimit
         )
     }
 }
 
-public extension Card {
-    static let mockCreditCard = Card(
+extension Card {
+    public static let mockCreditCard = Card(
         id: "card-credit-001",
         cardholderName: "Jordan Avery",
         lastFourDigits: "4821",
         type: .credit,
         status: .active,
         currency: "EUR",
-        spendingLimit: 2500,
+        spendingLimit: 2500
     )
 
-    static let mockDebitCard = Card(
+    public static let mockDebitCard = Card(
         id: "card-debit-001",
         cardholderName: "Jordan Avery",
         lastFourDigits: "9034",
         type: .debit,
         status: .active,
         currency: "EUR",
-        spendingLimit: nil,
+        spendingLimit: nil
     )
 
-    static let mockFrozenCard = Card(
+    public static let mockFrozenCard = Card(
         id: "card-credit-002",
         cardholderName: "Jordan Avery",
         lastFourDigits: "1147",
         type: .credit,
         status: .frozen,
         currency: "EUR",
-        spendingLimit: 1000,
+        spendingLimit: 1000
     )
 
-    static let mockExpiredCard = Card(
+    public static let mockExpiredCard = Card(
         id: "card-credit-003",
         cardholderName: "Jordan Avery",
         lastFourDigits: "7720",
         type: .credit,
         status: .expired,
         currency: "EUR",
-        spendingLimit: nil,
+        spendingLimit: nil
     )
 
-    static let mockLostCard = Card(
+    public static let mockLostCard = Card(
         id: "card-credit-004",
         cardholderName: "Jordan Avery",
         lastFourDigits: "3381",
         type: .credit,
         status: .lost,
         currency: "EUR",
-        spendingLimit: 1500,
+        spendingLimit: 1500
     )
 
-    static let mockPrepaidCard = Card(
+    public static let mockPrepaidCard = Card(
         id: "card-prepaid-001",
         cardholderName: "Jordan Avery",
         lastFourDigits: "6059",
         type: .prepaid,
         status: .active,
         currency: "EUR",
-        spendingLimit: 200,
+        spendingLimit: 200
     )
 
     /// Demo/default card set covering every `CardType` and `CardStatus` for
     /// previews and tests.
-    static var mockDefaults: [Card] {
-        [.mockCreditCard, .mockDebitCard, .mockFrozenCard, .mockExpiredCard, .mockLostCard, .mockPrepaidCard]
+    public static var mockDefaults: [Card] {
+        [
+            .mockCreditCard,
+            .mockDebitCard,
+            .mockFrozenCard,
+            .mockExpiredCard,
+            .mockLostCard,
+            .mockPrepaidCard,
+        ]
     }
 }

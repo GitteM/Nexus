@@ -1,7 +1,7 @@
-@testable import DataSources
 import Entities
 import Foundation
 import Testing
+@testable import DataSources
 
 @Suite("OffersDataSource")
 @MainActor
@@ -10,7 +10,7 @@ struct OffersDataSourceTests {
     /// envelope encoded through the same `JSONEncoder` the wire will use.
     private func snapshotEvent(_ offers: [CardOffer]) throws -> BankingEvent {
         let payload = try String(decoding: JSONEncoder().encode(
-            OffersSnapshotDTO(offers: offers),
+            OffersSnapshotDTO(offers: offers)
         ), as: UTF8.self)
         return BankingEvent(channel: EventChannels.offers, payload: payload)
     }
@@ -73,7 +73,7 @@ struct OffersDataSourceTests {
         let source = OffersDataSource(
             eventSubscriptionManager: session,
             logger: RecordingLogger(),
-            ttl: 0.05,
+            ttl: 0.05
         )
 
         let first = await source.subscribeToOffers()
@@ -102,7 +102,7 @@ struct OffersDataSourceTests {
             // Generous TTL: this test only asserts the fresh-snapshot path;
             // the 0.05 s TTL case above pins expiry. A short TTL here made
             // the assertion load-dependent on slow runners.
-            ttl: 60,
+            ttl: 60
         )
 
         let stream = await source.subscribeToOffers()
@@ -121,12 +121,12 @@ struct OffersDataSourceTests {
         let stream = await source.subscribeToOffers()
         session.inject(BankingEvent(
             channel: EventChannels.offers,
-            payload: "not json at all",
+            payload: "not json at all"
         ))
         // A snapshot with the wrong shape (no `offers` key) is also skipped.
         session.inject(BankingEvent(
             channel: EventChannels.offers,
-            payload: #"{"somethingElse":true}"#,
+            payload: #"{"somethingElse":true}"#
         ))
 
         try session.inject(snapshotEvent([.mockCashbackOffer]))
@@ -158,11 +158,11 @@ struct OffersDataSourceTests {
 
         #expect(await source.parseEvent(BankingEvent(
             channel: EventChannels.offers,
-            payload: "garbage",
+            payload: "garbage"
         )) == nil)
         #expect(await source.parseEvent(BankingEvent(
             channel: EventChannels.offers,
-            payload: #"{"missing":"offers"}"#,
+            payload: #"{"missing":"offers"}"#
         )) == nil)
     }
 }

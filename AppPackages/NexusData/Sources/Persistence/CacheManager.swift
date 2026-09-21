@@ -74,7 +74,7 @@ public actor CacheManager {
     public init(
         itemLimit: Int = CacheManager.defaultItemLimit,
         totalCostLimit: Int = CacheManager.defaultTotalCostLimit,
-        defaultTTL: TimeInterval? = nil,
+        defaultTTL: TimeInterval? = nil
     ) {
         let cache = NSCache<NSString, CacheBox>()
         cache.countLimit = itemLimit
@@ -104,7 +104,7 @@ public actor CacheManager {
         _ value: some Sendable,
         forKey key: String,
         cost: Int = 1,
-        ttl: TimeInterval? = nil,
+        ttl: TimeInterval? = nil
     ) {
         purgeExpiredIfNeeded()
         let effectiveTTL = ttl ?? defaultTTL
@@ -112,7 +112,7 @@ public actor CacheManager {
         cache.setObject(
             CacheBox(value: value),
             forKey: key as NSString,
-            cost: max(cost, 1),
+            cost: max(cost, 1)
         )
         touch(key)
         enforceItemLimit()

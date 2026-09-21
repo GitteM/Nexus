@@ -16,11 +16,11 @@ public enum CardCommandType: String, Codable, CaseIterable, Sendable, Equatable 
     case unknown
 }
 
-public extension CardCommandType {
+extension CardCommandType {
     /// Stable English diagnostic label for logs and demo data. Not
     /// user-facing copy and intentionally not localized: call sites are
     /// diagnostics, and log output must stay language-independent.
-    var displayName: String {
+    public var displayName: String {
         switch self {
         case .freeze: "Freeze"
         case .unfreeze: "Unfreeze"
@@ -33,9 +33,9 @@ public extension CardCommandType {
     }
 }
 
-public extension CardCommandType {
+extension CardCommandType {
     /// Unknown wire values decode to `.unknown` rather than throwing.
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let rawValue = try container.decode(String.self)
         self = CardCommandType(rawValue: rawValue) ?? .unknown

@@ -95,14 +95,17 @@ public final class AppContainer {
                 dependencies = nil
             #endif
         case .live:
-            dependencies = AppDependenciesFactory.live(baseURL: baseURL ?? APIConfig.baseURL, logger: logger)
+            dependencies = AppDependenciesFactory.live(
+                baseURL: baseURL ?? APIConfig.baseURL,
+                logger: logger
+            )
         }
         dashboardModel = dependencies?.dashboardModel
         if mode == .live, dependencies == nil {
             logger.log(
                 "Live mode without a backend base URL (API_BASE_URL empty); "
                     + "start() will report the configuration gap.",
-                level: .notice,
+                level: .notice
             )
         }
     }
@@ -117,8 +120,8 @@ public final class AppContainer {
         guard let dependencies else {
             appState = .error(
                 .initializationFailed(
-                    details: "No backend base URL is configured (API_BASE_URL is empty).",
-                ),
+                    details: "No backend base URL is configured (API_BASE_URL is empty)."
+                )
             )
             return
         }

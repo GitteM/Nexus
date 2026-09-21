@@ -26,7 +26,7 @@ struct CardCommandTests {
         let command = CardCommand.setSpendingLimit(
             cardId: "card-1",
             period: .weekly,
-            amount: 500,
+            amount: 500
         )
         #expect(command.cardId == "card-1")
         #expect(command.type == .setSpendingLimit)
@@ -46,8 +46,16 @@ struct CardCommandTests {
         let a = CardCommand.freeze(cardId: "card-1")
         let same = CardCommand.freeze(cardId: "card-1")
         let different = CardCommand.unfreeze(cardId: "card-1")
-        let differentLimit = CardCommand.setSpendingLimit(cardId: "card-1", period: .weekly, amount: 500)
-        let otherLimit = CardCommand.setSpendingLimit(cardId: "card-1", period: .weekly, amount: 600)
+        let differentLimit = CardCommand.setSpendingLimit(
+            cardId: "card-1",
+            period: .weekly,
+            amount: 500
+        )
+        let otherLimit = CardCommand.setSpendingLimit(
+            cardId: "card-1",
+            period: .weekly,
+            amount: 600
+        )
         #expect(a == same)
         #expect(a != different)
         #expect(differentLimit != otherLimit)
@@ -59,7 +67,7 @@ struct CardCommandTests {
         let command = CardCommand.setSpendingLimit(
             cardId: "card-rt",
             period: .monthly,
-            amount: 1500.00,
+            amount: 1500.00
         )
         let data = try JSONEncoder().encode(command)
         let decoded = try JSONDecoder().decode(CardCommand.self, from: data)
@@ -87,7 +95,15 @@ struct CardCommandTests {
     @Test func `type raw values match wire contract`() {
         #expect(
             CardCommandType.allCases.map(\.rawValue)
-                == ["freeze", "unfreeze", "reportLost", "reportStolen", "requestReplacement", "setSpendingLimit", "unknown"],
+                == [
+                    "freeze",
+                    "unfreeze",
+                    "reportLost",
+                    "reportStolen",
+                    "requestReplacement",
+                    "setSpendingLimit",
+                    "unknown",
+                ]
         )
     }
 
