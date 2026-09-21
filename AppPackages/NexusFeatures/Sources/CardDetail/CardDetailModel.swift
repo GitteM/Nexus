@@ -95,26 +95,27 @@ public final class CardDetailModel {
         pendingAction != nil
     }
 
+    /// Lifecycle legality itself lives in the Domain (`CardStatus.permits(_:)`);
+    /// these projections add the model's session state (no card loaded yet, a
+    /// replacement already requested) and feed view enablement.
     public var canFreeze: Bool {
-        card?.status == .active
+        card?.status.permits(.freeze) ?? false
     }
 
     public var canUnfreeze: Bool {
-        card?.status == .frozen
+        card?.status.permits(.unfreeze) ?? false
     }
 
     public var canReportIssue: Bool {
-        guard let status = card?.status else { return false }
-        return status != .expired && status != .lost
+        card?.status.permits(.reportLost) ?? false
     }
 
     public var canRequestReplacement: Bool {
-        card?.status == .lost && !replacementRequested
+        (card?.status.permits(.requestReplacement) ?? false) && !replacementRequested
     }
 
     public var canChangeLimits: Bool {
-        guard let status = card?.status else { return false }
-        return status == .active || status == .frozen
+        card?.status.permits(.setSpendingLimit) ?? false
     }
 
     /// The per-period limit set this session, or `nil` when none is set.
