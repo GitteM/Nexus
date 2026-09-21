@@ -12,6 +12,9 @@ public struct ErrorView: View {
     private let error: AppError
     private let retry: (() -> Void)?
 
+    /// Decorative glyph size; scales with Dynamic Type from a 48 pt base.
+    @ScaledMetric(relativeTo: .largeTitle) private var glyphSize: CGFloat = 48
+
     public init(error: AppError, retry: (() -> Void)? = nil) {
         self.error = error
         self.retry = retry
@@ -20,7 +23,7 @@ public struct ErrorView: View {
     public var body: some View {
         VStack(spacing: Spacing.md) {
             Image(systemName: Icons.warning)
-                .font(.system(size: 48))
+                .font(.system(size: glyphSize))
                 .symbolRenderingMode(.hierarchical)
                 .foregroundStyle(ColorPalette.warning)
                 .accessibilityHidden(true)
