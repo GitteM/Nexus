@@ -1817,23 +1817,6 @@
         }
       }
     },
-    "Something went wrong" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "et" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Midagi läks valesti"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Что-то пошло не так"
-          }
-        }
-      }
-    },
     "Something went wrong while preparing your data." : {
       "extractionState" : "manual",
       "localizations" : {

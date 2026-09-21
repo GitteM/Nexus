@@ -194,7 +194,7 @@ public enum Strings {
 
     public enum App {
         public static let title = String(localized: "Nexus")
-        public static let errorTitle = String(localized: "Something went wrong")
+        public static let errorTitle = String(localized: "Something went wrong.")
         public static let errorMessage =
             String(localized: "Nexus couldn't start. Please try again.")
 
