@@ -15,9 +15,16 @@ struct ContentView: View {
             case .initializing, .loading:
                 AppLoadingView()
             case .ready:
-                MainNavigationView()
-                    .environment(container.router)
-                    .environment(container.dashboardModel)
+                // `.ready` implies a resolved graph, so the model should be
+                // present; if it somehow is not, show the loading surface and
+                // let the state machine settle rather than trap.
+                if let dashboardModel = container.dashboardModel {
+                    MainNavigationView()
+                        .environment(container.router)
+                        .environment(dashboardModel)
+                } else {
+                    AppLoadingView()
+                }
             case .disconnected:
                 DisconnectedView {
                     container.retry()

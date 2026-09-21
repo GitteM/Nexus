@@ -28,7 +28,14 @@ public final class AppContainer {
     public private(set) var appState: AppState = .initializing
     public let mode: Mode
     public let router: Router
-    public private(set) var dashboardModel: DashboardModel!
+
+    /// The dashboard model for the resolved graph, or `nil` before a graph
+    /// exists (live mode with no backend configured). Computed from
+    /// `dependencies` so it can never drift from the graph it belongs to —
+    /// there is no separate stored copy to keep in sync.
+    public var dashboardModel: DashboardModel? {
+        dependencies?.dashboardModel
+    }
 
     /// The resolved repository/model graph for the selected mode. `nil`
     /// only when live mode has no backend configured yet (the state
@@ -100,7 +107,6 @@ public final class AppContainer {
                 logger: logger
             )
         }
-        dashboardModel = dependencies?.dashboardModel
         if mode == .live, dependencies == nil {
             logger.log(
                 "Live mode without a backend base URL (API_BASE_URL empty); "
@@ -176,12 +182,12 @@ public final class AppContainer {
         /// reconnects).
         public func resetDemo() async {
             guard mode == .demo else { return }
-            cardDetailModels.removeAll()
-            historyModels.removeAll()
-            transactionDetailModels.removeAll()
             router.routes.removeAll()
             dependencies = AppDependenciesFactory.demo(logger: logger)
-            dashboardModel = dependencies?.dashboardModel
+            // Rebuild the graph, then drop the screen models that referenced
+            // the old repositories. Routes are already cleared, so this
+            // evicts all of them through the one eviction path.
+            prepareScreenModels(for: router.routes)
             appState = .initializing
             await start()
 

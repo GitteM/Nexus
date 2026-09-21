@@ -703,6 +703,11 @@ The model is the heart of a screen. Shape:
 - Owns **long-lived subscription `Task`s** (per-card live streams) — the one
   justified place for model-owned tasks; one-shot work is `async` and
   view-triggered (§9.3).
+- **Owned by the composition root, not the view.** The container holds one
+  model per route key and evicts it when the route is popped (§11.2), so a
+  model's subscription `Task`s end with the screen rather than at process
+  teardown. A destination *looks up* its model — it never creates one while
+  its body renders.
 - **No protocol** — concrete `@Observable` classes only. Substitutability
   comes from mocking at the repository boundary (§9.5).
 - **No business rules** — it orchestrates repositories, mutates state, and
@@ -975,6 +980,11 @@ built and injected**. Responsibilities:
 - Selects **live vs. demo mode** at init — one `Mode` enum, defaulted from
   the `-demoMode` launch argument; `createDependencies()` switches on it
   (demo mode below).
+- Owns the **screen models** for pushed routes: the shell materializes them
+  from `.onChange(of: router.routes, initial: true)` — never during body
+  evaluation — and the container evicts the ones whose route is gone, so the
+  live subscription tasks a model owns end with the screen (§9.1, §13
+  Step 8).
 - Provides `retry()` → `reinitialize()` for error recovery.
 - Has a `#if DEBUG` `init(previewState:)` for previews.
 
@@ -1081,9 +1091,13 @@ struct ContentView: View {
             switch container.appState {
             case .initializing, .loading: AppLoadingView()
             case .ready:
-                MainNavigationView()
-                    .environment(container.router)
-                    .environment(container.dashboardModel)
+                if let dashboardModel = container.dashboardModel {
+                    MainNavigationView()
+                        .environment(container.router)
+                        .environment(dashboardModel)
+                } else {
+                    AppLoadingView()
+                }
             case .disconnected: DisconnectedView { /* re-establish the session */ }
             case let .error(appError): AppErrorView(error: appError) { container.retry() }
             }
@@ -1369,8 +1383,9 @@ Use this as an ordered recipe. Replace the card/banking domain with your own
       zero `@unchecked Sendable`.
 - [ ] Every thrown error is an `AppError` (or is converted at the boundary);
       no `Result` at repository boundaries.
-- [ ] Models own and cancel their subscription tasks; one-shot work runs
-      from view `.task` — no leaks on deinit/state change.
+- [ ] Models own and cancel their subscription tasks; the container evicts
+      them when their route leaves the stack; one-shot work runs from view
+      `.task` — no leaks on deinit/state change.
 - [ ] Every screen state (loading/loaded/error/empty) has a preview and a
       test.
 - [ ] No sensitive data (card numbers, tokens) in logs, caches, or configs.
