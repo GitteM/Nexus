@@ -71,10 +71,8 @@ enum AppDependenciesFactory {
             logger: logger
         )
 
-        let cardRepository: any CardRepositoryProtocol = if let container =
-            try? SwiftDataCardRepository
-                .makeContainer()
-        {
+        let container = try? SwiftDataCardRepository.makeContainer()
+        let cardRepository: any CardRepositoryProtocol = if let container {
             CardRepository(store: SwiftDataCardRepository(container: container))
         } else {
             // No persistence available (e.g. entitlements in a bare test
