@@ -623,10 +623,11 @@ to prepare the next screen update.
   log.notice("trace \(traceID, privacy: .private(mask: .hash))") // correlate, not identify
   ```
 
-  The project's `LoggerProtocol` carries a plain `String` through a seam that logs every
-  message `.public` (`architecture.md` §7.2), so the *caller* owns the contract: pass
-  display-safe text only — last four digits, never a PAN, CVV, or token. Where a seam can
-  carry the annotation (or a typed log event), prefer `.private` / `.sensitive` as above.
+  The project's `LoggerProtocol` carries the privacy decision in the seam
+  (`LogPrivacy`: `visible` / `redacted` / `sensitive`, mapped to the log's
+  annotation in `LoggingService`, `architecture.md` §7.2). It defaults to
+  `.redacted`, so identifiers stay out of persisted logs unless a caller marks a
+  message `.visible` — and never mark a PAN, CVV, or token visible.
 
 - **Typed events, never `[String: Any]`.** Model loggable/analytics events as enums so a
   `Card` can’t leak into a parameter, and adding an event forces a visibility decision at

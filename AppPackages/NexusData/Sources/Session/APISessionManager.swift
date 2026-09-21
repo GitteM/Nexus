@@ -73,6 +73,7 @@ public final class APISessionManager: @preconcurrency SessionManagerProtocol {
     public private(set) var sessionStatus: SessionStatus = .disconnected
 
     private let client: any WebSocketClientProtocol
+    private let logger: any LoggerProtocol
     private let decoder = JSONDecoder()
     /// `nonisolated` (Sendable) so `deinit` can cancel a live receive loop
     /// without touching main-actor state; only main-actor code writes the
@@ -85,14 +86,19 @@ public final class APISessionManager: @preconcurrency SessionManagerProtocol {
 
     /// Creates the manager over the default `URLSessionWebSocketTask`
     /// transport for the given WebSocket endpoint.
-    public convenience init(url: URL) {
-        self.init(client: URLSessionWebSocketClient(url: url))
+    ///
+    /// - Parameters:
+    ///   - url: The WebSocket endpoint to connect to.
+    ///   - logger: Receives transport-failure diagnostics.
+    public convenience init(url: URL, logger: any LoggerProtocol) {
+        self.init(client: URLSessionWebSocketClient(url: url), logger: logger)
     }
 
     /// Injection seam for tests and alternative transports: any
     /// `WebSocketClientProtocol` (the fake SDK client in tests).
-    init(client: any WebSocketClientProtocol) {
+    init(client: any WebSocketClientProtocol, logger: any LoggerProtocol) {
         self.client = client
+        self.logger = logger
     }
 
     deinit {
@@ -250,10 +256,14 @@ public final class APISessionManager: @preconcurrency SessionManagerProtocol {
         // unparks `receive()` and ends the loop.
         let client = client
         let task = Task { [weak self] in
-            while let text = try? await client.receive() {
-                self?.route(text)
+            do {
+                while let text = try await client.receive() {
+                    self?.route(text)
+                }
+                self?.handleTransportClosed()
+            } catch {
+                self?.handleTransportFailed(error)
             }
-            self?.handleTransportClosed()
         }
         // Synchronous registration: `deinit`/`disconnect()` may cancel at any
         // point after this returns, so the handle must already hold the task.
@@ -282,14 +292,44 @@ public final class APISessionManager: @preconcurrency SessionManagerProtocol {
         return event
     }
 
+    /// The transport ended cleanly (`receive()` returned `nil`): the connection
+    /// is gone but nothing failed. Active streams finish; subscriptions
+    /// registered after this point queue in `subscriptions` until the next
+    /// successful `connect()`.
     private func handleTransportClosed() {
         guard sessionStatus == .connected else {
             return
         }
-        // Clean close or transport failure: the connection is gone. Active
-        // streams finish; subscriptions registered after this point queue in
-        // `subscriptions` until the next successful `connect()`.
         sessionStatus = .disconnected
+        finishAllSubscriptions()
+    }
+
+    /// The transport ended with an error: model it as `.error` — distinct from
+    /// a clean close — and log it, so a dropped connection is not silently
+    /// indistinguishable from a deliberate disconnect. A later `connect()`
+    /// re-establishes the session.
+    ///
+    /// The guard covers `.connecting` defensively: the receive loop only starts
+    /// once the session is `.connected`, so today this path always sees
+    /// `.connected` (a handshake failure is surfaced as `.error` by `connect()`
+    /// itself), and a cancelled loop finds `.disconnected` and returns.
+    private func handleTransportFailed(_ error: Error) {
+        guard sessionStatus == .connected || sessionStatus == .connecting else {
+            return
+        }
+        // The error *type* is non-identifying and safe to persist; the
+        // description can embed a URL or token, so it is redacted.
+        logger.log(
+            "Session transport failed: \(type(of: error))",
+            level: .error,
+            privacy: .visible
+        )
+        logger.log(
+            "Transport error detail: \(error.localizedDescription)",
+            level: .error,
+            privacy: .redacted
+        )
+        sessionStatus = .error
         finishAllSubscriptions()
     }
 

@@ -123,7 +123,8 @@ public actor CardBalanceDataSource {
         guard let data = event.payload.data(using: .utf8) else {
             logger.log(
                 "Balance from \(event.channel): payload is not UTF-8.",
-                level: .error
+                level: .error,
+                privacy: .redacted
             )
             return nil
         }

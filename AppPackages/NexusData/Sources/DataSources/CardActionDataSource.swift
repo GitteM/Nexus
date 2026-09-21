@@ -62,7 +62,8 @@ public struct CardActionDataSource: Sendable {
                 ?? AppError.apiConnectionFailed(details: error.localizedDescription)
             logger.log(
                 "Card command \(command.type.displayName) for card \(command.cardId) failed to send.",
-                level: .error
+                level: .error,
+                privacy: .redacted
             )
             throw mapped
         }

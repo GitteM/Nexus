@@ -36,7 +36,8 @@ extension JSONDecoder {
             let reason = Self.describe(error)
             logger.log(
                 "Deserialization failed — \(context): \(reason)",
-                level: .error
+                level: .error,
+                privacy: .redacted
             )
             throw AppError.deserializationError(
                 type: "\(T.self)",

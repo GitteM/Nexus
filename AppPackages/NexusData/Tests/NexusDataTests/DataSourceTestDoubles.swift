@@ -12,23 +12,23 @@ import Session
 /// records (the same pattern `APISessionManager.ReceiveTaskHandle` uses).
 final class RecordingLogger: LoggerProtocol {
     private struct Logs {
-        var records: [(message: String, level: LogLevel)] = []
+        var records: [(message: String, level: LogLevel, privacy: LogPrivacy)] = []
     }
 
     private let storage = OSAllocatedUnfairLock(initialState: Logs())
 
-    func log(_ message: String, level: LogLevel) {
-        storage.withLock { $0.records.append((message, level)) }
+    func log(_ message: String, level: LogLevel, privacy: LogPrivacy) {
+        storage.withLock { $0.records.append((message, level, privacy)) }
     }
 
     /// All recorded messages, oldest first.
-    var records: [(message: String, level: LogLevel)] {
+    var records: [(message: String, level: LogLevel, privacy: LogPrivacy)] {
         storage.withLock { $0.records }
     }
 
     /// Messages recorded at `.error`, oldest first. Filtering happens inside
     /// the lock so the read and the filter observe one consistent snapshot.
-    var errorRecords: [(message: String, level: LogLevel)] {
+    var errorRecords: [(message: String, level: LogLevel, privacy: LogPrivacy)] {
         storage.withLock { $0.records.filter { $0.level == .error } }
     }
 }
