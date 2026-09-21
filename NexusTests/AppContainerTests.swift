@@ -1,4 +1,5 @@
 import Entities
+import Navigation
 import Testing
 @testable import Nexus
 
@@ -22,13 +23,31 @@ struct AppContainerTests {
         #expect(container.dashboardModel != nil)
     }
 
-    @Test func `demo screen models are created once per route`() {
+    @Test func `screen models are reused while their route stays on the stack`() throws {
         let container = AppContainer(mode: .demo)
+        let cardID = Card.mockCreditCard.id
 
-        let first = container.cardDetailModel(cardID: Card.mockCreditCard.id)
-        let second = container.cardDetailModel(cardID: Card.mockCreditCard.id)
+        container.prepareScreenModels(for: [.cardDetail(cardID: cardID)])
+        let first = try #require(container.cardDetailModel(cardID: cardID))
+
+        // Re-preparing the same stack must not replace the model (PR #26).
+        container.prepareScreenModels(for: [.cardDetail(cardID: cardID)])
+        let second = try #require(container.cardDetailModel(cardID: cardID))
 
         #expect(first === second)
+    }
+
+    @Test func `screen models are evicted once their route leaves the stack`() throws {
+        let container = AppContainer(mode: .demo)
+        let cardID = Card.mockCreditCard.id
+
+        container.prepareScreenModels(for: [.cardDetail(cardID: cardID)])
+        #expect(container.cardDetailModel(cardID: cardID) != nil)
+
+        container.prepareScreenModels(for: [])
+
+        #expect(container.cardDetailModel(cardID: cardID) == nil)
+        #expect(container.cardDetailModels.isEmpty)
     }
 
     @Test func `reset demo rebuilds the graph and reconnects`() async {
