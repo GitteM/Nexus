@@ -17,33 +17,33 @@ public struct BankingEvent: Codable, Sendable, Equatable {
     }
 }
 
-public extension BankingEvent {
+extension BankingEvent {
     /// A `card.status` event whose payload decodes to `CardState`.
-    static let mockCardStatusEvent = BankingEvent(
+    public static let mockCardStatusEvent = BankingEvent(
         channel: "card.status",
-        payload: #"{"cardId":"card-credit-001","status":"frozen"}"#,
+        payload: #"{"cardId":"card-credit-001","status":"frozen"}"#
     )
 
     /// A `card.balance` event whose payload decodes to `Balance`.
-    static let mockBalanceEvent = BankingEvent(
+    public static let mockBalanceEvent = BankingEvent(
         channel: "card.balance",
-        payload: #"{"cardId":"card-credit-001","current":1240.75,"available":1259.25,"creditLimit":2500,"currency":"EUR"}"#,
+        payload: #"{"cardId":"card-credit-001","current":1240.75,"available":1259.25,"creditLimit":2500,"currency":"EUR"}"#
     )
 
     /// A `card.transactions` event whose payload decodes to `Transaction`.
-    static let mockTransactionEvent = BankingEvent(
+    public static let mockTransactionEvent = BankingEvent(
         channel: "card.transactions",
-        payload: #"{"id":"txn-event-001","cardId":"card-credit-001","date":800000000,"merchant":"Cafe Central","amount":-4.5,"currency":"EUR","category":"dining","status":"pending","location":"Berlin"}"#,
+        payload: #"{"id":"txn-event-001","cardId":"card-credit-001","date":800000000,"merchant":"Cafe Central","amount":-4.5,"currency":"EUR","category":"dining","status":"pending","location":"Berlin"}"#
     )
 
     /// A `card.limits` event whose payload decodes to `SpendingLimit`.
-    static let mockSpendingLimitEvent = BankingEvent(
+    public static let mockSpendingLimitEvent = BankingEvent(
         channel: "card.limits",
-        payload: #"{"cardId":"card-credit-001","period":"weekly","amount":500,"currency":"EUR"}"#,
+        payload: #"{"cardId":"card-credit-001","period":"weekly","amount":500,"currency":"EUR"}"#
     )
 
     /// Demo/default event set covering one payload per typed entity.
-    static var mockDefaults: [BankingEvent] {
+    public static var mockDefaults: [BankingEvent] {
         [.mockCardStatusEvent, .mockBalanceEvent, .mockTransactionEvent, .mockSpendingLimitEvent]
     }
 }

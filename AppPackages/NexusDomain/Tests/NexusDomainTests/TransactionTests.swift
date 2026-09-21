@@ -16,7 +16,7 @@ struct TransactionTests {
             currency: "EUR",
             category: .dining,
             status: .pending,
-            location: "Berlin",
+            location: "Berlin"
         )
         #expect(transaction.id == "txn-1")
         #expect(transaction.cardId == "card-1")
@@ -39,7 +39,7 @@ struct TransactionTests {
             currency: "EUR",
             category: .shopping,
             status: .cleared,
-            location: nil,
+            location: nil
         )
         #expect(transaction.location == nil)
     }
@@ -56,7 +56,7 @@ struct TransactionTests {
             currency: "EUR",
             category: .dining,
             status: .pending,
-            location: "Berlin",
+            location: "Berlin"
         )
         let same = Transaction(
             id: "txn-1",
@@ -67,7 +67,7 @@ struct TransactionTests {
             currency: "EUR",
             category: .dining,
             status: .pending,
-            location: "Berlin",
+            location: "Berlin"
         )
         let different = Transaction(
             id: "txn-9",
@@ -78,7 +78,7 @@ struct TransactionTests {
             currency: "EUR",
             category: .dining,
             status: .cleared,
-            location: "Berlin",
+            location: "Berlin"
         )
         #expect(a == same)
         #expect(a != different)
@@ -96,7 +96,7 @@ struct TransactionTests {
             currency: "EUR",
             category: .dining,
             status: .pending,
-            location: "Berlin",
+            location: "Berlin"
         )
         let data = try JSONEncoder().encode(transaction)
         let decoded = try JSONDecoder().decode(Transaction.self, from: data)
@@ -114,7 +114,7 @@ struct TransactionTests {
             currency: "EUR",
             category: .shopping,
             status: .cleared,
-            location: nil,
+            location: nil
         )
         let data = try JSONEncoder().encode(transaction)
         let decoded = try JSONDecoder().decode(Transaction.self, from: data)
@@ -127,7 +127,7 @@ struct TransactionTests {
             #"""
             {"id":"t1","cardId":"c1","date":800000000,"merchant":"Shoply",
              "amount":-129.99,"currency":"EUR","category":"shopping","status":"cleared"}
-            """#.utf8,
+            """#.utf8
         )
         let decoded = try JSONDecoder().decode(Transaction.self, from: json)
         #expect(decoded.location == nil)
@@ -159,7 +159,16 @@ struct TransactionTests {
     @Test func `category raw values match wire contract`() {
         #expect(
             TransactionCategory.allCases.map(\.rawValue)
-                == ["dining", "groceries", "shopping", "travel", "entertainment", "bills", "transfer", "other"],
+                == [
+                    "dining",
+                    "groceries",
+                    "shopping",
+                    "travel",
+                    "entertainment",
+                    "bills",
+                    "transfer",
+                    "other",
+                ]
         )
     }
 
@@ -179,7 +188,16 @@ struct TransactionTests {
         #expect(TransactionStatus.allCases.map(\.displayName) == ["Pending", "Cleared"])
         #expect(
             TransactionCategory.allCases.map(\.displayName)
-                == ["Dining", "Groceries", "Shopping", "Travel", "Entertainment", "Bills", "Transfer", "Other"],
+                == [
+                    "Dining",
+                    "Groceries",
+                    "Shopping",
+                    "Travel",
+                    "Entertainment",
+                    "Bills",
+                    "Transfer",
+                    "Other",
+                ]
         )
     }
 

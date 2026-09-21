@@ -21,7 +21,7 @@ public struct Balance: Codable, Sendable, Equatable, Identifiable {
         current: Decimal,
         available: Decimal,
         creditLimit: Decimal?,
-        currency: String,
+        currency: String
     ) {
         self.cardId = cardId
         self.current = current
@@ -31,27 +31,27 @@ public struct Balance: Codable, Sendable, Equatable, Identifiable {
     }
 }
 
-public extension Balance {
+extension Balance {
     /// Credit card balance: posted balance, available credit, and limit.
-    static let mockCreditBalance = Balance(
+    public static let mockCreditBalance = Balance(
         cardId: "card-credit-001",
         current: 1240.75,
         available: 1259.25,
         creditLimit: 2500,
-        currency: "EUR",
+        currency: "EUR"
     )
 
     /// Debit card balance: no credit limit — available equals current.
-    static let mockDebitBalance = Balance(
+    public static let mockDebitBalance = Balance(
         cardId: "card-debit-001",
         current: 482.30,
         available: 482.30,
         creditLimit: nil,
-        currency: "EUR",
+        currency: "EUR"
     )
 
     /// Demo/default balance set for previews and tests.
-    static var mockDefaults: [Balance] {
+    public static var mockDefaults: [Balance] {
         [.mockCreditBalance, .mockDebitBalance]
     }
 }

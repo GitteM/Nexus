@@ -47,7 +47,7 @@ public actor OffersDataSource {
     public init(
         eventSubscriptionManager: any EventSubscriptionManagerProtocol,
         logger: any LoggerProtocol,
-        ttl: TimeInterval = OffersDataSource.defaultTTL,
+        ttl: TimeInterval = OffersDataSource.defaultTTL
     ) {
         self.eventSubscriptionManager = eventSubscriptionManager
         self.logger = logger
@@ -117,7 +117,7 @@ public actor OffersDataSource {
         guard let data = event.payload.data(using: .utf8) else {
             logger.log(
                 "OffersSnapshot from \(event.channel): payload is not UTF-8.",
-                level: .error,
+                level: .error
             )
             return nil
         }
@@ -125,7 +125,7 @@ public actor OffersDataSource {
             OffersSnapshotDTO.self,
             from: data,
             logger: logger,
-            context: "OffersSnapshot from \(event.channel)",
+            context: "OffersSnapshot from \(event.channel)"
         )
         return dto?.offers
     }
@@ -135,7 +135,7 @@ public actor OffersDataSource {
     /// the cache too — the backend clearing offers is a real state.
     private func process(
         _ event: BankingEvent,
-        continuation: AsyncStream<[CardOffer]>.Continuation,
+        continuation: AsyncStream<[CardOffer]>.Continuation
     ) {
         guard let offers = parseEvent(event) else {
             return
@@ -157,8 +157,8 @@ public actor OffersDataSource {
         guard
             let cachedOffers,
             let receivedAt,
-            Date().timeIntervalSince(receivedAt) < ttl
-        else {
+            Date().timeIntervalSince(receivedAt) < ttl else
+        {
             if cachedOffers != nil {
                 cachedOffers = nil
                 receivedAt = nil

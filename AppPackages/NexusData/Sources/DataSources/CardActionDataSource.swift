@@ -19,7 +19,7 @@ public struct CardActionDataSource: Sendable {
 
     public init(
         eventSubscriptionManager: any EventSubscriptionManagerProtocol,
-        logger: any LoggerProtocol,
+        logger: any LoggerProtocol
     ) {
         self.eventSubscriptionManager = eventSubscriptionManager
         self.logger = logger
@@ -40,7 +40,7 @@ public struct CardActionDataSource: Sendable {
             guard let text = String(data: data, encoding: .utf8) else {
                 throw AppError.serializationError(
                     type: "CardCommand",
-                    details: "Encoded payload is not valid UTF-8.",
+                    details: "Encoded payload is not valid UTF-8."
                 )
             }
             payload = text
@@ -49,20 +49,20 @@ public struct CardActionDataSource: Sendable {
         } catch {
             throw AppError.serializationError(
                 type: "CardCommand",
-                details: error.localizedDescription,
+                details: error.localizedDescription
             )
         }
         do {
             try await eventSubscriptionManager.send(
                 to: EventChannels.commands,
-                payload: payload,
+                payload: payload
             )
         } catch {
             let mapped = (error as? AppError)
                 ?? AppError.apiConnectionFailed(details: error.localizedDescription)
             logger.log(
                 "Card command \(command.type.displayName) for card \(command.cardId) failed to send.",
-                level: .error,
+                level: .error
             )
             throw mapped
         }
@@ -75,13 +75,13 @@ public struct CardActionDataSource: Sendable {
         guard !command.cardId.isEmpty else {
             throw AppError.validationError(
                 field: "cardId",
-                reason: "Card id must not be empty.",
+                reason: "Card id must not be empty."
             )
         }
         guard command.type != .unknown else {
             throw AppError.validationError(
                 field: "type",
-                reason: "Cannot send an unknown card action.",
+                reason: "Cannot send an unknown card action."
             )
         }
         switch command.type {
@@ -89,20 +89,20 @@ public struct CardActionDataSource: Sendable {
             guard command.period != nil else {
                 throw AppError.validationError(
                     field: "period",
-                    reason: "setSpendingLimit requires a period.",
+                    reason: "setSpendingLimit requires a period."
                 )
             }
             guard command.amount != nil else {
                 throw AppError.validationError(
                     field: "amount",
-                    reason: "setSpendingLimit requires an amount.",
+                    reason: "setSpendingLimit requires an amount."
                 )
             }
         default:
             guard command.amount == nil, command.period == nil else {
                 throw AppError.validationError(
                     field: "payload",
-                    reason: "\(command.type.displayName) takes no amount or period.",
+                    reason: "\(command.type.displayName) takes no amount or period."
                 )
             }
         }

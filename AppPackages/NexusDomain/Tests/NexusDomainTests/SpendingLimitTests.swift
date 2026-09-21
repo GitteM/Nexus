@@ -11,7 +11,7 @@ struct SpendingLimitTests {
             cardId: "card-1",
             period: .weekly,
             amount: 500,
-            currency: "EUR",
+            currency: "EUR"
         )
         #expect(limit.cardId == "card-1")
         #expect(limit.period == .weekly)
@@ -26,19 +26,19 @@ struct SpendingLimitTests {
             cardId: "card-1",
             period: .weekly,
             amount: 500,
-            currency: "EUR",
+            currency: "EUR"
         )
         let same = SpendingLimit(
             cardId: "card-1",
             period: .weekly,
             amount: 500,
-            currency: "EUR",
+            currency: "EUR"
         )
         let different = SpendingLimit(
             cardId: "card-1",
             period: .monthly,
             amount: 500,
-            currency: "EUR",
+            currency: "EUR"
         )
         #expect(a == same)
         #expect(a != different)
@@ -51,7 +51,7 @@ struct SpendingLimitTests {
             cardId: "card-rt",
             period: .daily,
             amount: 125.50,
-            currency: "EUR",
+            currency: "EUR"
         )
         let data = try JSONEncoder().encode(limit)
         let decoded = try JSONDecoder().decode(SpendingLimit.self, from: data)

@@ -14,9 +14,9 @@ public enum AppState: Equatable {
     case error(AppError)
 }
 
-public extension AppState {
+extension AppState {
     /// The `AppError` behind `.error`, or `nil` for every other state.
-    var error: AppError? {
+    public var error: AppError? {
         if case let .error(error) = self {
             return error
         }

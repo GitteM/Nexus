@@ -30,7 +30,7 @@ let package = Package(
             dependencies: [
                 "Design",
                 .product(name: "Entities", package: "NexusDomain"),
-            ],
+            ]
         ),
         .target(name: "Navigation"),
         .target(
@@ -41,7 +41,7 @@ let package = Package(
                 .product(name: "Entities", package: "NexusDomain"),
                 .product(name: "Mocks", package: "NexusData"),
                 .product(name: "RepositoryProtocols", package: "NexusDomain"),
-            ],
+            ]
         ),
         .target(
             name: "CardDetail",
@@ -51,7 +51,7 @@ let package = Package(
                 .product(name: "Entities", package: "NexusDomain"),
                 .product(name: "Mocks", package: "NexusData"),
                 .product(name: "RepositoryProtocols", package: "NexusDomain"),
-            ],
+            ]
         ),
         // Per-card account activity: balance header and the transaction
         // history + details screens.
@@ -64,7 +64,7 @@ let package = Package(
                 .product(name: "Entities", package: "NexusDomain"),
                 .product(name: "Mocks", package: "NexusData"),
                 .product(name: "RepositoryProtocols", package: "NexusDomain"),
-            ],
+            ]
         ),
         .testTarget(
             name: "NexusFeaturesTests",
@@ -77,7 +77,7 @@ let package = Package(
                 // Mock repositories power the model tests' loading/error
                 // knobs and call counts.
                 .product(name: "Mocks", package: "NexusData"),
-            ],
+            ]
         ),
-    ],
+    ]
 )

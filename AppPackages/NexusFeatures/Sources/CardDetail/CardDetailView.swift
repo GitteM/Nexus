@@ -21,7 +21,7 @@ public struct CardDetailView: View {
         content
             .navigationTitle(
                 model.card.map { Strings.CardDetail.title(lastFour: $0.lastFourDigits) }
-                    ?? Strings.App.title,
+                    ?? Strings.App.title
             )
             .task { await model.load() }
     }
@@ -68,7 +68,7 @@ private struct CardDetailContentView: View {
                     if model.replacementRequested {
                         InfoRow(
                             title: Strings.CardDetail.replacementRequestedTitle,
-                            message: Strings.CardDetail.replacementRequestedMessage,
+                            message: Strings.CardDetail.replacementRequestedMessage
                         )
                         .padding(.horizontal, Spacing.lg)
                     }
@@ -83,7 +83,7 @@ private struct CardDetailContentView: View {
             .confirmationDialog(
                 Strings.CardDetail.reportConfirmTitle,
                 isPresented: $showReportDialog,
-                titleVisibility: .visible,
+                titleVisibility: .visible
             ) {
                 Button(Strings.CardDetail.reportLost, role: .destructive) {
                     Task { await model.reportLost() }
@@ -107,7 +107,7 @@ private struct CardDetailContentView: View {
         .alert(
             Strings.CardDetail.actionFailedTitle,
             isPresented: actionErrorPresented,
-            presenting: model.actionError,
+            presenting: model.actionError
         ) { _ in
             Button(Strings.Common.ok) {
                 model.dismissActionError()
@@ -119,7 +119,7 @@ private struct CardDetailContentView: View {
             LimitSetterSheet(
                 period: draft.period,
                 currency: model.card?.currency ?? "",
-                currentLimit: model.limit(for: draft.period)?.amount,
+                currentLimit: model.limit(for: draft.period)?.amount
             ) { amount in
                 limitDraft = nil
                 Task { await model.setSpendingLimit(period: draft.period, amount: amount) }
@@ -156,7 +156,7 @@ private struct CardDetailContentView: View {
                 if model.canReportIssue {
                     DestructiveButton(
                         title: Strings.CardDetail.reportLostOrStolen,
-                        action: { showReportDialog = true },
+                        action: { showReportDialog = true }
                     )
                     .disabled(model.isExecuting)
                     .accessibilityIdentifier(CardDetailAccessibility.reportLostOrStolen)
@@ -177,7 +177,7 @@ private struct CardDetailContentView: View {
                 systemImage: Icons.card,
                 identifier: CardDetailAccessibility.freeze,
                 isPending: model.pendingAction == .freeze,
-                disabled: model.isExecuting,
+                disabled: model.isExecuting
             ) {
                 confirmAction = .freeze
             }
@@ -187,7 +187,7 @@ private struct CardDetailContentView: View {
                 systemImage: Icons.unfreeze,
                 identifier: CardDetailAccessibility.unfreeze,
                 isPending: model.pendingAction == .unfreeze,
-                disabled: model.isExecuting,
+                disabled: model.isExecuting
             ) {
                 confirmAction = .unfreeze
             }
@@ -200,7 +200,7 @@ private struct CardDetailContentView: View {
         VStack(alignment: .leading, spacing: Spacing.md) {
             InfoRow(
                 title: Strings.CardDetail.lostCardTitle,
-                message: Strings.CardDetail.lostCardMessage,
+                message: Strings.CardDetail.lostCardMessage
             )
             if model.canRequestReplacement {
                 ActionButton(
@@ -208,7 +208,7 @@ private struct CardDetailContentView: View {
                     systemImage: Icons.add,
                     identifier: CardDetailAccessibility.requestReplacement,
                     isPending: model.pendingAction == .requestReplacement,
-                    disabled: model.isExecuting,
+                    disabled: model.isExecuting
                 ) {
                     confirmAction = .requestReplacement
                 }
@@ -275,9 +275,12 @@ private struct CardDetailContentView: View {
                     .font(.subheadline.weight(.medium))
                     .foregroundStyle(ColorPalette.label)
                 Spacer()
-                Text(formattedLimit(model.limit(for: period)?.amount, currency: model.card?.currency ?? ""))
-                    .font(.subheadline)
-                    .foregroundStyle(ColorPalette.secondaryLabel)
+                Text(formattedLimit(
+                    model.limit(for: period)?.amount,
+                    currency: model.card?.currency ?? ""
+                ))
+                .font(.subheadline)
+                .foregroundStyle(ColorPalette.secondaryLabel)
                 Image(systemName: Icons.chevronRight)
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(ColorPalette.secondaryLabel)
@@ -309,7 +312,7 @@ private struct CardDetailContentView: View {
                 primaryButton: .default(Text(Strings.CardDetail.freeze)) {
                     Task { await model.freeze() }
                 },
-                secondaryButton: .cancel(),
+                secondaryButton: .cancel()
             )
         case .unfreeze:
             Alert(
@@ -318,7 +321,7 @@ private struct CardDetailContentView: View {
                 primaryButton: .default(Text(Strings.CardDetail.unfreeze)) {
                     Task { await model.unfreeze() }
                 },
-                secondaryButton: .cancel(),
+                secondaryButton: .cancel()
             )
         case .requestReplacement:
             Alert(
@@ -327,7 +330,7 @@ private struct CardDetailContentView: View {
                 primaryButton: .default(Text(Strings.CardDetail.requestReplacement)) {
                     Task { await model.requestReplacement() }
                 },
-                secondaryButton: .cancel(),
+                secondaryButton: .cancel()
             )
         }
     }
@@ -341,7 +344,7 @@ private struct CardDetailContentView: View {
                 if !presented {
                     model.dismissActionError()
                 }
-            },
+            }
         )
     }
 
@@ -389,7 +392,7 @@ private struct ActionButton: View {
         identifier: String,
         isPending: Bool,
         disabled: Bool,
-        action: @escaping () -> Void,
+        action: @escaping () -> Void
     ) {
         self.title = title
         self.systemImage = systemImage
@@ -497,7 +500,7 @@ private struct DetailCardFront: View {
         .foregroundStyle(CardArtwork.foreground)
         .background(
             CardArtwork.gradient(for: card.type),
-            in: RoundedRectangle(cornerRadius: 20, style: .continuous),
+            in: RoundedRectangle(cornerRadius: 20, style: .continuous)
         )
         .aspectRatio(1.586, contentMode: .fit)
         .accessibilityHidden(true)
@@ -525,7 +528,7 @@ private struct LimitSetterSheet: View {
         period: SpendingLimitPeriod,
         currency: String,
         currentLimit: Decimal?,
-        onSave: @escaping (Decimal) -> Void,
+        onSave: @escaping (Decimal) -> Void
     ) {
         self.period = period
         self.currency = currency
@@ -554,7 +557,8 @@ private struct LimitSetterSheet: View {
                     }
                 }
             }
-            .navigationTitle(Strings.CardDetail.setLimitTitle(period: period.displayName.lowercased()))
+            .navigationTitle(Strings.CardDetail
+                .setLimitTitle(period: period.displayName.lowercased()))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

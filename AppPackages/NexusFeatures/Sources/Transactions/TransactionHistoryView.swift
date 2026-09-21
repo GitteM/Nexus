@@ -37,17 +37,17 @@ public struct TransactionHistoryView: View {
                 router.navigateTo(
                     .transactionDetail(
                         cardID: transaction.cardId,
-                        transactionID: transaction.id,
-                    ),
+                        transactionID: transaction.id
+                    )
                 )
             }
             .searchable(
                 text: Binding(
                     get: { model.query.searchText },
-                    set: { model.setSearchText($0) },
+                    set: { model.setSearchText($0) }
                 ),
                 placement: .navigationBarDrawer(displayMode: .always),
-                prompt: Text(Strings.Transactions.searchPlaceholder),
+                prompt: Text(Strings.Transactions.searchPlaceholder)
             )
         }
     }
@@ -63,7 +63,7 @@ private struct HistoryContent: View {
 
     init(
         model: TransactionHistoryModel,
-        onSelectTransaction: @escaping (Entities.Transaction) -> Void,
+        onSelectTransaction: @escaping (Entities.Transaction) -> Void
     ) {
         self.model = model
         self.onSelectTransaction = onSelectTransaction
@@ -104,7 +104,7 @@ private struct HistoryContent: View {
                             onSelectTransaction(transaction)
                         }
                         .accessibilityIdentifier(
-                            TransactionsAccessibility.transactionRow(transaction.id),
+                            TransactionsAccessibility.transactionRow(transaction.id)
                         )
                 }
             }
@@ -131,7 +131,7 @@ private struct HistoryContent: View {
                 .accessibilityValue(
                     model.query.isDefault
                         ? Strings.Transactions.noFilters
-                        : Strings.Transactions.filtersActiveTitle,
+                        : Strings.Transactions.filtersActiveTitle
                 )
             }
         }
@@ -191,7 +191,7 @@ private struct HistoryContent: View {
     private var bannerDetail: String {
         let count = Strings.Transactions.showingCount(
             model.filteredTransactions.count,
-            of: model.transactions.count,
+            of: model.transactions.count
         )
         let summary = activeFilterSummary
         return summary.isEmpty ? count : "\(count) · \(summary)"
@@ -221,7 +221,7 @@ private struct HistoryContent: View {
         EmptyStateView(
             systemImage: Icons.card,
             title: Strings.Transactions.emptyTitle,
-            message: Strings.Transactions.emptyMessage,
+            message: Strings.Transactions.emptyMessage
         )
     }
 
@@ -229,7 +229,7 @@ private struct HistoryContent: View {
         EmptyStateView(
             systemImage: Icons.search,
             title: Strings.Transactions.noResultsTitle,
-            message: Strings.Transactions.noResultsMessage,
+            message: Strings.Transactions.noResultsMessage
         )
     }
 }
@@ -290,14 +290,14 @@ private struct FilterSheetView: View {
         Menu {
             checkedButton(
                 label: Strings.Transactions.allCategories,
-                isOn: model.query.category == nil,
+                isOn: model.query.category == nil
             ) {
                 model.setCategoryFilter(nil)
             }
             ForEach(TransactionCategory.allCases, id: \.self) { category in
                 checkedButton(
                     label: category.displayName,
-                    isOn: model.query.category == category,
+                    isOn: model.query.category == category
                 ) {
                     model.setCategoryFilter(category)
                 }
@@ -305,7 +305,7 @@ private struct FilterSheetView: View {
         } label: {
             filterRowLabel(
                 title: Strings.Transactions.filterCategory,
-                value: model.query.category?.displayName ?? Strings.Transactions.allCategories,
+                value: model.query.category?.displayName ?? Strings.Transactions.allCategories
             )
         }
     }
@@ -314,14 +314,14 @@ private struct FilterSheetView: View {
         Menu {
             checkedButton(
                 label: Strings.Transactions.allStatuses,
-                isOn: model.query.status == nil,
+                isOn: model.query.status == nil
             ) {
                 model.setStatusFilter(nil)
             }
             ForEach(TransactionStatus.allCases, id: \.self) { status in
                 checkedButton(
                     label: status.displayName,
-                    isOn: model.query.status == status,
+                    isOn: model.query.status == status
                 ) {
                     model.setStatusFilter(status)
                 }
@@ -329,7 +329,7 @@ private struct FilterSheetView: View {
         } label: {
             filterRowLabel(
                 title: Strings.Transactions.filterStatus,
-                value: model.query.status?.displayName ?? Strings.Transactions.allStatuses,
+                value: model.query.status?.displayName ?? Strings.Transactions.allStatuses
             )
         }
     }
@@ -344,7 +344,7 @@ private struct FilterSheetView: View {
         } label: {
             filterRowLabel(
                 title: Strings.Transactions.filterDate,
-                value: dateLabel(model.query.dateRange),
+                value: dateLabel(model.query.dateRange)
             )
         }
     }
@@ -368,7 +368,7 @@ private struct FilterSheetView: View {
     private func checkedButton(
         label: String,
         isOn: Bool,
-        action: @escaping () -> Void,
+        action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
             if isOn {
@@ -413,12 +413,12 @@ struct BalanceHeaderView: View {
             HStack(spacing: Spacing.lg) {
                 balanceLine(
                     Strings.Transactions.available,
-                    value: balance.available,
+                    value: balance.available
                 )
                 if let creditLimit = balance.creditLimit {
                     balanceLine(
                         Strings.Transactions.creditLimit,
-                        value: creditLimit,
+                        value: creditLimit
                     )
                 }
             }

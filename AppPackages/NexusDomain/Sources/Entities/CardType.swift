@@ -7,10 +7,10 @@ public enum CardType: String, Codable, CaseIterable, Sendable, Equatable {
     case prepaid
 }
 
-public extension CardType {
+extension CardType {
     /// Human-readable label for UI, e.g. "Credit". Localized through the
     /// app's String Catalog at lookup time.
-    var displayName: String {
+    public var displayName: String {
         switch self {
         case .credit: String(localized: "Credit")
         case .debit: String(localized: "Debit")
@@ -19,7 +19,7 @@ public extension CardType {
     }
 
     /// SF Symbol name used by the UI for this card type.
-    var icon: String {
+    public var icon: String {
         switch self {
         case .credit: "creditcard"
         case .debit: "banknote"

@@ -1,7 +1,7 @@
-@testable import DataSources
 import Entities
 import Foundation
 import Testing
+@testable import DataSources
 
 /// Tests for the balance and transaction-feed sources: per-kind parse on
 /// the shared per-card channel, cache/feed seed semantics, live delivery,
@@ -14,7 +14,13 @@ struct CardFinancialDataSourcesTests {
 
     private func balanceEvent(cardId: String, current: Decimal = 100) throws -> BankingEvent {
         let payload = try String(decoding: JSONEncoder().encode(
-            Balance(cardId: cardId, current: current, available: current, creditLimit: nil, currency: "EUR"),
+            Balance(
+                cardId: cardId,
+                current: current,
+                available: current,
+                creditLimit: nil,
+                currency: "EUR"
+            )
         ), as: UTF8.self)
         return BankingEvent(channel: EventChannels.cardEvents(cardId: cardId), payload: payload)
     }
@@ -23,13 +29,13 @@ struct CardFinancialDataSourcesTests {
         let payload = try String(decoding: JSONEncoder().encode(transaction), as: UTF8.self)
         return BankingEvent(
             channel: EventChannels.cardEvents(cardId: transaction.cardId),
-            payload: payload,
+            payload: payload
         )
     }
 
     private func statusEvent(cardId: String) throws -> BankingEvent {
         let payload = try String(decoding: JSONEncoder().encode(
-            CardState(cardId: cardId, status: .frozen),
+            CardState(cardId: cardId, status: .frozen)
         ), as: UTF8.self)
         return BankingEvent(channel: EventChannels.cardEvents(cardId: cardId), payload: payload)
     }
@@ -48,7 +54,10 @@ struct CardFinancialDataSourcesTests {
 
     @Test func `balance subscription delivers live updates and warms the cache`() async throws {
         let session = FakeEventSubscriptionManager()
-        let source = CardBalanceDataSource(eventSubscriptionManager: session, logger: RecordingLogger())
+        let source = CardBalanceDataSource(
+            eventSubscriptionManager: session,
+            logger: RecordingLogger()
+        )
 
         let stream = try await source.subscribeToBalance(cardId: "card-credit-001")
         #expect(await source.getBalance(cardId: "card-credit-001") == nil)
@@ -60,7 +69,10 @@ struct CardFinancialDataSourcesTests {
 
     @Test func `balance resubscribe seeds the cached value first`() async throws {
         let session = FakeEventSubscriptionManager()
-        let source = CardBalanceDataSource(eventSubscriptionManager: session, logger: RecordingLogger())
+        let source = CardBalanceDataSource(
+            eventSubscriptionManager: session,
+            logger: RecordingLogger()
+        )
 
         let first = try await source.subscribeToBalance(cardId: "card-credit-001")
         try session.inject(balanceEvent(cardId: "card-credit-001", current: 250))
@@ -72,13 +84,16 @@ struct CardFinancialDataSourcesTests {
 
     @Test func `balance source skips non-balance frames`() async throws {
         let session = FakeEventSubscriptionManager()
-        let source = CardBalanceDataSource(eventSubscriptionManager: session, logger: RecordingLogger())
+        let source = CardBalanceDataSource(
+            eventSubscriptionManager: session,
+            logger: RecordingLogger()
+        )
 
         let stream = try await source.subscribeToBalance(cardId: "card-credit-001")
         try session.inject(statusEvent(cardId: "card-credit-001"))
         session.inject(BankingEvent(
             channel: EventChannels.cardEvents(cardId: "card-credit-001"),
-            payload: "not json at all",
+            payload: "not json at all"
         ))
         // Neither a status frame nor garbage is a balance — the cache stays
         // cold until a real frame arrives, proving the skip never killed
@@ -91,10 +106,13 @@ struct CardFinancialDataSourcesTests {
     @Test func `balance source rejects an empty card id`() async {
         let source = CardBalanceDataSource(
             eventSubscriptionManager: FakeEventSubscriptionManager(),
-            logger: RecordingLogger(),
+            logger: RecordingLogger()
         )
 
-        await #expect(throws: AppError.validationError(field: "cardId", reason: "Card id must not be empty.")) {
+        await #expect(throws: AppError.validationError(
+            field: "cardId",
+            reason: "Card id must not be empty."
+        )) {
             try await source.subscribeToBalance(cardId: "")
         }
     }
@@ -103,7 +121,10 @@ struct CardFinancialDataSourcesTests {
 
     @Test func `transaction feed delivers newest-first list snapshots`() async throws {
         let session = FakeEventSubscriptionManager()
-        let source = CardTransactionsDataSource(eventSubscriptionManager: session, logger: RecordingLogger())
+        let source = CardTransactionsDataSource(
+            eventSubscriptionManager: session,
+            logger: RecordingLogger()
+        )
 
         let stream = try await source.subscribeToTransactions(cardId: Card.mockCreditCard.id)
         // The stream seeds the current (empty) list first.
@@ -115,12 +136,18 @@ struct CardFinancialDataSourcesTests {
         // A later frame with an older date sorts after the newer purchase:
         // the feed stays newest-first by date, not arrival order.
         try session.inject(transactionEvent(Transaction.mockOnlineShoppingPurchase))
-        #expect(await nextList(stream) == [Transaction.mockCoffeePurchase, Transaction.mockOnlineShoppingPurchase])
+        #expect(await nextList(stream) == [
+            Transaction.mockCoffeePurchase,
+            Transaction.mockOnlineShoppingPurchase,
+        ])
     }
 
     @Test func `transaction feed replaces a same-id frame in place`() async throws {
         let session = FakeEventSubscriptionManager()
-        let source = CardTransactionsDataSource(eventSubscriptionManager: session, logger: RecordingLogger())
+        let source = CardTransactionsDataSource(
+            eventSubscriptionManager: session,
+            logger: RecordingLogger()
+        )
 
         let stream = try await source.subscribeToTransactions(cardId: Card.mockCreditCard.id)
         #expect(await nextList(stream) == [])
@@ -137,7 +164,7 @@ struct CardFinancialDataSourcesTests {
             currency: Transaction.mockCoffeePurchase.currency,
             category: Transaction.mockCoffeePurchase.category,
             status: .cleared,
-            location: Transaction.mockCoffeePurchase.location,
+            location: Transaction.mockCoffeePurchase.location
         )
         try session.inject(transactionEvent(cleared))
         let list = await nextList(stream)
@@ -146,13 +173,17 @@ struct CardFinancialDataSourcesTests {
 
     @Test func `transaction feed getTransactions mirrors delivered state`() async throws {
         let session = FakeEventSubscriptionManager()
-        let source = CardTransactionsDataSource(eventSubscriptionManager: session, logger: RecordingLogger())
+        let source = CardTransactionsDataSource(
+            eventSubscriptionManager: session,
+            logger: RecordingLogger()
+        )
 
         let stream = try await source.subscribeToTransactions(cardId: Card.mockCreditCard.id)
         #expect(await nextList(stream) == [])
         try session.inject(transactionEvent(Transaction.mockCoffeePurchase))
         #expect(await nextList(stream)?.count == 1)
-        #expect(await source.getTransactions(cardId: Card.mockCreditCard.id) == [Transaction.mockCoffeePurchase])
+        #expect(await source
+            .getTransactions(cardId: Card.mockCreditCard.id) == [Transaction.mockCoffeePurchase])
     }
 
     @Test func `transaction feed bounds its per-card list`() async throws {
@@ -160,7 +191,7 @@ struct CardFinancialDataSourcesTests {
         let source = CardTransactionsDataSource(
             eventSubscriptionManager: session,
             logger: RecordingLogger(),
-            feedLimit: 2,
+            feedLimit: 2
         )
         let stream = try await source.subscribeToTransactions(cardId: Card.mockCreditCard.id)
         #expect(await nextList(stream) == [])
@@ -178,7 +209,10 @@ struct CardFinancialDataSourcesTests {
 
     @Test func `transaction feed skips non-transaction frames`() async throws {
         let session = FakeEventSubscriptionManager()
-        let source = CardTransactionsDataSource(eventSubscriptionManager: session, logger: RecordingLogger())
+        let source = CardTransactionsDataSource(
+            eventSubscriptionManager: session,
+            logger: RecordingLogger()
+        )
 
         let stream = try await source.subscribeToTransactions(cardId: Card.mockCreditCard.id)
         #expect(await nextList(stream) == [])

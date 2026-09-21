@@ -1,8 +1,8 @@
 import Entities
 import Foundation
-@testable import Persistence
 import SwiftData
 import Testing
+@testable import Persistence
 
 /// Integration tests over the real SwiftData stack:
 /// `StoredCard` @Model records through a real in-memory `ModelContainer`,
@@ -27,7 +27,7 @@ struct SwiftDataCardRepositoryTests {
             type: .credit,
             status: .active,
             currency: "EUR",
-            spendingLimit: 2500,
+            spendingLimit: 2500
         )
     }
 
@@ -61,7 +61,7 @@ struct SwiftDataCardRepositoryTests {
             type: card.type,
             status: card.status,
             currency: card.currency,
-            spendingLimit: nil,
+            spendingLimit: nil
         )
         try await repository.insert(card)
         #expect(try await repository.fetchCards() == [card])
@@ -80,7 +80,7 @@ struct SwiftDataCardRepositoryTests {
                     type: type,
                     status: status,
                     currency: "EUR",
-                    spendingLimit: nil,
+                    spendingLimit: nil
                 )
                 try await repository.insert(card)
             }
@@ -94,12 +94,22 @@ struct SwiftDataCardRepositoryTests {
     func `fetch is stable ordered by id`() async throws {
         let repository = try makeRepository()
         let cardB = Card(
-            id: "b", cardholderName: "B", lastFourDigits: "0002",
-            type: .debit, status: .active, currency: "EUR", spendingLimit: nil,
+            id: "b",
+            cardholderName: "B",
+            lastFourDigits: "0002",
+            type: .debit,
+            status: .active,
+            currency: "EUR",
+            spendingLimit: nil
         )
         let cardA = Card(
-            id: "a", cardholderName: "A", lastFourDigits: "0001",
-            type: .credit, status: .active, currency: "EUR", spendingLimit: nil,
+            id: "a",
+            cardholderName: "A",
+            lastFourDigits: "0001",
+            type: .credit,
+            status: .active,
+            currency: "EUR",
+            spendingLimit: nil
         )
         try await repository.insert(cardB)
         try await repository.insert(cardA)
@@ -121,7 +131,7 @@ struct SwiftDataCardRepositoryTests {
             type: card.type,
             status: .frozen,
             currency: card.currency,
-            spendingLimit: 500,
+            spendingLimit: 500
         )
         try await repository.insert(updated)
 
@@ -144,7 +154,7 @@ struct SwiftDataCardRepositoryTests {
             type: .prepaid,
             status: .frozen,
             currency: "USD",
-            spendingLimit: 1,
+            spendingLimit: 1
         )
         #expect(try await repository.insertIfAbsent(changed) == false)
         #expect(try await repository.fetchCards() == [sampleCard])
@@ -157,7 +167,7 @@ struct SwiftDataCardRepositoryTests {
         let attempts = 20
 
         let outcomes = await withTaskGroup(of: Bool.self) { group in
-            for _ in 0 ..< attempts {
+            for _ in 0..<attempts {
                 group.addTask {
                     await (try? repository.insertIfAbsent(card)) ?? false
                 }

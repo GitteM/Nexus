@@ -1,7 +1,7 @@
 import Entities
 import Foundation
-@testable import Session
 import Testing
+@testable import Session
 
 @Suite("EventSubscriptionManager")
 @MainActor

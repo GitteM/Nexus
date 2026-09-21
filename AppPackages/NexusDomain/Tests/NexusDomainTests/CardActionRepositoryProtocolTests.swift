@@ -36,7 +36,10 @@ struct CardActionRepositoryProtocolTests {
             try await repository.execute(.freeze(cardId: "card-1"))
             Issue.record("Expected execute to throw")
         } catch {
-            #expect(error as? AppError == .cardActionFailed(action: "freeze", details: "card is lost"))
+            #expect(error as? AppError == .cardActionFailed(
+                action: "freeze",
+                details: "card is lost"
+            ))
         }
         #expect(repository.commands.isEmpty)
     }

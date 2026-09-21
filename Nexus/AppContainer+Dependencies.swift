@@ -52,26 +52,28 @@ enum AppDependenciesFactory {
 
         let statusSource = CardStateDataSource(
             eventSubscriptionManager: eventSubscriptionManager,
-            logger: logger,
+            logger: logger
         )
         let offersSource = OffersDataSource(
             eventSubscriptionManager: eventSubscriptionManager,
-            logger: logger,
+            logger: logger
         )
         let actionSource = CardActionDataSource(
             eventSubscriptionManager: eventSubscriptionManager,
-            logger: logger,
+            logger: logger
         )
         let balanceSource = CardBalanceDataSource(
             eventSubscriptionManager: eventSubscriptionManager,
-            logger: logger,
+            logger: logger
         )
         let transactionsSource = CardTransactionsDataSource(
             eventSubscriptionManager: eventSubscriptionManager,
-            logger: logger,
+            logger: logger
         )
 
-        let cardRepository: CardRepositoryProtocol = if let container = try? SwiftDataCardRepository.makeContainer() {
+        let cardRepository: CardRepositoryProtocol = if let container = try? SwiftDataCardRepository
+            .makeContainer()
+        {
             CardRepository(store: SwiftDataCardRepository(container: container))
         } else {
             // No persistence available (e.g. entitlements in a bare test
@@ -93,8 +95,8 @@ enum AppDependenciesFactory {
             dashboardModel: DashboardModel(
                 cardRepository: cardRepository,
                 offersRepository: offersRepository,
-                statusRepository: statusRepository,
-            ),
+                statusRepository: statusRepository
+            )
         )
     }
 }
@@ -117,7 +119,7 @@ private struct EmptyCardRepository: CardRepositoryProtocol {
             type: offer.type,
             status: .active,
             currency: offer.currency,
-            spendingLimit: nil,
+            spendingLimit: nil
         )
     }
 

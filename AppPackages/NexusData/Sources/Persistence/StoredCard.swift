@@ -70,13 +70,13 @@ final class StoredCard {
         guard let type = CardType(rawValue: typeRaw) else {
             throw AppError.persistenceError(
                 operation: "read_card",
-                details: "Stored card '\(id)' has unknown type '\(typeRaw)'.",
+                details: "Stored card '\(id)' has unknown type '\(typeRaw)'."
             )
         }
         guard let status = CardStatus(rawValue: statusRaw) else {
             throw AppError.persistenceError(
                 operation: "read_card",
-                details: "Stored card '\(id)' has unknown status '\(statusRaw)'.",
+                details: "Stored card '\(id)' has unknown status '\(statusRaw)'."
             )
         }
         return Card(
@@ -86,7 +86,7 @@ final class StoredCard {
             type: type,
             status: status,
             currency: currency,
-            spendingLimit: spendingLimit,
+            spendingLimit: spendingLimit
         )
     }
 }

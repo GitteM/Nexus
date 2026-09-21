@@ -1,7 +1,7 @@
-@testable import Logging
 import os
 import ServiceProtocols
 import Testing
+@testable import Logging
 
 /// Tests for the OSLog-backed `LoggingService`.
 ///

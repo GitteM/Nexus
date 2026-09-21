@@ -8,7 +8,9 @@ import Foundation
     /// write `AppErrorTestFactory.cardNotFound()` for the canonical instance or
     /// pass a payload to pin a specific value.
     public enum AppErrorTestFactory {
-        public static func apiConnectionFailed(details: String? = "Connection reset by peer") -> AppError {
+        public static func apiConnectionFailed(details: String? = "Connection reset by peer")
+            -> AppError
+        {
             .apiConnectionFailed(details: details)
         }
 
@@ -26,7 +28,7 @@ import Foundation
 
         public static func cardActionFailed(
             action: String = "freeze",
-            details: String? = "Command rejected",
+            details: String? = "Command rejected"
         ) -> AppError {
             .cardActionFailed(action: action, details: details)
         }
@@ -37,34 +39,41 @@ import Foundation
 
         public static func persistenceError(
             operation: String = "save_card",
-            details: String? = "Write failed",
+            details: String? = "Write failed"
         ) -> AppError {
             .persistenceError(operation: operation, details: details)
         }
 
         public static func serializationError(
             type: String = "Card",
-            details: String? = "Invalid key",
+            details: String? = "Invalid key"
         ) -> AppError {
             .serializationError(type: type, details: details)
         }
 
         public static func deserializationError(
             type: String = "CardState",
-            details: String? = "Type mismatch at 'status'",
+            details: String? = "Type mismatch at 'status'"
         ) -> AppError {
             .deserializationError(type: type, details: details)
         }
 
-        public static func validationError(field: String = "amount", reason: String = "must be positive") -> AppError {
+        public static func validationError(
+            field: String = "amount",
+            reason: String = "must be positive"
+        ) -> AppError {
             .validationError(field: field, reason: reason)
         }
 
-        public static func systemUnavailable(details: String? = "Biometrics unavailable") -> AppError {
+        public static func systemUnavailable(details: String? = "Biometrics unavailable")
+            -> AppError
+        {
             .systemUnavailable(details: details)
         }
 
-        public static func initializationFailed(details: String? = "Container setup failed") -> AppError {
+        public static func initializationFailed(details: String? = "Container setup failed")
+            -> AppError
+        {
             .initializationFailed(details: details)
         }
 

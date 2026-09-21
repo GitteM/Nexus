@@ -22,7 +22,7 @@
             let actionRepository = MockActionRepository()
             let balanceRepository = MockBalanceRepository(seed: Balance.mockDefaults)
             let transactionRepository = MockTransactionRepository(
-                seed: [Card.mockCreditCard.id: Transaction.mockDefaults],
+                seed: [Card.mockCreditCard.id: Transaction.mockDefaults]
             )
 
             // UI-test launch knobs drive the failure/loading surfaces.
@@ -38,7 +38,7 @@
                 actionRepository.shouldThrowError = true
                 actionRepository.thrownError = .cardActionFailed(
                     action: "Freeze",
-                    details: "The freeze was rejected.",
+                    details: "The freeze was rejected."
                 )
             }
 
@@ -50,7 +50,7 @@
                 actionRepository: actionRepository,
                 cardRepository: cardRepository,
                 statusRepository: statusRepository,
-                offersRepository: offersRepository,
+                offersRepository: offersRepository
             )
             coordinator.start()
 
@@ -65,9 +65,9 @@
                 dashboardModel: DashboardModel(
                     cardRepository: cardRepository,
                     offersRepository: offersRepository,
-                    statusRepository: statusRepository,
+                    statusRepository: statusRepository
                 ),
-                commandCoordinator: coordinator,
+                commandCoordinator: coordinator
             )
         }
     }
@@ -98,7 +98,10 @@
             value(for: "demoOpenCard")
         }
 
-        private static func parse<Value: RawRepresentable>(_ key: String, as _: Value.Type) -> Value? where Value.RawValue == String {
+        private static func parse<Value: RawRepresentable>(
+            _ key: String,
+            as _: Value.Type
+        ) -> Value? where Value.RawValue == String {
             guard let raw = value(for: key), let parsed = Value(rawValue: raw) else {
                 return nil
             }

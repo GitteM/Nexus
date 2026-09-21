@@ -9,10 +9,10 @@ public enum SpendingLimitPeriod: String, Codable, CaseIterable, Sendable, Equata
     case monthly
 }
 
-public extension SpendingLimitPeriod {
+extension SpendingLimitPeriod {
     /// Human-readable label for UI, e.g. "Weekly". Localized through the
     /// app's String Catalog at lookup time.
-    var displayName: String {
+    public var displayName: String {
         switch self {
         case .daily: String(localized: "Daily")
         case .weekly: String(localized: "Weekly")
@@ -33,7 +33,7 @@ public struct SpendingLimit: Codable, Sendable, Equatable {
         cardId: String,
         period: SpendingLimitPeriod,
         amount: Decimal,
-        currency: String,
+        currency: String
     ) {
         self.cardId = cardId
         self.period = period
@@ -42,30 +42,30 @@ public struct SpendingLimit: Codable, Sendable, Equatable {
     }
 }
 
-public extension SpendingLimit {
-    static let mockDailyLimit = SpendingLimit(
+extension SpendingLimit {
+    public static let mockDailyLimit = SpendingLimit(
         cardId: "card-credit-001",
         period: .daily,
         amount: 100,
-        currency: "EUR",
+        currency: "EUR"
     )
 
-    static let mockWeeklyLimit = SpendingLimit(
+    public static let mockWeeklyLimit = SpendingLimit(
         cardId: "card-credit-001",
         period: .weekly,
         amount: 500,
-        currency: "EUR",
+        currency: "EUR"
     )
 
-    static let mockMonthlyLimit = SpendingLimit(
+    public static let mockMonthlyLimit = SpendingLimit(
         cardId: "card-credit-001",
         period: .monthly,
         amount: 2000,
-        currency: "EUR",
+        currency: "EUR"
     )
 
     /// Demo/default limit set covering every `SpendingLimitPeriod`.
-    static var mockDefaults: [SpendingLimit] {
+    public static var mockDefaults: [SpendingLimit] {
         [.mockDailyLimit, .mockWeeklyLimit, .mockMonthlyLimit]
     }
 }

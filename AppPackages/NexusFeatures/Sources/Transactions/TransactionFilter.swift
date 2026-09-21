@@ -11,10 +11,10 @@ public enum TransactionDateRange: String, CaseIterable, Sendable, Equatable {
     case last90Days
 }
 
-public extension TransactionDateRange {
+extension TransactionDateRange {
     /// The inclusive lower bound of the window relative to `now`; `nil`
     /// for `.all` (UI copy lives in `Strings.Transactions`).
-    func lowerBound(relativeTo now: Date) -> Date? {
+    public func lowerBound(relativeTo now: Date) -> Date? {
         let calendar = Calendar.current
         switch self {
         case .all:
@@ -57,7 +57,7 @@ public struct TransactionQuery: Equatable, Sendable {
         status: TransactionStatus? = nil,
         dateRange: TransactionDateRange = .all,
         minimumAmount: Decimal? = nil,
-        maximumAmount: Decimal? = nil,
+        maximumAmount: Decimal? = nil
     ) {
         self.searchText = searchText
         self.category = category
@@ -85,7 +85,7 @@ public struct TransactionQuery: Equatable, Sendable {
     public static func filter(
         _ transactions: [Transaction],
         by query: TransactionQuery,
-        now: Date = .now,
+        now: Date = .now
     ) -> [Transaction] {
         transactions.filter { transaction in
             if !query.searchText.isEmpty {
@@ -101,7 +101,9 @@ public struct TransactionQuery: Equatable, Sendable {
             if let status = query.status, transaction.status != status {
                 return false
             }
-            if let lowerBound = query.dateRange.lowerBound(relativeTo: now), transaction.date < lowerBound {
+            if let lowerBound = query.dateRange.lowerBound(relativeTo: now),
+               transaction.date < lowerBound
+            {
                 return false
             }
             let magnitude = abs(transaction.amount)

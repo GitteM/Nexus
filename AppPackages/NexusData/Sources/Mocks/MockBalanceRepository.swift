@@ -40,7 +40,10 @@
         /// - Parameter seed: The balances known at start, keyed by
         ///   `cardId`; duplicates collapse to the last entry.
         public init(seed: [Balance] = Balance.mockDefaults) {
-            balancesByCardId = Dictionary(seed.map { ($0.cardId, $0) }, uniquingKeysWith: { _, last in last })
+            balancesByCardId = Dictionary(
+                seed.map { ($0.cardId, $0) },
+                uniquingKeysWith: { _, last in last }
+            )
         }
 
         /// The latest known balance for one card, or `nil` when none is
@@ -51,7 +54,7 @@
             guard !cardId.isEmpty else {
                 throw AppError.validationError(
                     field: "cardId",
-                    reason: "Card id must not be empty.",
+                    reason: "Card id must not be empty."
                 )
             }
             return balancesByCardId[cardId]
@@ -66,7 +69,7 @@
             guard !cardId.isEmpty else {
                 throw AppError.validationError(
                     field: "cardId",
-                    reason: "Card id must not be empty.",
+                    reason: "Card id must not be empty."
                 )
             }
             let (stream, continuation) = AsyncStream<Balance>.makeStream()
@@ -95,7 +98,10 @@
             }
         }
 
-        private func register(cardId: String, continuation: AsyncStream<Balance>.Continuation) -> Int {
+        private func register(
+            cardId: String,
+            continuation: AsyncStream<Balance>.Continuation
+        ) -> Int {
             let id = nextSubscriberID
             nextSubscriberID += 1
             subscribers[cardId, default: [:]][id] = continuation

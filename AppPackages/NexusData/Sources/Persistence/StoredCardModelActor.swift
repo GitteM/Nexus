@@ -37,7 +37,7 @@ actor StoredCardModelActor {
     func fetchAll() throws -> [Card] {
         try wrap("read_cards") {
             let descriptor = FetchDescriptor<StoredCard>(
-                sortBy: [SortDescriptor(\StoredCard.id)],
+                sortBy: [SortDescriptor(\StoredCard.id)]
             )
             return try context.fetch(descriptor).map { try $0.toDomain() }
         }
@@ -100,7 +100,7 @@ actor StoredCardModelActor {
     /// the natural key — the schema has no `#Unique` on the iOS 17 floor).
     private func existingDescriptor(id cardId: String) -> FetchDescriptor<StoredCard> {
         FetchDescriptor<StoredCard>(
-            predicate: #Predicate<StoredCard> { $0.id == cardId },
+            predicate: #Predicate<StoredCard> { $0.id == cardId }
         )
     }
 
@@ -116,7 +116,7 @@ actor StoredCardModelActor {
         } catch {
             throw AppError.persistenceError(
                 operation: operation,
-                details: error.localizedDescription,
+                details: error.localizedDescription
             )
         }
     }

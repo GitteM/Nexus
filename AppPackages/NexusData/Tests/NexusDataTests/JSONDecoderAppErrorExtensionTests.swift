@@ -11,10 +11,15 @@ struct JSONDecoderAppErrorExtensionTests {
     /// when the decode does not throw an `AppError`.
     private func thrownError(
         _ data: Data,
-        logger: RecordingLogger = RecordingLogger(),
+        logger: RecordingLogger = RecordingLogger()
     ) -> AppError? {
         do {
-            _ = try decoder.decode(CardState.self, from: data, logger: logger, context: "test payload")
+            _ = try decoder.decode(
+                CardState.self,
+                from: data,
+                logger: logger,
+                context: "test payload"
+            )
             Issue.record("decode should have thrown an AppError")
             return nil
         } catch let error as AppError {
@@ -28,7 +33,12 @@ struct JSONDecoderAppErrorExtensionTests {
     @Test func `valid payloads decode and return the value`() throws {
         let logger = RecordingLogger()
         let data = try JSONEncoder().encode(CardState(cardId: "card-credit-001", status: .active))
-        let state = try decoder.decode(CardState.self, from: data, logger: logger, context: "test payload")
+        let state = try decoder.decode(
+            CardState.self,
+            from: data,
+            logger: logger,
+            context: "test payload"
+        )
         #expect(state == .mockActiveState)
         #expect(logger.records.isEmpty)
     }

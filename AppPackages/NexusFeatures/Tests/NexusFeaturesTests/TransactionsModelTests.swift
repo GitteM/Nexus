@@ -16,7 +16,8 @@ struct TransactionFilterTests {
     private let now = Date(timeIntervalSinceReferenceDate: 799_459_200)
 
     @Test func `empty query keeps the whole list`() {
-        #expect(TransactionQuery.filter(transactions, by: TransactionQuery(), now: now) == transactions)
+        #expect(TransactionQuery
+            .filter(transactions, by: TransactionQuery(), now: now) == transactions)
         #expect(TransactionQuery().isDefault)
     }
 
@@ -26,13 +27,24 @@ struct TransactionFilterTests {
         let result = TransactionQuery.filter(transactions, by: query, now: now)
 
         #expect(result == [Transaction.mockCoffeePurchase])
-        #expect(TransactionQuery.filter(transactions, by: TransactionQuery(searchText: "FRESH"), now: now).count == 2)
-        #expect(TransactionQuery.filter(transactions, by: TransactionQuery(searchText: "no such shop"), now: now).isEmpty)
+        #expect(TransactionQuery.filter(
+            transactions,
+            by: TransactionQuery(searchText: "FRESH"),
+            now: now
+        )
+        .count == 2)
+        #expect(TransactionQuery.filter(
+            transactions,
+            by: TransactionQuery(searchText: "no such shop"),
+            now: now
+        )
+        .isEmpty)
     }
 
     @Test func `category filter narrows to one category`() {
         let dining = TransactionQuery(category: .dining)
-        #expect(TransactionQuery.filter(transactions, by: dining, now: now) == [Transaction.mockCoffeePurchase])
+        #expect(TransactionQuery
+            .filter(transactions, by: dining, now: now) == [Transaction.mockCoffeePurchase])
 
         let groceries = TransactionQuery(category: .groceries)
         #expect(TransactionQuery.filter(transactions, by: groceries, now: now) == [
@@ -84,7 +96,7 @@ struct TransactionFilterTests {
         let query = TransactionQuery(
             searchText: "fresh",
             category: .groceries,
-            status: .cleared,
+            status: .cleared
         )
         #expect(TransactionQuery.filter(transactions, by: query, now: now).count == 2)
 
@@ -102,20 +114,20 @@ struct TransactionHistoryModelTests {
     private func makeModel(
         cardID: String = Card.mockCreditCard.id,
         balances: [Balance] = Balance.mockDefaults,
-        transactions: [Transaction] = Transaction.mockDefaults,
+        transactions: [Transaction] = Transaction.mockDefaults
     ) -> (
         model: TransactionHistoryModel,
         balanceRepository: MockBalanceRepository,
-        transactionRepository: MockTransactionRepository,
+        transactionRepository: MockTransactionRepository
     ) {
         let balanceRepository = MockBalanceRepository(seed: balances)
         let transactionRepository = MockTransactionRepository(
-            seed: cardID == Card.mockCreditCard.id ? [cardID: transactions] : [:],
+            seed: cardID == Card.mockCreditCard.id ? [cardID: transactions] : [:]
         )
         let model = TransactionHistoryModel(
             cardID: cardID,
             balanceRepository: balanceRepository,
-            transactionRepository: transactionRepository,
+            transactionRepository: transactionRepository
         )
         return (model, balanceRepository, transactionRepository)
     }
@@ -186,7 +198,7 @@ struct TransactionHistoryModelTests {
             current: 1000,
             available: 1000,
             creditLimit: 2500,
-            currency: "EUR",
+            currency: "EUR"
         )
         balanceRepository.publish(updated)
 
@@ -207,7 +219,7 @@ struct TransactionHistoryModelTests {
             currency: "EUR",
             category: .shopping,
             status: .pending,
-            location: nil,
+            location: nil
         )
         transactionRepository.publish(newer)
 
@@ -276,12 +288,12 @@ struct TransactionHistoryModelTests {
 struct TransactionDetailModelTests {
     @Test func `load finds the transaction in the feed`() async {
         let repository = MockTransactionRepository(
-            seed: [Card.mockCreditCard.id: Transaction.mockDefaults],
+            seed: [Card.mockCreditCard.id: Transaction.mockDefaults]
         )
         let model = TransactionDetailModel(
             cardID: Card.mockCreditCard.id,
             transactionID: Transaction.mockFlightPurchase.id,
-            transactionRepository: repository,
+            transactionRepository: repository
         )
 
         #expect(model.viewState == .loading)
@@ -293,12 +305,12 @@ struct TransactionDetailModelTests {
 
     @Test func `load is idempotent once a transaction is shown`() async {
         let repository = MockTransactionRepository(
-            seed: [Card.mockCreditCard.id: Transaction.mockDefaults],
+            seed: [Card.mockCreditCard.id: Transaction.mockDefaults]
         )
         let model = TransactionDetailModel(
             cardID: Card.mockCreditCard.id,
             transactionID: Transaction.mockFlightPurchase.id,
-            transactionRepository: repository,
+            transactionRepository: repository
         )
 
         await model.load()
@@ -310,12 +322,12 @@ struct TransactionDetailModelTests {
 
     @Test func `a stale transaction id lands in the missing state`() async {
         let repository = MockTransactionRepository(
-            seed: [Card.mockCreditCard.id: Transaction.mockDefaults],
+            seed: [Card.mockCreditCard.id: Transaction.mockDefaults]
         )
         let model = TransactionDetailModel(
             cardID: Card.mockCreditCard.id,
             transactionID: "txn-gone",
-            transactionRepository: repository,
+            transactionRepository: repository
         )
 
         await model.load()
@@ -325,13 +337,13 @@ struct TransactionDetailModelTests {
 
     @Test func `a failed fetch lands in the error state and can retry`() async {
         let repository = MockTransactionRepository(
-            seed: [Card.mockCreditCard.id: Transaction.mockDefaults],
+            seed: [Card.mockCreditCard.id: Transaction.mockDefaults]
         )
         repository.shouldThrowError = true
         let model = TransactionDetailModel(
             cardID: Card.mockCreditCard.id,
             transactionID: Transaction.mockFlightPurchase.id,
-            transactionRepository: repository,
+            transactionRepository: repository
         )
 
         await model.load()
@@ -345,7 +357,7 @@ struct TransactionDetailModelTests {
 
 @MainActor
 private func waitUntil(_ condition: @MainActor () -> Bool) async {
-    for _ in 0 ..< 200 {
+    for _ in 0..<200 {
         if condition() {
             return
         }

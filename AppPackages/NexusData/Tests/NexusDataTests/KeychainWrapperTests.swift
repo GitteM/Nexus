@@ -17,7 +17,10 @@ final class FakeKeychainSession: KeychainSessionProtocol {
         var data: Data
     }
 
-    private let storage = OSAllocatedUnfairLock(initialState: (items: [String: Item](), forcedStatus: nil as OSStatus?))
+    private let storage = OSAllocatedUnfairLock(initialState: (
+        items: [String: Item](),
+        forcedStatus: nil as OSStatus?
+    ))
 
     /// When set, `add` returns this status instead of storing (used to
     /// exercise the wrapper's error mapping, e.g. -34018).
@@ -98,7 +101,7 @@ struct KeychainWrapperTests {
         let session = FakeKeychainSession()
         let wrapper = KeychainWrapper(
             service: "nexus.tests.\(UUID().uuidString)",
-            session: session,
+            session: session
         )
         return (wrapper, session)
     }

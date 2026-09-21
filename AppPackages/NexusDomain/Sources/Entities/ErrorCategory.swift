@@ -13,11 +13,11 @@ public enum ErrorCategory: String, Codable, CaseIterable, Sendable, Equatable {
     case unknown
 }
 
-public extension ErrorCategory {
+extension ErrorCategory {
     /// Stable English diagnostic label for analytics and logs. Not
     /// user-facing copy and intentionally not localized: call sites are
     /// diagnostics, and log output must stay language-independent.
-    var displayName: String {
+    public var displayName: String {
         switch self {
         case .network: "Network"
         case .card: "Card"

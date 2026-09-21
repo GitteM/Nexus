@@ -167,7 +167,7 @@ private struct OfferCardView: View {
         .frame(width: 248, alignment: .leading)
         .background(
             ColorPalette.secondaryBackground,
-            in: RoundedRectangle(cornerRadius: Self.cornerRadius, style: .continuous),
+            in: RoundedRectangle(cornerRadius: Self.cornerRadius, style: .continuous)
         )
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier(DashboardAccessibility.offer(offer.id))
@@ -207,13 +207,13 @@ private struct OfferCardView: View {
             type: CardOffer.mockCashbackOffer.type,
             status: .active,
             currency: "EUR",
-            spendingLimit: nil,
+            spendingLimit: nil
         )
         let cardRepository = MockCardRepository(seed: [alreadyManagedCard] + Card.mockDefaults)
         let model = DashboardModel(
             cardRepository: cardRepository,
             offersRepository: MockOffersRepository(seed: CardOffer.mockDefaults),
-            statusRepository: MockStatusRepository(seed: CardState.mockDefaults),
+            statusRepository: MockStatusRepository(seed: CardState.mockDefaults)
         )
         return OffersSectionPreview(model: model)
     }

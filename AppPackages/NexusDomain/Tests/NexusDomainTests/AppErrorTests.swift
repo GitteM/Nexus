@@ -52,8 +52,12 @@ struct AppErrorTests {
 
     @Test func `factory preserves payloads`() {
         #expect(AppErrorTestFactory.cardNotFound(cardId: "c-42") == .cardNotFound(cardId: "c-42"))
-        #expect(AppErrorTestFactory.validationError(field: "amount") == .validationError(field: "amount", reason: "must be positive"))
-        #expect(AppErrorTestFactory.insufficientFunds(amount: 99.50) == .insufficientFunds(amount: 99.50))
+        #expect(AppErrorTestFactory.validationError(field: "amount") == .validationError(
+            field: "amount",
+            reason: "must be positive"
+        ))
+        #expect(AppErrorTestFactory
+            .insufficientFunds(amount: 99.50) == .insufficientFunds(amount: 99.50))
         #expect(AppErrorTestFactory.unknown(underlying: nil) == .unknown(underlying: nil))
     }
 
@@ -61,18 +65,37 @@ struct AppErrorTests {
         // Pins factory→case mapping: a wiring bug that swaps two
         // same-category factories would otherwise pass the construction,
         // category, and policy suites undetected.
-        #expect(AppErrorTestFactory.apiConnectionFailed() == .apiConnectionFailed(details: "Connection reset by peer"))
+        #expect(AppErrorTestFactory
+            .apiConnectionFailed() == .apiConnectionFailed(details: "Connection reset by peer"))
         #expect(AppErrorTestFactory.requestTimedOut() == .requestTimedOut)
         #expect(AppErrorTestFactory.cardNotFound() == .cardNotFound(cardId: "card-test-001"))
-        #expect(AppErrorTestFactory.cardAlreadyExists() == .cardAlreadyExists(cardId: "card-test-001"))
-        #expect(AppErrorTestFactory.cardActionFailed() == .cardActionFailed(action: "freeze", details: "Command rejected"))
+        #expect(AppErrorTestFactory
+            .cardAlreadyExists() == .cardAlreadyExists(cardId: "card-test-001"))
+        #expect(AppErrorTestFactory.cardActionFailed() == .cardActionFailed(
+            action: "freeze",
+            details: "Command rejected"
+        ))
         #expect(AppErrorTestFactory.insufficientFunds() == .insufficientFunds(amount: 1250.75))
-        #expect(AppErrorTestFactory.persistenceError() == .persistenceError(operation: "save_card", details: "Write failed"))
-        #expect(AppErrorTestFactory.serializationError() == .serializationError(type: "Card", details: "Invalid key"))
-        #expect(AppErrorTestFactory.deserializationError() == .deserializationError(type: "CardState", details: "Type mismatch at 'status'"))
-        #expect(AppErrorTestFactory.validationError() == .validationError(field: "amount", reason: "must be positive"))
-        #expect(AppErrorTestFactory.systemUnavailable() == .systemUnavailable(details: "Biometrics unavailable"))
-        #expect(AppErrorTestFactory.initializationFailed() == .initializationFailed(details: "Container setup failed"))
+        #expect(AppErrorTestFactory.persistenceError() == .persistenceError(
+            operation: "save_card",
+            details: "Write failed"
+        ))
+        #expect(AppErrorTestFactory.serializationError() == .serializationError(
+            type: "Card",
+            details: "Invalid key"
+        ))
+        #expect(AppErrorTestFactory.deserializationError() == .deserializationError(
+            type: "CardState",
+            details: "Type mismatch at 'status'"
+        ))
+        #expect(AppErrorTestFactory.validationError() == .validationError(
+            field: "amount",
+            reason: "must be positive"
+        ))
+        #expect(AppErrorTestFactory
+            .systemUnavailable() == .systemUnavailable(details: "Biometrics unavailable"))
+        #expect(AppErrorTestFactory
+            .initializationFailed() == .initializationFailed(details: "Container setup failed"))
         // Equatable compares `.unknown` by underlying presence only, so pin
         // the default explicitly.
         if case let .unknown(underlying) = AppErrorTestFactory.unknown() {
@@ -101,7 +124,7 @@ struct AppErrorTests {
     @Test func `category covers all feature areas`() {
         #expect(
             ErrorCategory.allCases
-                == [.network, .card, .account, .data, .system, .initialization, .unknown],
+                == [.network, .card, .account, .data, .system, .initialization, .unknown]
         )
     }
 
@@ -130,7 +153,10 @@ struct AppErrorTests {
         #expect(notFound.failureReason == "No card with id c-42 exists.")
         #expect(notFound.errorDescription == "This card couldn't be found.")
 
-        let validation = AppErrorTestFactory.validationError(field: "amount", reason: "must be positive")
+        let validation = AppErrorTestFactory.validationError(
+            field: "amount",
+            reason: "must be positive"
+        )
         #expect(validation.failureReason == "'amount': must be positive")
 
         let api = AppErrorTestFactory.apiConnectionFailed(details: "host unreachable")
@@ -180,32 +206,37 @@ struct AppErrorTests {
     // MARK: - Equatable
 
     @Test func `equal payloads compare equal`() {
-        #expect(AppError.apiConnectionFailed(details: "x") == AppError.apiConnectionFailed(details: "x"))
-        #expect(AppError.apiConnectionFailed(details: nil) == AppError.apiConnectionFailed(details: nil))
+        #expect(AppError.apiConnectionFailed(details: "x") == AppError
+            .apiConnectionFailed(details: "x"))
+        #expect(AppError.apiConnectionFailed(details: nil) == AppError
+            .apiConnectionFailed(details: nil))
         #expect(AppError.requestTimedOut == AppError.requestTimedOut)
         #expect(AppError.cardNotFound(cardId: "c1") == AppError.cardNotFound(cardId: "c1"))
         #expect(AppError.insufficientFunds(amount: 10) == AppError.insufficientFunds(amount: 10))
         #expect(
             AppError.validationError(field: "amount", reason: "must be positive")
-                == AppError.validationError(field: "amount", reason: "must be positive"),
+                == AppError.validationError(field: "amount", reason: "must be positive")
         )
     }
 
     @Test func `different payloads compare different`() {
-        #expect(AppError.apiConnectionFailed(details: "a") != AppError.apiConnectionFailed(details: "b"))
-        #expect(AppError.apiConnectionFailed(details: "a") != AppError.apiConnectionFailed(details: nil))
+        #expect(AppError.apiConnectionFailed(details: "a") != AppError
+            .apiConnectionFailed(details: "b"))
+        #expect(AppError.apiConnectionFailed(details: "a") != AppError
+            .apiConnectionFailed(details: nil))
         #expect(AppError.cardNotFound(cardId: "c1") != AppError.cardNotFound(cardId: "c2"))
         #expect(AppError.insufficientFunds(amount: 10) != AppError.insufficientFunds(amount: 20))
         #expect(
             AppError.validationError(field: "amount", reason: "must be positive")
-                != AppError.validationError(field: "amount", reason: "must be negative"),
+                != AppError.validationError(field: "amount", reason: "must be negative")
         )
     }
 
     @Test func `different cases compare different`() {
         #expect(AppError.cardNotFound(cardId: "c1") != AppError.cardAlreadyExists(cardId: "c1"))
         #expect(AppError.apiConnectionFailed() != AppError.requestTimedOut)
-        #expect(AppError.serializationError(type: "Card") != AppError.deserializationError(type: "Card"))
+        #expect(AppError.serializationError(type: "Card") != AppError
+            .deserializationError(type: "Card"))
     }
 
     @Test func `unknown compares underlying errors by presence only`() {
@@ -214,8 +245,11 @@ struct AppErrorTests {
         #expect(AppError.unknown(underlying: nil) == AppError.unknown(underlying: nil))
         #expect(
             AppError.unknown(underlying: NSError(domain: "a", code: 1))
-                == AppError.unknown(underlying: NSError(domain: "b", code: 2)),
+                == AppError.unknown(underlying: NSError(domain: "b", code: 2))
         )
-        #expect(AppError.unknown(underlying: nil) != AppError.unknown(underlying: NSError(domain: "a", code: 1)))
+        #expect(AppError.unknown(underlying: nil) != AppError.unknown(underlying: NSError(
+            domain: "a",
+            code: 1
+        )))
     }
 }

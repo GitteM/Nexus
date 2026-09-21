@@ -32,7 +32,11 @@ struct RouterTests {
     }
 
     @Test func `pop to root clears every destination`() {
-        let router = Router(routes: [root, .cardDetail(cardID: "card-a"), .cardDetail(cardID: "card-b")])
+        let router = Router(routes: [
+            root,
+            .cardDetail(cardID: "card-a"),
+            .cardDetail(cardID: "card-b"),
+        ])
 
         router.popToRoot()
 
@@ -40,7 +44,11 @@ struct RouterTests {
     }
 
     @Test func `pop to removes destinations above route`() {
-        let router = Router(routes: [root, .cardDetail(cardID: "card-a"), .cardDetail(cardID: "card-b")])
+        let router = Router(routes: [
+            root,
+            .cardDetail(cardID: "card-a"),
+            .cardDetail(cardID: "card-b"),
+        ])
 
         router.popTo(root)
 

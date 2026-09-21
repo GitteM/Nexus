@@ -13,8 +13,12 @@ struct DateExtensionsTests {
         return calendar.date(
             from: DateComponents(
                 timeZone: TimeZone(secondsFromGMT: 0),
-                year: 2026, month: 1, day: 12, hour: 12, minute: 0,
-            ),
+                year: 2026,
+                month: 1,
+                day: 12,
+                hour: 12,
+                minute: 0
+            )
         )!
     }
 
@@ -22,7 +26,8 @@ struct DateExtensionsTests {
         let locale = Locale(identifier: "en_US")
         let timeZone = try #require(TimeZone(secondsFromGMT: 0))
 
-        #expect(noonJanuary12.formattedMediumDate(locale: locale, timeZone: timeZone) == "Jan 12, 2026")
+        #expect(noonJanuary12
+            .formattedMediumDate(locale: locale, timeZone: timeZone) == "Jan 12, 2026")
     }
 
     @Test func `short time formats with pinned locale`() throws {

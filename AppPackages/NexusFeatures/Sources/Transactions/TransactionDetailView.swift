@@ -34,7 +34,7 @@ public struct TransactionDetailView: View {
             EmptyStateView(
                 systemImage: Icons.search,
                 title: Strings.Transactions.noResultsTitle,
-                message: Strings.Transactions.noResultsMessage,
+                message: Strings.Transactions.noResultsMessage
             )
         case let .error(error):
             ErrorView(error: error) {
@@ -63,7 +63,7 @@ private struct DetailContent: View {
                         .font(.title.weight(.semibold))
                         .monospacedDigit()
                         .foregroundStyle(
-                            transaction.amount > 0 ? ColorPalette.brand : ColorPalette.label,
+                            transaction.amount > 0 ? ColorPalette.brand : ColorPalette.label
                         )
                         .accessibilityIdentifier(TransactionsAccessibility.detailAmount)
                 }
@@ -72,7 +72,10 @@ private struct DetailContent: View {
             Section {
                 row(Strings.Transactions.category, value: transaction.category.displayName)
                 row(Strings.Transactions.status, value: transaction.status.displayName)
-                row(Strings.Transactions.date, value: transaction.date.formatted(date: .long, time: .shortened))
+                row(
+                    Strings.Transactions.date,
+                    value: transaction.date.formatted(date: .long, time: .shortened)
+                )
                 if let location = transaction.location {
                     row(Strings.Transactions.location, value: location)
                 }
@@ -80,7 +83,7 @@ private struct DetailContent: View {
                     Strings.Transactions.transactionID,
                     value: transaction.id,
                     monospaced: true,
-                    valueIdentifier: TransactionsAccessibility.detailTransactionID,
+                    valueIdentifier: TransactionsAccessibility.detailTransactionID
                 )
             }
         }
@@ -92,7 +95,7 @@ private struct DetailContent: View {
         _ label: String,
         value: String,
         monospaced: Bool = false,
-        valueIdentifier: String? = nil,
+        valueIdentifier: String? = nil
     ) -> some View {
         HStack(alignment: .firstTextBaseline) {
             Text(label)
@@ -130,8 +133,8 @@ private struct DetailContent: View {
                 .environment(
                     TransactionDetailModel.loadingPreview(
                         cardID: Transaction.mockFlightPurchase.cardId,
-                        transactionID: Transaction.mockFlightPurchase.id,
-                    ),
+                        transactionID: Transaction.mockFlightPurchase.id
+                    )
                 )
         }
     }
@@ -142,8 +145,8 @@ private struct DetailContent: View {
                 .environment(
                     TransactionDetailModel.errorPreview(
                         cardID: Transaction.mockFlightPurchase.cardId,
-                        transactionID: Transaction.mockFlightPurchase.id,
-                    ),
+                        transactionID: Transaction.mockFlightPurchase.id
+                    )
                 )
         }
     }
@@ -154,8 +157,8 @@ private struct DetailContent: View {
                 .environment(
                     TransactionDetailModel.preview(
                         cardID: Transaction.mockFlightPurchase.cardId,
-                        transactionID: Transaction.mockFlightPurchase.id,
-                    ),
+                        transactionID: Transaction.mockFlightPurchase.id
+                    )
                 )
         }
     }
@@ -164,7 +167,10 @@ private struct DetailContent: View {
         NavigationStack {
             TransactionDetailView()
                 .environment(
-                    TransactionDetailModel.preview(cardID: "card-credit-001", transactionID: "txn-gone"),
+                    TransactionDetailModel.preview(
+                        cardID: "card-credit-001",
+                        transactionID: "txn-gone"
+                    )
                 )
         }
     }

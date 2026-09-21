@@ -1,7 +1,7 @@
-@testable import DataSources
 import Entities
 import Foundation
 import Testing
+@testable import DataSources
 
 @Suite("CardStateDataSource")
 @MainActor
@@ -10,7 +10,7 @@ struct CardStateDataSourceTests {
     /// encoded through the same `JSONEncoder` the wire will use.
     private func statusEvent(cardId: String, status: CardStatus) throws -> BankingEvent {
         let payload = try String(decoding: JSONEncoder().encode(
-            CardState(cardId: cardId, status: status),
+            CardState(cardId: cardId, status: status)
         ), as: UTF8.self)
         return BankingEvent(channel: EventChannels.cardEvents(cardId: cardId), payload: payload)
     }
@@ -19,7 +19,7 @@ struct CardStateDataSourceTests {
     /// skipped, not decoded as a status.
     private func balanceEvent(cardId: String) throws -> BankingEvent {
         let payload = try String(decoding: JSONEncoder().encode(
-            Balance(cardId: cardId, current: 100, available: 100, creditLimit: nil, currency: "EUR"),
+            Balance(cardId: cardId, current: 100, available: 100, creditLimit: nil, currency: "EUR")
         ), as: UTF8.self)
         return BankingEvent(channel: EventChannels.cardEvents(cardId: cardId), payload: payload)
     }
@@ -31,7 +31,10 @@ struct CardStateDataSourceTests {
 
     @Test func `subscribe delivers live status updates`() async throws {
         let session = FakeEventSubscriptionManager()
-        let source = CardStateDataSource(eventSubscriptionManager: session, logger: RecordingLogger())
+        let source = CardStateDataSource(
+            eventSubscriptionManager: session,
+            logger: RecordingLogger()
+        )
 
         let stream = try await source.subscribeToCardStatus(cardId: "card-credit-001")
 
@@ -44,7 +47,10 @@ struct CardStateDataSourceTests {
 
     @Test func `resubscribe seeds the cached state before going live`() async throws {
         let session = FakeEventSubscriptionManager()
-        let source = CardStateDataSource(eventSubscriptionManager: session, logger: RecordingLogger())
+        let source = CardStateDataSource(
+            eventSubscriptionManager: session,
+            logger: RecordingLogger()
+        )
 
         let first = try await source.subscribeToCardStatus(cardId: "card-credit-001")
         try session.inject(statusEvent(cardId: "card-credit-001", status: .frozen))
@@ -62,7 +68,10 @@ struct CardStateDataSourceTests {
 
     @Test func `getCardStatus answers from the per-id cache`() async throws {
         let session = FakeEventSubscriptionManager()
-        let source = CardStateDataSource(eventSubscriptionManager: session, logger: RecordingLogger())
+        let source = CardStateDataSource(
+            eventSubscriptionManager: session,
+            logger: RecordingLogger()
+        )
 
         // Cache miss: nothing has arrived on the wire yet.
         #expect(await source.getCardStatus(cardId: "card-credit-001") == nil)
@@ -85,7 +94,7 @@ struct CardStateDataSourceTests {
         let stream = try await source.subscribeToCardStatus(cardId: "card-credit-001")
         session.inject(BankingEvent(
             channel: EventChannels.cardEvents(cardId: "card-credit-001"),
-            payload: "not json at all",
+            payload: "not json at all"
         ))
 
         // The malformed frame must not surface; the next valid one must.
@@ -96,7 +105,10 @@ struct CardStateDataSourceTests {
 
     @Test func `non-status frames on a card channel are skipped`() async throws {
         let session = FakeEventSubscriptionManager()
-        let source = CardStateDataSource(eventSubscriptionManager: session, logger: RecordingLogger())
+        let source = CardStateDataSource(
+            eventSubscriptionManager: session,
+            logger: RecordingLogger()
+        )
 
         let stream = try await source.subscribeToCardStatus(cardId: "card-credit-001")
         try session.inject(balanceEvent(cardId: "card-credit-001"))
@@ -107,17 +119,20 @@ struct CardStateDataSourceTests {
 
     @Test func `a frame for another card warms its cache but is not delivered`() async throws {
         let session = FakeEventSubscriptionManager()
-        let source = CardStateDataSource(eventSubscriptionManager: session, logger: RecordingLogger())
+        let source = CardStateDataSource(
+            eventSubscriptionManager: session,
+            logger: RecordingLogger()
+        )
 
         let stream = try await source.subscribeToCardStatus(cardId: "card-credit-001")
         // Misrouted frame: the payload carries card-credit-002's state but the
         // frame arrives on card-credit-001's channel (a server-side mix-up).
         let misroutedPayload = try String(decoding: JSONEncoder().encode(
-            CardState(cardId: "card-credit-002", status: .active),
+            CardState(cardId: "card-credit-002", status: .active)
         ), as: UTF8.self)
         session.inject(BankingEvent(
             channel: EventChannels.cardEvents(cardId: "card-credit-001"),
-            payload: misroutedPayload,
+            payload: misroutedPayload
         ))
 
         // A frame for the subscribed card proves the consumer ran through the
@@ -137,7 +152,10 @@ struct CardStateDataSourceTests {
 
     @Test func `subscribe throws on an empty card id`() async throws {
         let session = FakeEventSubscriptionManager()
-        let source = CardStateDataSource(eventSubscriptionManager: session, logger: RecordingLogger())
+        let source = CardStateDataSource(
+            eventSubscriptionManager: session,
+            logger: RecordingLogger()
+        )
 
         do {
             _ = try await source.subscribeToCardStatus(cardId: "")
@@ -152,11 +170,17 @@ struct CardStateDataSourceTests {
 
     @Test func `parseEvent normalizes status payloads and rejects everything else`() async throws {
         let session = FakeEventSubscriptionManager()
-        let source = CardStateDataSource(eventSubscriptionManager: session, logger: RecordingLogger())
+        let source = CardStateDataSource(
+            eventSubscriptionManager: session,
+            logger: RecordingLogger()
+        )
 
         // A status frame parses to the typed entity.
         let status = try statusEvent(cardId: "card-credit-001", status: .frozen)
-        #expect(await source.parseEvent(status) == CardState(cardId: "card-credit-001", status: .frozen))
+        #expect(await source.parseEvent(status) == CardState(
+            cardId: "card-credit-001",
+            status: .frozen
+        ))
 
         // A balance frame is not a status — parseEvent must answer nil.
         #expect(try await source.parseEvent(balanceEvent(cardId: "card-credit-001")) == nil)
@@ -164,7 +188,7 @@ struct CardStateDataSourceTests {
         // Garbage is not a status either.
         #expect(await source.parseEvent(BankingEvent(
             channel: EventChannels.cardEvents(cardId: "card-credit-001"),
-            payload: "{broken",
+            payload: "{broken"
         )) == nil)
     }
 
@@ -173,7 +197,7 @@ struct CardStateDataSourceTests {
         let source = CardStateDataSource(
             eventSubscriptionManager: session,
             logger: RecordingLogger(),
-            cacheLimit: 2,
+            cacheLimit: 2
         )
 
         let a = try await source.subscribeToCardStatus(cardId: "card-a")
@@ -211,7 +235,10 @@ struct CardStateDataSourceTests {
 
     @Test func `cancelling the consumer releases the session subscriber`() async throws {
         let session = FakeEventSubscriptionManager()
-        let source = CardStateDataSource(eventSubscriptionManager: session, logger: RecordingLogger())
+        let source = CardStateDataSource(
+            eventSubscriptionManager: session,
+            logger: RecordingLogger()
+        )
 
         let stream = try await source.subscribeToCardStatus(cardId: "card-credit-001")
         try session.inject(statusEvent(cardId: "card-credit-001", status: .active))
@@ -238,7 +265,7 @@ struct CardStateDataSourceTests {
         await consumer.value
 
         var unregistered = false
-        for _ in 0 ..< 200 {
+        for _ in 0..<200 {
             if session.subscribedChannelCount == 0 {
                 unregistered = true
                 break
@@ -250,7 +277,10 @@ struct CardStateDataSourceTests {
 
     @Test func `two subscribers on the same card each receive live updates`() async throws {
         let session = FakeEventSubscriptionManager()
-        let source = CardStateDataSource(eventSubscriptionManager: session, logger: RecordingLogger())
+        let source = CardStateDataSource(
+            eventSubscriptionManager: session,
+            logger: RecordingLogger()
+        )
 
         let first = try await source.subscribeToCardStatus(cardId: "card-credit-001")
         let second = try await source.subscribeToCardStatus(cardId: "card-credit-001")

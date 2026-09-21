@@ -36,7 +36,7 @@ final class CardDetailUITests: XCTestCase {
     @MainActor
     private func launchApp(
         actionState: DemoActionState = .ready,
-        openCardID: String? = nil,
+        openCardID: String? = nil
     ) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments += [
@@ -68,7 +68,7 @@ final class CardDetailUITests: XCTestCase {
         // The deep link lands on the card detail.
         XCTAssertTrue(
             app.descendants(matching: .any)[CardDetailAccessibility.screen]
-                .waitForExistence(timeout: 20),
+                .waitForExistence(timeout: 20)
         )
 
         // Active card offers the freeze control.
@@ -90,7 +90,8 @@ final class CardDetailUITests: XCTestCase {
         // Back on the dashboard, the carousel chip shows the frozen state
         // (the detail and dashboard share the status store + subscription).
         backToDashboard(from: app)
-        let firstCard = app.descendants(matching: .any)[DashboardAccessibility.card(Card.mockCreditCard.id)]
+        let firstCard = app
+            .descendants(matching: .any)[DashboardAccessibility.card(Card.mockCreditCard.id)]
         XCTAssertTrue(firstCard.waitForExistence(timeout: 10))
         XCTAssertTrue(firstCard.label.contains("Frozen"), "label was: \(firstCard.label)")
 
@@ -98,11 +99,14 @@ final class CardDetailUITests: XCTestCase {
         XCTAssertTrue(UITestInteraction.tapWhenReady(firstCard))
         XCTAssertTrue(
             app.descendants(matching: .any)[CardDetailAccessibility.screen]
-                .waitForExistence(timeout: 20),
+                .waitForExistence(timeout: 20)
         )
         let statusAfterReload = app.descendants(matching: .any)[CardDetailAccessibility.status]
         XCTAssertTrue(statusAfterReload.waitForExistence(timeout: 10))
-        XCTAssertTrue(statusAfterReload.label.contains("Frozen"), "label was: \(statusAfterReload.label)")
+        XCTAssertTrue(
+            statusAfterReload.label.contains("Frozen"),
+            "label was: \(statusAfterReload.label)"
+        )
     }
 
     /// Failure knob: the `-demoActionState=error` launch argument makes the
@@ -115,7 +119,7 @@ final class CardDetailUITests: XCTestCase {
         // The deep link lands on the card detail.
         XCTAssertTrue(
             app.descendants(matching: .any)[CardDetailAccessibility.screen]
-                .waitForExistence(timeout: 20),
+                .waitForExistence(timeout: 20)
         )
 
         let status = app.descendants(matching: .any)[CardDetailAccessibility.status]
@@ -131,7 +135,7 @@ final class CardDetailUITests: XCTestCase {
         // The AppError headline surfaces (the demo's thrown error copy; the
         // alert body is one multiline element, so match by CONTAINS).
         let alertHeadline = app.alerts.staticTexts.element(
-            matching: NSPredicate(format: "label CONTAINS %@", "The 'Freeze' action failed."),
+            matching: NSPredicate(format: "label CONTAINS %@", "The 'Freeze' action failed.")
         )
         XCTAssertTrue(alertHeadline.waitForExistence(timeout: 20))
         // …dismissing keeps the card active and the controls usable.

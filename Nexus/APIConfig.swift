@@ -15,8 +15,8 @@ public enum APIConfig {
     /// The configured backend base URL, or `nil` when none is set.
     public static var baseURL: URL? {
         guard let raw = Bundle.main.infoDictionary?["API_BASE_URL"] as? String,
-              !raw.isEmpty
-        else {
+              !raw.isEmpty else
+        {
             return nil
         }
         return URL(string: raw)

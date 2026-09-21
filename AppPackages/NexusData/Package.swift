@@ -25,7 +25,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Entities", package: "NexusDomain"),
                 .product(name: "ServiceProtocols", package: "NexusDomain"),
-            ],
+            ]
         ),
         .target(
             name: "DataSources",
@@ -33,7 +33,7 @@ let package = Package(
                 "Session",
                 .product(name: "Entities", package: "NexusDomain"),
                 .product(name: "ServiceProtocols", package: "NexusDomain"),
-            ],
+            ]
         ),
         .target(
             name: "Repositories",
@@ -42,20 +42,20 @@ let package = Package(
                 "Persistence",
                 .product(name: "Entities", package: "NexusDomain"),
                 .product(name: "RepositoryProtocols", package: "NexusDomain"),
-            ],
+            ]
         ),
         .target(
             name: "Persistence",
             dependencies: [
                 .product(name: "Entities", package: "NexusDomain"),
                 .product(name: "RepositoryProtocols", package: "NexusDomain"),
-            ],
+            ]
         ),
         .target(
             name: "Logging",
             dependencies: [
                 .product(name: "ServiceProtocols", package: "NexusDomain"),
-            ],
+            ]
         ),
         .target(
             name: "Mocks",
@@ -68,7 +68,7 @@ let package = Package(
                 .product(name: "Entities", package: "NexusDomain"),
                 .product(name: "RepositoryProtocols", package: "NexusDomain"),
                 .product(name: "ServiceProtocols", package: "NexusDomain"),
-            ],
+            ]
         ),
         .testTarget(
             name: "NexusDataTests",
@@ -85,7 +85,7 @@ let package = Package(
                 // edges are missing from the generated project.
                 .product(name: "Entities", package: "NexusDomain"),
                 .product(name: "ServiceProtocols", package: "NexusDomain"),
-            ],
+            ]
         ),
-    ],
+    ]
 )

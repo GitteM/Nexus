@@ -44,7 +44,7 @@ public struct TransactionsRepository: TransactionRepositoryProtocol, Sendable {
         guard !cardId.isEmpty else {
             throw AppError.validationError(
                 field: "cardId",
-                reason: "Card id must not be empty.",
+                reason: "Card id must not be empty."
             )
         }
     }

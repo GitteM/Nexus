@@ -32,7 +32,7 @@ public enum CardArtwork {
         return LinearGradient(
             colors: [start, end],
             startPoint: .topLeading,
-            endPoint: .bottomTrailing,
+            endPoint: .bottomTrailing
         )
     }
 

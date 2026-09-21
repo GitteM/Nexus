@@ -14,7 +14,7 @@ struct CardTests {
             type: .debit,
             status: .active,
             currency: "EUR",
-            spendingLimit: 500,
+            spendingLimit: 500
         )
         #expect(card.id == "card-1")
         #expect(card.cardholderName == "Avery Jordan")
@@ -33,7 +33,7 @@ struct CardTests {
             type: .credit,
             status: .active,
             currency: "EUR",
-            spendingLimit: nil,
+            spendingLimit: nil
         )
         #expect(card.spendingLimit == nil)
     }
@@ -48,7 +48,7 @@ struct CardTests {
             type: .debit,
             status: .active,
             currency: "EUR",
-            spendingLimit: 500,
+            spendingLimit: 500
         )
         let same = Card(
             id: "card-1",
@@ -57,7 +57,7 @@ struct CardTests {
             type: .debit,
             status: .active,
             currency: "EUR",
-            spendingLimit: 500,
+            spendingLimit: 500
         )
         let different = Card(
             id: "card-9",
@@ -66,7 +66,7 @@ struct CardTests {
             type: .debit,
             status: .frozen,
             currency: "EUR",
-            spendingLimit: 500,
+            spendingLimit: 500
         )
         #expect(a == same)
         #expect(a != different)
@@ -82,7 +82,7 @@ struct CardTests {
             type: .prepaid,
             status: .frozen,
             currency: "EUR",
-            spendingLimit: Decimal(string: "1250.50"),
+            spendingLimit: Decimal(string: "1250.50")
         )
         let data = try JSONEncoder().encode(card)
         let decoded = try JSONDecoder().decode(Card.self, from: data)
@@ -98,7 +98,7 @@ struct CardTests {
             type: .debit,
             status: .active,
             currency: "EUR",
-            spendingLimit: nil,
+            spendingLimit: nil
         )
         let data = try JSONEncoder().encode(card)
         let decoded = try JSONDecoder().decode(Card.self, from: data)
@@ -111,7 +111,7 @@ struct CardTests {
             #"""
             {"id":"c1","cardholderName":"Avery Jordan","lastFourDigits":"4242",
              "type":"credit","status":"active","currency":"EUR"}
-            """#.utf8,
+            """#.utf8
         )
         let decoded = try JSONDecoder().decode(Card.self, from: json)
         #expect(decoded.spendingLimit == nil)

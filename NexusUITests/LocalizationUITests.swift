@@ -28,8 +28,10 @@ final class LocalizationUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments += [
             "-demoMode",
-            "-AppleLanguages", "(\(language))",
-            "-AppleLocale", locale,
+            "-AppleLanguages",
+            "(\(language))",
+            "-AppleLocale",
+            locale,
             Self.openCardArgument,
         ]
         app.launch()
@@ -43,7 +45,7 @@ final class LocalizationUITests: XCTestCase {
         // The deep link lands on the card detail with the card title.
         XCTAssertTrue(
             app.descendants(matching: .any)[CardDetailAccessibility.screen]
-                .waitForExistence(timeout: 20),
+                .waitForExistence(timeout: 20)
         )
         XCTAssertTrue(app.navigationBars["Карта ••4821"].waitForExistence(timeout: 10))
 
@@ -59,7 +61,7 @@ final class LocalizationUITests: XCTestCase {
 
         XCTAssertTrue(
             app.descendants(matching: .any)[CardDetailAccessibility.screen]
-                .waitForExistence(timeout: 20),
+                .waitForExistence(timeout: 20)
         )
         XCTAssertTrue(app.navigationBars["Kaart ••4821"].waitForExistence(timeout: 10))
 

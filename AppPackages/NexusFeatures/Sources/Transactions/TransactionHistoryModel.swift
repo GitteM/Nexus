@@ -42,7 +42,7 @@ public final class TransactionHistoryModel {
     public init(
         cardID: String,
         balanceRepository: BalanceRepositoryProtocol,
-        transactionRepository: TransactionRepositoryProtocol,
+        transactionRepository: TransactionRepositoryProtocol
     ) {
         self.cardID = cardID
         self.balanceRepository = balanceRepository
@@ -129,26 +129,24 @@ public final class TransactionHistoryModel {
         subscriptionBox.tasks.append(
             Task { @MainActor [weak self] in
                 guard let stream = try? await balanceRepository
-                    .subscribeToBalance(cardId: cardID)
-                else { return }
+                    .subscribeToBalance(cardId: cardID) else { return }
                 for await value in stream {
                     guard !Task.isCancelled else { break }
                     self?.balance = value
                 }
-            },
+            }
         )
 
         let transactionRepository = transactionRepository
         subscriptionBox.tasks.append(
             Task { @MainActor [weak self] in
                 guard let stream = try? await transactionRepository
-                    .subscribeToTransactions(cardId: cardID)
-                else { return }
+                    .subscribeToTransactions(cardId: cardID) else { return }
                 for await list in stream {
                     guard !Task.isCancelled else { break }
                     self?.transactions = list
                 }
-            },
+            }
         )
     }
 }

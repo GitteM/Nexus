@@ -1,6 +1,6 @@
 import Entities
-@testable import Nexus
 import Testing
+@testable import Nexus
 
 /// Composition-root integration tests: both modes construct, the demo
 /// connects to `.ready`, reset
@@ -96,7 +96,7 @@ struct AppContainerTests {
 
 @MainActor
 private func waitUntil(_ condition: @MainActor () -> Bool) async {
-    for _ in 0 ..< 200 {
+    for _ in 0..<200 {
         if condition() {
             return
         }

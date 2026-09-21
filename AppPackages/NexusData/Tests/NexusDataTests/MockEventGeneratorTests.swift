@@ -1,7 +1,7 @@
-@testable import DataSources
 import Entities
 import Mocks
 import Testing
+@testable import DataSources
 
 /// Tests for `MockEventGenerator`: the demo's synthetic events must decode
 /// through the same `parseEvent` / `JSONDecoder` AppError path live frames
@@ -20,7 +20,7 @@ struct MockEventGeneratorTests {
 
         let source = OffersDataSource(
             eventSubscriptionManager: FakeEventSubscriptionManager(),
-            logger: RecordingLogger(),
+            logger: RecordingLogger()
         )
         let offers = await source.parseEvent(event)
         #expect(offers == CardOffer.mockDefaults)
@@ -33,11 +33,11 @@ struct MockEventGeneratorTests {
     func `demo card status events decode through the real source`() async {
         let source = CardStateDataSource(
             eventSubscriptionManager: FakeEventSubscriptionManager(),
-            logger: RecordingLogger(),
+            logger: RecordingLogger()
         )
         let expectedByCardId = Dictionary(
             CardState.mockDefaults.map { ($0.cardId, $0) },
-            uniquingKeysWith: { _, last in last },
+            uniquingKeysWith: { _, last in last }
         )
 
         for state in CardState.mockDefaults {

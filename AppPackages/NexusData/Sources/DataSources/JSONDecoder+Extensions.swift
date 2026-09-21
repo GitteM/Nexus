@@ -13,7 +13,7 @@ import ServiceProtocols
 /// It lives in `DataSources` — the consumers of wire JSON — and is reused by
 /// `Repositories` (REST DTO decoding) and the demo mocks, which both depend
 /// on this target.
-public extension JSONDecoder {
+extension JSONDecoder {
     /// Decodes `data` as `T`, logging failures and rethrowing them as
     /// `AppError.deserializationError`.
     ///
@@ -24,11 +24,11 @@ public extension JSONDecoder {
     ///   - context: Human-readable description of the decode site (e.g.
     ///     "CardState from card.events payload") — must stay display-safe:
     ///     no full card numbers, CVV, or tokens.
-    func decode<T: Decodable>(
+    public func decode<T: Decodable>(
         _ type: T.Type,
         from data: Data,
         logger: any LoggerProtocol,
-        context: String,
+        context: String
     ) throws -> T {
         do {
             return try decode(type, from: data)
@@ -36,11 +36,11 @@ public extension JSONDecoder {
             let reason = Self.describe(error)
             logger.log(
                 "Deserialization failed — \(context): \(reason)",
-                level: .error,
+                level: .error
             )
             throw AppError.deserializationError(
                 type: "\(T.self)",
-                details: "\(context): \(reason)",
+                details: "\(context): \(reason)"
             )
         }
     }

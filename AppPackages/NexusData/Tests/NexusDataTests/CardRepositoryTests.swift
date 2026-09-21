@@ -24,7 +24,7 @@ struct CardRepositoryTests {
             type: .credit,
             currency: "EUR",
             annualFee: nil,
-            benefits: ["2% cashback on everything"],
+            benefits: ["2% cashback on everything"]
         )
     }
 
@@ -68,8 +68,13 @@ struct CardRepositoryTests {
     func `empty offer id throws validationError`() async throws {
         let repository = try makeRepository()
         let offer = CardOffer(
-            id: "", title: "Broken", subtitle: "", type: .credit,
-            currency: "EUR", annualFee: nil, benefits: [],
+            id: "",
+            title: "Broken",
+            subtitle: "",
+            type: .credit,
+            currency: "EUR",
+            annualFee: nil,
+            benefits: []
         )
         await #expect(throws: AppError.self) {
             _ = try await repository.addCard(offer)
@@ -80,8 +85,13 @@ struct CardRepositoryTests {
     func `empty offer currency throws validationError`() async throws {
         let repository = try makeRepository()
         let offer = CardOffer(
-            id: "offer-x", title: "Broken", subtitle: "", type: .credit,
-            currency: "", annualFee: nil, benefits: [],
+            id: "offer-x",
+            title: "Broken",
+            subtitle: "",
+            type: .credit,
+            currency: "",
+            annualFee: nil,
+            benefits: []
         )
         await #expect(throws: AppError.self) {
             _ = try await repository.addCard(offer)
@@ -92,8 +102,13 @@ struct CardRepositoryTests {
     func `two distinct offers produce two cards`() async throws {
         let repository = try makeRepository()
         let other = CardOffer(
-            id: "offer-travel-001", title: "Travel Rewards Card", subtitle: "",
-            type: .credit, currency: "EUR", annualFee: 95, benefits: [],
+            id: "offer-travel-001",
+            title: "Travel Rewards Card",
+            subtitle: "",
+            type: .credit,
+            currency: "EUR",
+            annualFee: 95,
+            benefits: []
         )
         _ = try await repository.addCard(sampleOffer)
         _ = try await repository.addCard(other)
@@ -111,7 +126,7 @@ struct CardRepositoryTests {
         // one call inserts and every other call reports cardAlreadyExists
         // (the check-then-act guard in CardRepository is no longer racy).
         let outcomes = await withTaskGroup(of: Result<Card, Error>.self) { group in
-            for _ in 0 ..< attempts {
+            for _ in 0..<attempts {
                 group.addTask {
                     do {
                         return try await .success(repository.addCard(offer))

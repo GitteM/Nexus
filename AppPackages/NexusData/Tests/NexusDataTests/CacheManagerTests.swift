@@ -146,7 +146,7 @@ struct CacheManagerTests {
     @Test
     func `bulk writes stay within cap`() async {
         let cache = CacheManager(itemLimit: 50)
-        for index in 0 ..< 200 {
+        for index in 0..<200 {
             await cache.set(index, forKey: "key-\(index)")
         }
         #expect(await cache.count == 50)
@@ -172,7 +172,7 @@ struct CacheManagerTests {
     func `concurrent writes are race free`() async {
         let cache = CacheManager(itemLimit: 1000)
         await withTaskGroup(of: Void.self) { group in
-            for index in 0 ..< 200 {
+            for index in 0..<200 {
                 group.addTask {
                     await cache.set(index, forKey: "key-\(index)")
                 }

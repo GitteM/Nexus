@@ -57,7 +57,7 @@ public final class DashboardModel {
     public init(
         cardRepository: CardRepositoryProtocol,
         offersRepository: CardOffersRepositoryProtocol,
-        statusRepository: CardStatusRepositoryProtocol,
+        statusRepository: CardStatusRepositoryProtocol
     ) {
         self.cardRepository = cardRepository
         self.offersRepository = offersRepository
@@ -183,8 +183,7 @@ public final class DashboardModel {
         let cardID = card.id
         let task = Task { @MainActor [weak self] in
             guard let stream = try? await self?.statusRepository
-                .subscribeToCardStatus(cardId: cardID)
-            else { return }
+                .subscribeToCardStatus(cardId: cardID) else { return }
             for await state in stream {
                 guard !Task.isCancelled else { break }
                 self?.apply(state)

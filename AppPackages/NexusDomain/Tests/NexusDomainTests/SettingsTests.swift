@@ -22,7 +22,10 @@ struct SettingsTests {
 
     @Test func `equality compares all properties`() {
         #expect(Settings() == Settings())
-        #expect(Settings(notificationsEnabled: true, hapticsEnabled: true) != Settings(notificationsEnabled: false, hapticsEnabled: true))
+        #expect(Settings(notificationsEnabled: true, hapticsEnabled: true) != Settings(
+            notificationsEnabled: false,
+            hapticsEnabled: true
+        ))
     }
 
     // MARK: - Codable

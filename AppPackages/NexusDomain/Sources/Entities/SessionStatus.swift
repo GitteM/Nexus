@@ -14,10 +14,10 @@ public enum SessionStatus: String, Codable, CaseIterable, Sendable, Equatable {
     case error
 }
 
-public extension SessionStatus {
+extension SessionStatus {
     /// Human-readable label for UI, e.g. "Connected". Localized through
     /// the app's String Catalog at lookup time.
-    var displayName: String {
+    public var displayName: String {
         switch self {
         case .connecting: String(localized: "Connecting")
         case .connected: String(localized: "Connected")
@@ -27,7 +27,7 @@ public extension SessionStatus {
     }
 
     /// SF Symbol name used by the UI for this status.
-    var icon: String {
+    public var icon: String {
         switch self {
         case .connecting: "arrow.triangle.2.circlepath"
         case .connected: "checkmark.circle.fill"
