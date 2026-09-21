@@ -20,7 +20,7 @@
   payments, security, Apple Pay). See [features.md](features.md).
 - **Remote**: `git@github.com:GitteM/Nexus.git`. Default branch `main` is
   the only permanent branch — no `develop`/`release`.
-- **Stack**: Swift 6.3 language mode (`swift-tools-version: 6.3`), iOS 17.0+
+- **Stack**: Swift 6 language mode (`swift-tools-version: 6.3`), iOS 17.0+
   floor. **CI is pinned to Xcode 26.6** (the latest stable runner image); local
   development may use a newer Xcode — e.g. 27, which ships Swift 6.4 — so code
   must build on both (§5). Workspace `Nexus.xcworkspace`; three SPM packages

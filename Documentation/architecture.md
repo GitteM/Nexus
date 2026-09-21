@@ -27,6 +27,11 @@
 > document keeps them explicit so the snippets port to projects that do not
 > enable it (§3, §12.3).
 
+> **Style authority.** Where this blueprint and `styleguide.md` disagree on
+> style — access control, formatting, naming — `styleguide.md` governs: its
+> rules are mechanically enforced (SwiftFormat/SwiftLint) and the code
+> follows them, so the snippets here are illustrative, not normative.
+
 > **Reading guide for agents (incl. DeepSeek in Codewhale).** This is a
 > 1,300-line porting guide — for work *inside* Nexus, read only the section
 > for the layer you touch (§3 module map, §4 Domain, §5 `AppError`, §6 Data,
@@ -190,9 +195,9 @@ public struct Card: Codable, Sendable, Equatable {
     public init(id: String, cardholderName: String, /* ... */) { /* ... */ }
 }
 
-public extension Card {
-    static let mockCreditCard = Card(/* ... */)
-    static var mockDefaults: [Card] { [.mockCreditCard, /* ... */] }
+extension Card {
+    public static let mockCreditCard = Card(/* ... */)
+    public static var mockDefaults: [Card] { [.mockCreditCard, /* ... */] }
 }
 ```
 
@@ -559,8 +564,8 @@ API_ENVIRONMENT = sandbox                      // sandbox | production | demo
 <key>API_BASE_URL</key><string>$(API_BASE_URL)</string>
 
 // Bundle+Extension.swift
-public extension Bundle {
-    static let apiBaseURL: URL = {
+extension Bundle {
+    public static let apiBaseURL: URL = {
         guard let string = Bundle.main.infoDictionary?["API_BASE_URL"] as? String,
               let url = URL(string: string) else {
             fatalError("API_BASE_URL missing from Info.plist")
@@ -712,7 +717,10 @@ The model is the heart of a screen. Shape:
 - **No protocol** — concrete `@Observable` classes only. Substitutability
   comes from mocking at the repository boundary (§9.5).
 - **No business rules** — it orchestrates repositories, mutates state, and
-  maps errors to the view state.
+  maps errors to the view state. Legality that *is* domain knowledge lives
+  in the Domain (e.g. `CardStatus.permits(_: CardCommandType)`); a model only
+  layers its own session state (say, "a replacement was already requested")
+  on top of a domain rule.
 
 ```swift
 @MainActor
@@ -1191,7 +1199,11 @@ this codebase and the decisions that keep it honest.
   implementations to construct ~10 objects that one composition root builds
   once. Plain initializers are type-checked and greppable. Factories earn
   their keep only when a **second composition root** appears (widgets,
-  watchOS, test bundles).
+  watchOS, test bundles). What was cut is the *protocol* ladder — factories
+  whose only job was substitutability. A concrete builder like
+  `AppDependenciesFactory` (an enum of static builders) is fine: it's how the
+  one root keeps its two construction paths — live and DEBUG-only demo —
+  apart, without protocol indirection.
 - **The 250 ms session-polling `Task`** — `sessionStatus` is already
   `@Observable`; the poll was a second source of truth. Now
   observation-driven (§11.3). If you ever need the *sequence* of session
