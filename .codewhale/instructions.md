@@ -21,8 +21,9 @@ authority chain lives in `Documentation/README.md` (Conventions).
 2. **Commits.** Conventional Commits: `type(scope): subject` — subject ≤ 72
    chars, imperative mood, capitalized, no trailing period. Full spec:
    `Documentation/CONTRIBUTING.md`.
-3. **Gates before submitting code.** `swiftformat .` clean, full workspace
-   TestPlan green, zero build warnings. Docs-only changes skip the test
+3. **Gates before submitting code.** Formatting + lint clean
+   (`scripts/lint.sh`; the pre-commit hook runs it), full workspace TestPlan
+   green, zero build warnings. Docs-only changes skip the test
    suite — say so and state what you did verify. Note: the first test build
    after a fresh DerivedData prints 12 Xcode dependency-scan "missing a
    dependency" warnings — known one-time tooling noise, never a gate

@@ -25,6 +25,9 @@
   under `AppPackages/` (`NexusDomain`, `NexusData`, `NexusFeatures`) plus a
   thin `Nexus` app target (composition root). No umbrella modules — import
   concrete targets.
+- **Tooling**: SwiftFormat (the only writer) + SwiftLint (the reporter), via
+  the committed `Brewfile` / `.swiftformat` / `.swiftlint.yml`; a pre-commit
+  hook and `scripts/` wrap them (CONTRIBUTING.md §4).
 - **Architecture**: MV (Model-View). SwiftUI views driven by `@MainActor
   @Observable` models publishing explicit `viewState` enums. No ViewModels,
   no Combine, no completion handlers. One `AppError`. SwiftData + Keychain +
@@ -86,7 +89,11 @@ type(scope): subject        # feat | fix | docs | style | refactor | perf |
 
 ## 5. Definition of done — run before submitting any code
 
-1. `swiftformat .` leaves no diffs (CI runs `swiftformat --lint .`).
+1. Formatting and lint clean — `scripts/lint.sh` (SwiftFormat `--lint` +
+   SwiftLint `--strict`). The committed pre-commit hook runs this (and
+   `swiftformat` on staged files) once activated with
+   `git config core.hooksPath .githooks`; CI still runs `swiftformat --lint .`
+   as the backstop.
 2. Full workspace TestPlan green:
    ```bash
    xcodebuild test -workspace Nexus.xcworkspace \

@@ -1,0 +1,6 @@
+# The UI-test bundle: fixtures/launch helpers legitimately force-unwrap and lay
+# out multi-line calls compactly. Nested config — overrides the root
+# `.swiftlint.yml` for files under this directory only.
+disabled_rules:
+  - force_unwrapping
+  - multiline_call_arguments
