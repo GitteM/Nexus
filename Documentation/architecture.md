@@ -797,7 +797,8 @@ Presentation-layer UI lives in two NexusFeatures targets: the **`Design`**
 target holds the design language, `SharedUI` holds components.
 
 - **Design tokens (`Design` target — dependency-free):** `Spacing` (static
-  CGFloat scale, `xs…section3`), `Icons` (SF Symbol names), `ColorPalette`
+  CGFloat scale, `xs…section3`), `Dimensions` (named component sizes —
+  offer-card width, page-dot metrics), `Icons` (SF Symbol names), `ColorPalette`
   (namespace; system colors resolve per platform/appearance here — the one
   place platform-backed values live), plus the **localization seam**: a
   single `Strings` enum using `String(localized:)` — all UI copy goes
