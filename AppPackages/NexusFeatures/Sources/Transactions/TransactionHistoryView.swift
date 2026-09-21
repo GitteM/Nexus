@@ -194,7 +194,7 @@ private struct HistoryContent: View {
             of: model.transactions.count
         )
         let summary = activeFilterSummary
-        return summary.isEmpty ? count : "\(count) · \(summary)"
+        return summary.isEmpty ? count : count + Strings.Transactions.bannerSeparator + summary
     }
 
     /// The human-readable list of active filters, newest first.
