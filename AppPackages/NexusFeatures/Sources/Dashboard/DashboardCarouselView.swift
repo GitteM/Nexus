@@ -28,11 +28,6 @@ struct DashboardCarouselView: View {
     /// card.
     private static let cardAspectRatio: CGFloat = 85.6 / 53.98
 
-    /// Page-dot metrics (points): the active dot is a wide capsule, the
-    /// inactive dots small circles.
-    private let pageDotSize: CGFloat = 7
-    private let selectedPageDotWidth: CGFloat = 20
-
     init(cards: [Card], onSelectCard: ((Card) -> Void)? = nil) {
         self.cards = cards
         self.onSelectCard = onSelectCard
@@ -73,8 +68,10 @@ struct DashboardCarouselView: View {
                 Capsule()
                     .fill(index == selectedIndex ? ColorPalette.brand : ColorPalette.separator)
                     .frame(
-                        width: index == selectedIndex ? selectedPageDotWidth : pageDotSize,
-                        height: pageDotSize
+                        width: index == selectedIndex
+                            ? Dimensions.pageDotActiveWidth
+                            : Dimensions.pageDotDiameter,
+                        height: Dimensions.pageDotDiameter
                     )
                     .padding(.vertical, Spacing.xs)
                     .contentShape(Rectangle())

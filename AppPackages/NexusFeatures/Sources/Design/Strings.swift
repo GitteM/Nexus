@@ -151,6 +151,10 @@ public enum Strings {
         public static let noFilters = String(localized: "No filters")
         public static let edit = String(localized: "Edit")
 
+        /// Separator between the result count and the active-filter summary in
+        /// the filtered banner, e.g. "Showing 3 of 9 · Dining".
+        public static let bannerSeparator = " · "
+
         /// "Showing 3 of 9" — the banner line under the active-filters title.
         public static func showingCount(_ shown: Int, of total: Int) -> String {
             String(localized: "Showing \(shown) of \(total)")

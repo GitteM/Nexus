@@ -9,6 +9,9 @@ import SwiftUI
 public struct DisconnectedView: View {
     private let reconnect: (() -> Void)?
 
+    /// Decorative glyph size; scales with Dynamic Type from a 52 pt base.
+    @ScaledMetric(relativeTo: .largeTitle) private var glyphSize: CGFloat = 52
+
     public init(reconnect: (() -> Void)? = nil) {
         self.reconnect = reconnect
     }
@@ -16,7 +19,7 @@ public struct DisconnectedView: View {
     public var body: some View {
         VStack(spacing: Spacing.md) {
             Image(systemName: Icons.offline)
-                .font(.system(size: 52))
+                .font(.system(size: glyphSize))
                 .foregroundStyle(ColorPalette.secondaryLabel)
                 .accessibilityHidden(true)
             Text(Strings.Connection.title)
