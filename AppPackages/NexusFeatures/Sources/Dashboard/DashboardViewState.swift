@@ -23,16 +23,4 @@ extension DashboardViewState {
         }
         return nil
     }
-
-    /// User-facing headline for the `.error` state, forwarded from the
-    /// error's own surface; `nil` unless the state is `.error`.
-    public var errorMessage: String? {
-        error?.errorDescription
-    }
-
-    /// Recovery guidance for the `.error` state, forwarded from the error's
-    /// own surface; `nil` unless the state is `.error`.
-    public var recoverySuggestion: String? {
-        error?.recoverySuggestion
-    }
 }

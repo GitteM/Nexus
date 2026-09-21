@@ -21,12 +21,4 @@ extension TransactionHistoryViewState {
         }
         return nil
     }
-
-    public var errorMessage: String? {
-        error?.errorDescription
-    }
-
-    public var recoverySuggestion: String? {
-        error?.recoverySuggestion
-    }
 }
