@@ -1,4 +1,5 @@
 import Foundation
+import os
 import Persistence
 import Testing
 
@@ -65,52 +66,57 @@ struct CacheManagerTests {
     // MARK: - TTL
 
     @Test
-    func `entry expires after per set TTL`() async throws {
-        let cache = CacheManager()
-        await cache.set("fresh", forKey: "key", ttl: 0.05)
+    func `entry expires after per set TTL`() async {
+        let clock = ManualClock()
+        let cache = CacheManager(now: { clock.now })
+        await cache.set("fresh", forKey: "key", ttl: 60)
         #expect(await cache.value(forKey: "key") == "fresh")
 
-        try await Task.sleep(for: .milliseconds(120))
+        clock.advance(by: 61)
         let value: String? = await cache.value(forKey: "key")
         #expect(value == nil)
     }
 
     @Test
-    func `expired read removes entry`() async throws {
-        let cache = CacheManager()
-        await cache.set("fresh", forKey: "key", ttl: 0.05)
-        try await Task.sleep(for: .milliseconds(120))
+    func `expired read removes entry`() async {
+        let clock = ManualClock()
+        let cache = CacheManager(now: { clock.now })
+        await cache.set("fresh", forKey: "key", ttl: 60)
+        clock.advance(by: 61)
         _ = await cache.value(forKey: "key") as String?
         #expect(await cache.count == 0)
     }
 
     @Test
-    func `default TTL applies when set omits TTL`() async throws {
-        let cache = CacheManager(defaultTTL: 0.05)
+    func `default TTL applies when set omits TTL`() async {
+        let clock = ManualClock()
+        let cache = CacheManager(defaultTTL: 60, now: { clock.now })
         await cache.set("fresh", forKey: "key")
         #expect(await cache.value(forKey: "key") == "fresh")
 
-        try await Task.sleep(for: .milliseconds(120))
+        clock.advance(by: 61)
         let value: String? = await cache.value(forKey: "key")
         #expect(value == nil)
     }
 
     @Test
-    func `overwrite resets expiry`() async throws {
-        let cache = CacheManager()
-        await cache.set("short-lived", forKey: "key", ttl: 0.05)
+    func `overwrite resets expiry`() async {
+        let clock = ManualClock()
+        let cache = CacheManager(now: { clock.now })
+        await cache.set("short-lived", forKey: "key", ttl: 60)
         // The replacement is stored with no expiry (manager default is nil).
         await cache.set("long-lived", forKey: "key")
-        try await Task.sleep(for: .milliseconds(120))
+        clock.advance(by: 61)
         let value: String? = await cache.value(forKey: "key")
         #expect(value == "long-lived")
     }
 
     @Test
-    func `entry without TTL does not expire`() async throws {
-        let cache = CacheManager()
+    func `entry without TTL does not expire`() async {
+        let clock = ManualClock()
+        let cache = CacheManager(now: { clock.now })
         await cache.set("persistent", forKey: "key")
-        try await Task.sleep(for: .milliseconds(120))
+        clock.advance(by: 86400)
         let value: String? = await cache.value(forKey: "key")
         #expect(value == "persistent")
     }
@@ -181,5 +187,21 @@ struct CacheManagerTests {
         }
         #expect(await cache.count == 200)
         #expect(await cache.value(forKey: "key-42") == 42)
+    }
+}
+
+/// A manually advanced clock so TTL tests never touch the wall clock — expiry
+/// tests move time explicitly instead of sleeping. `OSAllocatedUnfairLock`
+/// keeps it `Sendable` without `@unchecked`.
+final class ManualClock: Sendable {
+    private let storage =
+        OSAllocatedUnfairLock(initialState: Date(timeIntervalSince1970: 1_000_000))
+
+    var now: Date {
+        storage.withLock { $0 }
+    }
+
+    func advance(by interval: TimeInterval) {
+        storage.withLock { $0 = $0.addingTimeInterval(interval) }
     }
 }

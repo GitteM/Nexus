@@ -55,6 +55,10 @@ public actor CacheManager {
     private let itemLimit: Int
     private let defaultTTL: TimeInterval?
 
+    /// Wall-clock source for TTL arithmetic; injectable so tests advance time
+    /// deterministically instead of sleeping on the wall clock.
+    private let now: @Sendable () -> Date
+
     /// Entry bookkeeping the actor enforces deterministically.
     /// `keysByRecency` is most-recently-used first (identical to
     /// `CardStateDataSource`'s LRU list).
@@ -71,10 +75,14 @@ public actor CacheManager {
     ///     explicit `ttl`. `nil` (the default) means entries never expire on
     ///     their own — they live until evicted by the cap, memory pressure,
     ///     or an explicit `remove`.
+    ///   - now: The current-time source for TTL expiry checks. Defaults to
+    ///     `Date()`; inject a controllable clock to test expiry without
+    ///     sleeping.
     public init(
         itemLimit: Int = CacheManager.defaultItemLimit,
         totalCostLimit: Int = CacheManager.defaultTotalCostLimit,
-        defaultTTL: TimeInterval? = nil
+        defaultTTL: TimeInterval? = nil,
+        now: @escaping @Sendable () -> Date = { Date() }
     ) {
         let cache = NSCache<NSString, CacheBox>()
         cache.countLimit = itemLimit
@@ -82,6 +90,7 @@ public actor CacheManager {
         self.cache = cache
         self.itemLimit = itemLimit
         self.defaultTTL = defaultTTL
+        self.now = now
     }
 
     // MARK: - Public API
@@ -108,7 +117,7 @@ public actor CacheManager {
     ) {
         purgeExpiredIfNeeded()
         let effectiveTTL = ttl ?? defaultTTL
-        metadataByKey[key] = Metadata(expiresAt: effectiveTTL.map { Date().addingTimeInterval($0) })
+        metadataByKey[key] = Metadata(expiresAt: effectiveTTL.map { now().addingTimeInterval($0) })
         cache.setObject(
             CacheBox(value: value),
             forKey: key as NSString,
@@ -167,7 +176,7 @@ public actor CacheManager {
         guard let expiresAt = metadata.expiresAt else {
             return false
         }
-        return Date() >= expiresAt
+        return now() >= expiresAt
     }
 
     /// Drops expired entries in bulk when a write arrives, so a long-lived
