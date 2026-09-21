@@ -12,7 +12,7 @@ struct CardRepositoryProtocolTests {
     /// boundary. If a signature regresses to `Result`, these assignments
     /// stop compiling.
     @Test func `methods are async throws and never return Result`() {
-        let repository: CardRepositoryProtocol = TestCardRepository()
+        let repository: any CardRepositoryProtocol = TestCardRepository()
         let _: () async throws -> [Card] = repository.getCards
         let _: (CardOffer) async throws -> Card = repository.addCard
         let _: (String) async throws -> Void = repository.removeCard

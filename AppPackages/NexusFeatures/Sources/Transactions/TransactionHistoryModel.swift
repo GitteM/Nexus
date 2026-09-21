@@ -35,14 +35,14 @@ public final class TransactionHistoryModel {
     public private(set) var query = TransactionQuery()
 
     private let cardID: String
-    private let balanceRepository: BalanceRepositoryProtocol
-    private let transactionRepository: TransactionRepositoryProtocol
+    private let balanceRepository: any BalanceRepositoryProtocol
+    private let transactionRepository: any TransactionRepositoryProtocol
     private let subscriptionBox = ActivitySubscriptionBox()
 
     public init(
         cardID: String,
-        balanceRepository: BalanceRepositoryProtocol,
-        transactionRepository: TransactionRepositoryProtocol
+        balanceRepository: any BalanceRepositoryProtocol,
+        transactionRepository: any TransactionRepositoryProtocol
     ) {
         self.cardID = cardID
         self.balanceRepository = balanceRepository

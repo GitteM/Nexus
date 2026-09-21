@@ -11,7 +11,7 @@ struct CardOffersRepositoryProtocolTests {
     /// Pins the shapes: one-shot `async throws`, subscription
     /// `async throws -> AsyncStream`, no `Result` at the boundary.
     @Test func `one shot and subscription shapes hold`() {
-        let repository: CardOffersRepositoryProtocol = TestCardOffersRepository()
+        let repository: any CardOffersRepositoryProtocol = TestCardOffersRepository()
         let _: () async throws -> [CardOffer] = repository.getAvailableOffers
         let _: () async throws -> AsyncStream<[CardOffer]> = repository.subscribeToOffers
     }

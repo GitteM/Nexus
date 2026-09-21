@@ -45,9 +45,9 @@ public final class DashboardModel {
     /// signal views use for haptics (`.sensoryFeedback` trigger).
     public private(set) var lastAddedCardID: String?
 
-    private let cardRepository: CardRepositoryProtocol
-    private let offersRepository: CardOffersRepositoryProtocol
-    private let statusRepository: CardStatusRepositoryProtocol
+    private let cardRepository: any CardRepositoryProtocol
+    private let offersRepository: any CardOffersRepositoryProtocol
+    private let statusRepository: any CardStatusRepositoryProtocol
 
     /// One long-lived task per subscribed card; cancelled and pruned when
     /// the card leaves the list or the model deallocates.
@@ -55,9 +55,9 @@ public final class DashboardModel {
     private var isLoadInFlight = false
 
     public init(
-        cardRepository: CardRepositoryProtocol,
-        offersRepository: CardOffersRepositoryProtocol,
-        statusRepository: CardStatusRepositoryProtocol
+        cardRepository: any CardRepositoryProtocol,
+        offersRepository: any CardOffersRepositoryProtocol,
+        statusRepository: any CardStatusRepositoryProtocol
     ) {
         self.cardRepository = cardRepository
         self.offersRepository = offersRepository
