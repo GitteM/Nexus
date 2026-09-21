@@ -1,3 +1,5 @@
+import Foundation
+
 /// The kind of card a customer holds or is offered.
 ///
 /// Encoded by its raw value on the wire, e.g. `"credit"`.
