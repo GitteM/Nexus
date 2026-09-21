@@ -115,6 +115,8 @@ public actor OffersDataSource {
     /// `offers` key, an offer that does not decode — is logged and skipped.
     func parseEvent(_ event: BankingEvent) -> [CardOffer]? {
         guard let data = event.payload.data(using: .utf8) else {
+            // `card.offers` is a fixed route name (the offers channel carries
+            // no card id), so this message is non-identifying and may persist.
             logger.log(
                 "OffersSnapshot from \(event.channel): payload is not UTF-8.",
                 level: .error,

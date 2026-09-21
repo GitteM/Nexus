@@ -54,6 +54,9 @@ struct JSONDecoderAppErrorExtensionTests {
         #expect(details?.contains("test payload") == true)
         #expect(error?.category == .data)
         #expect(logger.errorRecords.count == 1)
+        // A decode failure carries per-user context (the channel), so it is
+        // logged redacted per the call site.
+        #expect(logger.errorRecords.first?.privacy == .redacted)
     }
 
     @Test func `missing key maps to deserializationError`() {

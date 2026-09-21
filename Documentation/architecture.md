@@ -262,6 +262,13 @@ public protocol LoggerProtocol: Sendable {
     func log(_ message: String, level: LogLevel, privacy: LogPrivacy)
 }
 
+extension LoggerProtocol {
+    /// Records one message at the given severity, redacted by default.
+    public func log(_ message: String, level: LogLevel) {
+        log(message, level: level, privacy: .redacted)
+    }
+}
+
 public protocol SessionManagerProtocol: Sendable {
     var sessionStatus: SessionStatus { get }   // .connecting/.connected/.disconnected/.error
     func connect() async throws                // establish authenticated session
@@ -452,6 +459,11 @@ Rules:
   yields into; `onTermination` cleans up the channel.
 - `connect()` bridges the delegate callback into
   `withCheckedThrowingContinuation` (the canonical callback→async bridge).
+- A dropped transport is modelled, not swallowed: `receive()` returning `nil`
+  is a clean close (`sessionStatus = .disconnected`), while a thrown error is a
+  failure (`sessionStatus = .error`) logged through the injected
+  `LoggerProtocol`. A handshake failure surfaces as `.error` from `connect()`
+  itself; active streams finish either way and a later `connect()` restores.
 - `EventSubscriptionManager` is a thin facade over it
   (`connect/disconnect/events(for:)/send`), which is what data sources
   receive — data sources never see the SDK directly.

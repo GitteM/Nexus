@@ -305,15 +305,27 @@ public final class APISessionManager: @preconcurrency SessionManagerProtocol {
     }
 
     /// The transport ended with an error: model it as `.error` — distinct from
-    /// a clean close — and log the cause, so a dropped connection is not
-    /// silently indistinguishable from a deliberate disconnect. A later
-    /// `connect()` re-establishes the session.
+    /// a clean close — and log it, so a dropped connection is not silently
+    /// indistinguishable from a deliberate disconnect. A later `connect()`
+    /// re-establishes the session.
+    ///
+    /// The guard covers `.connecting` defensively: the receive loop only starts
+    /// once the session is `.connected`, so today this path always sees
+    /// `.connected` (a handshake failure is surfaced as `.error` by `connect()`
+    /// itself), and a cancelled loop finds `.disconnected` and returns.
     private func handleTransportFailed(_ error: Error) {
         guard sessionStatus == .connected || sessionStatus == .connecting else {
             return
         }
+        // The error *type* is non-identifying and safe to persist; the
+        // description can embed a URL or token, so it is redacted.
         logger.log(
-            "Session transport failed: \(type(of: error)) — \(error.localizedDescription)",
+            "Session transport failed: \(type(of: error))",
+            level: .error,
+            privacy: .visible
+        )
+        logger.log(
+            "Transport error detail: \(error.localizedDescription)",
             level: .error,
             privacy: .redacted
         )
