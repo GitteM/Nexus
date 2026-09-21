@@ -11,9 +11,17 @@ struct LoggerProtocolTests {
         logger.log("decode failed", level: .error)
 
         #expect(logger.entries == [
-            LogEntry(message: "card loaded", level: .info),
-            LogEntry(message: "decode failed", level: .error),
+            LogEntry(message: "card loaded", level: .info, privacy: .redacted),
+            LogEntry(message: "decode failed", level: .error, privacy: .redacted),
         ])
+    }
+
+    @Test func `privacy is recorded, defaulting to redacted`() {
+        let logger = TestLogger()
+        logger.log("visible", level: .notice, privacy: .visible)
+        logger.log("default", level: .notice)
+
+        #expect(logger.entries.map(\.privacy) == [.visible, .redacted])
     }
 
     @Test func `log preserves the full level taxonomy`() {

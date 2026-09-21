@@ -245,16 +245,21 @@ implementations are `Sendable` structs (§6.3) or `@MainActor` classes
 
 Abstractions for cross-cutting infrastructure the domain still needs to *name*.
 Domain defines its own `LogLevel` (mapped to `OSLogType` inside the logging
-implementation) and a **stream-based** session protocol — no completion
-handlers anywhere:
+implementation), a `LogPrivacy` (mapped to the log's privacy annotation), and a
+**stream-based** session protocol — no completion handlers anywhere:
 
 ```swift
 public enum LogLevel: Sendable {
     case debug, info, notice, error, fault
 }
 
+/// How much of a message may be persisted without redaction.
+public enum LogPrivacy: Sendable {
+    case visible, redacted, sensitive
+}
+
 public protocol LoggerProtocol: Sendable {
-    func log(_ message: String, level: LogLevel)
+    func log(_ message: String, level: LogLevel, privacy: LogPrivacy)
 }
 
 public protocol SessionManagerProtocol: Sendable {
@@ -564,13 +569,14 @@ real backend is configuration + the §11.4 adapter checklist, nothing else.
 ### 7.2 Logging (`NexusData/Logging`)
 
 `LoggingService` is an `OSLog`-backed type conforming to Domain's
-`LoggerProtocol`, mapping the Domain `LogLevel` to `OSLogType`:
+`LoggerProtocol`, mapping the Domain `LogLevel` to `OSLogType` and
+`LogPrivacy` to the log's privacy annotation:
 
 ```swift
 public struct LoggingService: LoggerProtocol {
     private let logger = Logger(subsystem: "com.nexusbank.app", category: "default")
 
-    public func log(_ message: String, level: LogLevel) {
+    public func log(_ message: String, level: LogLevel, privacy: LogPrivacy) {
         let type: OSLogType = switch level {
         case .debug: .debug
         case .info: .info
@@ -578,14 +584,19 @@ public struct LoggingService: LoggerProtocol {
         case .error: .error
         case .fault: .fault
         }
-        logger.log(level: type, "\(message, privacy: .public)")
+        switch privacy {
+        case .visible: logger.log(level: type, "\(message, privacy: .public)")
+        case .redacted: logger.log(level: type, "\(message, privacy: .private)")
+        case .sensitive: logger.log(level: type, "\(message, privacy: .sensitive)")
+        }
     }
 }
 ```
 
 Every layer receives a `LoggerProtocol` via initializer — **no global logging
-calls in the codebase.** Never log card numbers or sensitive payloads — log
-only display-safe identifiers (last four digits).
+calls in the codebase.** Messages default to `.redacted`, so identifiers stay
+out of persisted logs; pass `.visible` only for non-identifying diagnostics, and
+never log card numbers, CVV, or tokens even then.
 
 ---
 
@@ -1164,8 +1175,8 @@ this codebase and the decisions that keep it honest.
   in a dependency-free target; the route→view switch lives in the app target.
   The router never imports views.
 - **The SDK and OSLog imports in Domain** — Domain is now pure Swift:
-  `LogLevel` replaces `OSLogType` in the protocol, and the session protocol
-  already spoke only Domain types.
+  `LogLevel`/`LogPrivacy` replace `OSLogType`/privacy annotations at the seam,
+  and the session protocol already spoke only Domain types.
 - **JSON-disk durable storage** — replaced by SwiftData for durable data; the
   in-memory cache stays for ephemeral live state.
 - **Store-owned one-shot `Task`s** — one-shot loads are `async` methods
@@ -1193,7 +1204,9 @@ this codebase and the decisions that keep it honest.
 1. **`AsyncStream` cannot throw mid-stream.** Setup failures now throw (so a
    returned stream means "subscribed"), but mid-stream errors must be modeled
    as values — session status, an error element in the stream, or
-   `AsyncThrowingStream` if you need typed mid-stream failure.
+   `AsyncThrowingStream` if you need typed mid-stream failure. The session
+   manager models a dropped transport as `sessionStatus = .error` (distinct
+   from a clean close's `.disconnected`) and logs the cause (§6.2).
 2. **`@MainActor` session manager** means every SDK event hops to the main
    actor. Fine at a few events/second; promote to an actor at high rates
    (§6.2).
@@ -1268,7 +1281,8 @@ Use this as an ordered recipe. Replace the card/banking domain with your own
 - `AppError` + `ErrorCategory` + Equatable + `TestFactory`.
 - Repository protocols: one-shot `async throws -> T`; subscriptions
   `async throws -> AsyncStream<T>`.
-- Service protocols: `LoggerProtocol` with your own `LogLevel` first;
+- Service protocols: `LoggerProtocol` with your own `LogLevel` and
+  `LogPrivacy` first;
   session/transport protocol with `events(for:) -> AsyncStream<T>`.
 - Apply the use-case rule (§4.4): zero use cases until one composes ≥2
   collaborators.
@@ -1292,8 +1306,8 @@ Use this as an ordered recipe. Replace the card/banking domain with your own
 
 - `Bundle` config extension in the app target (xcconfig → Info.plist →
   Bundle).
-- `LoggingService` (OSLog) in NexusData mapping `LogLevel` → `OSLogType` (no
-  sensitive data in logs).
+- `LoggingService` (OSLog) in NexusData mapping `LogLevel` → `OSLogType` and
+  `LogPrivacy` → the log's privacy annotation (no sensitive data in logs).
 
 ### Step 5 — Write Features (Presentation)
 

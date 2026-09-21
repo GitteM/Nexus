@@ -161,14 +161,15 @@ final class TestCardActionRepository: CardActionRepositoryProtocol {
 struct LogEntry: Equatable {
     let message: String
     let level: LogLevel
+    let privacy: LogPrivacy
 }
 
 @MainActor
 final class TestLogger: @preconcurrency LoggerProtocol {
     private(set) var entries: [LogEntry] = []
 
-    func log(_ message: String, level: LogLevel) {
-        entries.append(LogEntry(message: message, level: level))
+    func log(_ message: String, level: LogLevel, privacy: LogPrivacy) {
+        entries.append(LogEntry(message: message, level: level, privacy: privacy))
     }
 }
 

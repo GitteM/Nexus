@@ -105,7 +105,8 @@ public final class AppContainer {
             logger.log(
                 "Live mode without a backend base URL (API_BASE_URL empty); "
                     + "start() will report the configuration gap.",
-                level: .notice
+                level: .notice,
+                privacy: .visible
             )
         }
     }

@@ -17,7 +17,7 @@ final class RecordingLogger: LoggerProtocol {
 
     private let storage = OSAllocatedUnfairLock(initialState: Logs())
 
-    func log(_ message: String, level: LogLevel) {
+    func log(_ message: String, level: LogLevel, privacy: LogPrivacy) {
         storage.withLock { $0.records.append((message, level)) }
     }
 

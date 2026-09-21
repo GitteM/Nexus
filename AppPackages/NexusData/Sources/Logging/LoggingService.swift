@@ -4,12 +4,12 @@ import ServiceProtocols
 /// OSLog-backed implementation of Domain's `LoggerProtocol`.
 ///
 /// The Data layer owns logging infrastructure; Domain only names the seam
-/// (`LoggerProtocol` + its own `LogLevel`). This service maps the Domain
-/// `LogLevel` to the matching `OSLogType` and hands every message to the
-/// unified system log with `.public` privacy — the caller contract is that
-/// messages carry display-safe data only (last four digits, never full card
-/// numbers, CVV, or auth tokens), so `.public` is safe here by
-/// construction.
+/// (`LoggerProtocol` + its own `LogLevel` and `LogPrivacy`). This service maps
+/// the Domain `LogLevel` to `OSLogType` and `LogPrivacy` to the unified log's
+/// privacy annotation: `visible` → `.public`, `redacted` → `.private`,
+/// `sensitive` → `.sensitive`. The default (see `LoggerProtocol`) is
+/// `.redacted`, so identifiers stay out of persisted logs unless a caller
+/// explicitly marks a message `visible`.
 ///
 /// Every layer receives a `LoggerProtocol` via its initializer — there are
 /// no global logging calls in the codebase. A caller can override the
@@ -33,9 +33,17 @@ public struct LoggingService: LoggerProtocol {
         logger = Logger(subsystem: subsystem, category: category)
     }
 
-    /// Records one message at the severity mapped from the Domain level.
-    public func log(_ message: String, level: LogLevel) {
-        logger.log(level: Self.osLogType(for: level), "\(message, privacy: .public)")
+    /// Records one message at the severity and privacy mapped from Domain.
+    public func log(_ message: String, level: LogLevel, privacy: LogPrivacy) {
+        let type = Self.osLogType(for: level)
+        switch privacy {
+        case .visible:
+            logger.log(level: type, "\(message, privacy: .public)")
+        case .redacted:
+            logger.log(level: type, "\(message, privacy: .private)")
+        case .sensitive:
+            logger.log(level: type, "\(message, privacy: .sensitive)")
+        }
     }
 
     /// Maps the Domain `LogLevel` to the `OSLogType` used for the message:
