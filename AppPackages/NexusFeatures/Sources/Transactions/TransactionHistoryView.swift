@@ -154,9 +154,11 @@ private struct HistoryContent: View {
                 Text(Strings.Transactions.filtersActiveTitle)
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(ColorPalette.label)
+                    .accessibilityIdentifier(TransactionsAccessibility.filteredBannerTitle)
                 Text(bannerDetail)
                     .font(.footnote)
                     .foregroundStyle(ColorPalette.secondaryLabel)
+                    .accessibilityIdentifier(TransactionsAccessibility.filteredBannerDetail)
             }
             Spacer(minLength: Spacing.md)
             Button {

@@ -116,22 +116,20 @@ final class TransactionsUITests: XCTestCase {
         XCTAssertTrue(groceriesRow.waitForNonExistence(timeout: 10))
 
         // The filtered state is announced in-list: a banner with the result
-        // count and the active filter (copy matched literally — Design is
-        // not linked into the UI test target). The banner container exposes
-        // its text as child elements, so assert on those.
+        // count and the active filter. Assert against the banner's own
+        // identifiers — never the copy — so a copy/localization change can't
+        // break the test. The count line is checked against a domain amount
+        // (the mock default count), not a hard-coded string.
         let banner = app.descendants(matching: .any)[TransactionsAccessibility.filteredBanner]
         XCTAssertTrue(banner.waitForExistence(timeout: 10))
-        let filtersActive = app.staticTexts["Filters active"]
-        XCTAssertTrue(filtersActive.waitForExistence(timeout: 10))
-        let showingCount = app.staticTexts
-            .matching(
-                NSPredicate(
-                    format: "label CONTAINS %@",
-                    "Showing 1 of \(Transaction.mockDefaults.count)"
-                )
-            )
-            .firstMatch
-        XCTAssertTrue(showingCount.exists, "count line was missing")
+        let bannerTitle = app.staticTexts[TransactionsAccessibility.filteredBannerTitle]
+        XCTAssertTrue(bannerTitle.waitForExistence(timeout: 10))
+        let bannerDetail = app.staticTexts[TransactionsAccessibility.filteredBannerDetail]
+        XCTAssertTrue(bannerDetail.waitForExistence(timeout: 10))
+        XCTAssertTrue(
+            bannerDetail.label.contains("\(Transaction.mockDefaults.count)"),
+            "detail was: \(bannerDetail.label)"
+        )
 
         // Reset restores the whole feed and removes the banner.
         let reset = app.buttons[TransactionsAccessibility.filteredBannerReset]

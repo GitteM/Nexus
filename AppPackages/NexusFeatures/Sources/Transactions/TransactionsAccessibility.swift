@@ -27,6 +27,12 @@ public enum TransactionsAccessibility {
     /// The banner's Reset action (clears every filter).
     public static let filteredBannerReset = "transactions.filteredBanner.reset"
 
+    /// The banner's headline line ("Filters active").
+    public static let filteredBannerTitle = "transactions.filteredBanner.title"
+
+    /// The banner's detail line — result count plus the active-filter summary.
+    public static let filteredBannerDetail = "transactions.filteredBanner.detail"
+
     /// One transaction row in the history list.
     public static func transactionRow(_ transactionID: String) -> String {
         "transactions.row.\(transactionID)"
