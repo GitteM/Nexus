@@ -62,7 +62,8 @@ authority chain lives in `Documentation/README.md` (Conventions).
 
 - **Nexus**: SwiftUI iOS banking app — card issuing, freeze/unfreeze,
   spending limits, balances, transactions, payments, security, Apple Pay.
-- **Stack**: Swift 6.3 (Swift 6 mode), Xcode 26.6, iOS 17.0+; SPM packages
+- **Stack**: Swift 6.3 (Swift 6 mode), iOS 17.0+; CI pins Xcode 26.6 (local may
+  be newer); SPM packages
   `NexusDomain` / `NexusData` / `NexusFeatures` + thin app target
   (composition root); workspace `Nexus.xcworkspace`.
 - **Architecture**: MV — `@MainActor @Observable` models drive SwiftUI

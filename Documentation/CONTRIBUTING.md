@@ -183,9 +183,10 @@ swift build --package-path AppPackages/NexusDomain
 swift test  --package-path AppPackages/NexusData
 ```
 
-Prerequisites: Xcode 26.6, iPhone 17 simulator (iOS 26.5). Configs live in
-`Configs/` (`Debug.xcconfig`, `Release.xcconfig`, `Info.plist`); the scheme and
-TestPlan are shared at the workspace root.
+Prerequisites: Xcode 26.6 — the CI pin; a newer Xcode (e.g. 27, Swift 6.4) also
+builds the project (AGENTS.md §5) — and the iPhone 17 simulator (iOS 26.5).
+Configs live in `Configs/` (`Debug.xcconfig`, `Release.xcconfig`, `Info.plist`);
+the scheme and TestPlan are shared at the workspace root.
 
 ---
 

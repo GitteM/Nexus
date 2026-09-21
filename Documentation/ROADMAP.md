@@ -68,8 +68,9 @@ reflect them here only when they change a release.
   §12.3).
 - **`AsyncStream` cannot throw mid-stream** — mid-stream errors must be
   modeled as values (§12.3).
-- **Toolchain availability** — Xcode 26.6, iPhone 17 simulator (iOS 26.5);
-  all gates assume these exact versions.
+- **Toolchain availability** — CI is pinned to the latest stable runner image:
+  Xcode 26.6, iPhone 17 simulator (iOS 26.5); local development may use a newer
+  Xcode (e.g. 27 / Swift 6.4). All gates must hold on both.
 
 ## 5. Known tensions & decisions
 
