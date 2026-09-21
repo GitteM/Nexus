@@ -17,7 +17,7 @@ struct EventSubscriptionManagerTests {
 
     @Test func `facade forwards the session lifecycle`() async throws {
         let client = FakeWebSocketClient()
-        let manager = APISessionManager(client: client)
+        let manager = APISessionManager(client: client, logger: RecordingLogger())
         let facade = EventSubscriptionManager(session: manager)
 
         try await facade.connect()
@@ -31,7 +31,7 @@ struct EventSubscriptionManagerTests {
 
     @Test func `facade streams events and sends payloads through the session`() async throws {
         let client = FakeWebSocketClient()
-        let manager = APISessionManager(client: client)
+        let manager = APISessionManager(client: client, logger: RecordingLogger())
         let facade = EventSubscriptionManager(session: manager)
         try await facade.connect()
 

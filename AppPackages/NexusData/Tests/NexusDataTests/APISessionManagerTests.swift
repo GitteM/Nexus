@@ -6,10 +6,11 @@ import Testing
 @Suite("APISessionManager")
 @MainActor
 struct APISessionManagerTests {
-    private func makeManager(client: FakeWebSocketClient = FakeWebSocketClient())
-        -> APISessionManager
-    {
-        APISessionManager(client: client)
+    private func makeManager(
+        client: FakeWebSocketClient = FakeWebSocketClient(),
+        logger: RecordingLogger = RecordingLogger()
+    ) -> APISessionManager {
+        APISessionManager(client: client, logger: logger)
     }
 
     /// Serializes an event into the raw frame the transport would receive.
@@ -325,16 +326,21 @@ struct APISessionManagerTests {
         #expect(manager.sessionStatus == .connected)
     }
 
-    @Test func `transport error also marks disconnected and finishes streams`() async throws {
+    @Test func `transport error lands on error, logs the cause, and finishes streams`(
+    ) async throws {
         let client = FakeWebSocketClient()
-        let manager = makeManager(client: client)
+        let logger = RecordingLogger()
+        let manager = makeManager(client: client, logger: logger)
         try await manager.connect()
         let stream = manager.events(for: "card.status")
 
         client.failNextReceive(with: URLError(.networkConnectionLost))
         await flushMainActor()
 
-        #expect(manager.sessionStatus == .disconnected)
+        // A transport *error* is distinct from a clean close, which lands on
+        // `.disconnected`.
+        #expect(manager.sessionStatus == .error)
+        #expect(logger.records.contains { $0.message.contains("transport failed") })
         var received: [BankingEvent] = []
         for await event in stream {
             received.append(event)

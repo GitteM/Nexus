@@ -47,7 +47,7 @@ enum AppDependenciesFactory {
         guard let baseURL else {
             return nil
         }
-        let session = APISessionManager(url: baseURL)
+        let session = APISessionManager(url: baseURL, logger: logger)
         let eventSubscriptionManager = EventSubscriptionManager(session: session)
 
         let statusSource = CardStateDataSource(
