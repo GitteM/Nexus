@@ -8,4 +8,4 @@ set -euo pipefail
 cd "$(cd "$(dirname "$0")/.." && pwd)"
 
 swiftformat --lint .
-swiftlint --strict
+swiftlint --strict --quiet

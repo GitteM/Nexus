@@ -36,5 +36,8 @@ if [ "${#files[@]}" -gt 0 ]; then
 fi
 
 # Report-only over the whole tree: same commands the CI gate would run.
+# SwiftLint `--quiet` hides its per-file progress list but still prints every
+# violation; SwiftFormat keeps its (short) detail, which only appears when the
+# tree has drifted.
 swiftformat --lint .
-swiftlint --strict
+swiftlint --strict --quiet
