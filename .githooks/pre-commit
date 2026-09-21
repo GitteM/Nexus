@@ -19,7 +19,7 @@ cd "$(git rev-parse --show-toplevel)"
 for tool in swiftformat swiftlint; do
   if ! command -v "$tool" >/dev/null 2>&1; then
     printf 'pre-commit: %s not found on PATH.\n' "$tool" >&2
-    printf '%s\n' 'Install the pinned toolchain (see Brewfile: brew bundle) and retry.' >&2
+    printf '%s\n' "Run 'brew bundle' from the repo root (see Brewfile), then retry." >&2
     exit 1
   fi
 done
