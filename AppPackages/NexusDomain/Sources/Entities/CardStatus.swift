@@ -32,3 +32,29 @@ extension CardStatus {
         }
     }
 }
+
+extension CardStatus {
+    /// Whether a card in this status may run `command` — the lifecycle
+    /// legality the card-detail feature enforces and reflects in its controls.
+    ///
+    /// Pure domain knowledge, deliberately free of session state: a caller
+    /// holding extra context (e.g. "a replacement was already requested")
+    /// layers that on top of this rule rather than duplicating it.
+    public func permits(_ command: CardCommandType) -> Bool {
+        switch command {
+        case .freeze:
+            self == .active
+        case .unfreeze:
+            self == .frozen
+        case .reportLost, .reportStolen:
+            self != .expired && self != .lost
+        case .requestReplacement:
+            self == .lost
+        case .setSpendingLimit:
+            self == .active || self == .frozen
+        case .unknown:
+            // A wire value this build doesn't know — never a legal action.
+            false
+        }
+    }
+}
