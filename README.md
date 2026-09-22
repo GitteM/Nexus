@@ -21,9 +21,13 @@ runs with no backend.
 
 ## Requirements
 
-- Xcode 26.6 with the iOS 26.5 SDK and an **iPhone 17** simulator
-  (tests target it by name).
-- `swiftformat` (0.63+) on `PATH` for the formatting gate.
+- **Xcode 26.6** with the iOS 26.5 SDK and an **iPhone 17** simulator (tests
+  target it by name). That's the **CI pin** — local development may use a
+  newer Xcode (e.g. 27), so a change must build on both.
+- **SwiftFormat + SwiftLint** on `PATH` for the formatting/lint gate, pinned
+  to `swiftformat 0.63.0` and `swiftlint 0.65.1` (see `Brewfile`).
+- Optional: activate the pre-commit hook with
+  `git config core.hooksPath .githooks`.
 
 ## Run
 
@@ -62,7 +66,12 @@ AppPackages/NexusDomain/   domain: entities, repository/service protocols
 AppPackages/NexusData/     data: session, sources, repositories, mocks
 AppPackages/NexusFeatures/ features: design tokens, shared UI, screens
 Nexus/                     thin app target (composition root, demo wiring)
+NexusTests/                app-target unit tests (AppContainer, smoke)
 NexusUITests/              UI suites (dashboard, card detail, transactions)
+Configs/                   Debug/Release xcconfigs + Info.plist
+scripts/                   format/lint wrappers (format.sh, lint.sh)
+TestPlan.xctestplan        workspace test plan (every suite)
+Brewfile                   Homebrew manifest: swiftformat + swiftlint
 Documentation/             operating guide, architecture, styleguide, spec, roadmap
 ```
 
