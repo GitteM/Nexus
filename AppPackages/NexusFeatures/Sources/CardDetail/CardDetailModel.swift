@@ -107,7 +107,10 @@ public final class CardDetailModel {
     }
 
     public var canReportIssue: Bool {
-        card?.status.permits(.reportLost) ?? false
+        // Covers .reportLost and .reportStolen, which share a rule today —
+        // require both so a future divergence can't be silently inherited.
+        guard let status = card?.status else { return false }
+        return status.permits(.reportLost) && status.permits(.reportStolen)
     }
 
     public var canRequestReplacement: Bool {

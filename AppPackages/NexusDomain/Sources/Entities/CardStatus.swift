@@ -35,7 +35,7 @@ extension CardStatus {
 
 extension CardStatus {
     /// Whether a card in this status may run `command` — the lifecycle
-    /// legality `CardDetailModel` enforces and the card-detail view reflects.
+    /// legality the card-detail feature enforces and reflects in its controls.
     ///
     /// Pure domain knowledge, deliberately free of session state: a caller
     /// holding extra context (e.g. "a replacement was already requested")
@@ -53,6 +53,7 @@ extension CardStatus {
         case .setSpendingLimit:
             self == .active || self == .frozen
         case .unknown:
+            // A wire value this build doesn't know — never a legal action.
             false
         }
     }
