@@ -122,7 +122,7 @@ No long-lived or `develop`/`release` branches. Branches live < 1 day.
    - [ ] Workspace TestPlan green, zero build warnings
    - [ ] Tests added/updated for new logic
    - [ ] Docs updated (README/CHANGELOG, architecture.md, AGENTS.md,
-     tasks.md/ROADMAP.md as relevant)
+     spec.md/ROADMAP.md as relevant)
 5. **Merge:** the user reviews and merges (squash). CI must be green first.
    Never merge your own PR; never push to `main`.
 
@@ -208,15 +208,17 @@ the scheme and TestPlan are shared at the workspace root.
 Keep docs in sync with the change:
 
 - Root `README.md` / `Documentation/CHANGELOG.md` — user-facing features
-  (written at the v1.0 Day-15 hardening — see tasks.md).
+  (written at the v1.0 hardening close-out — see `ROADMAP.md` §6).
 - `Documentation/architecture.md` — when a pattern, target, or invariant
   changes.
 - `Documentation/AGENTS.md` and `.codewhale/instructions.md` — when
   workflows or agent conventions change.
-- `Documentation/tasks.md` — day/milestone status; `ROADMAP.md` — release
-  framing + decision log.
-- `Documentation/features.md` — product scope; resolve scope conflicts in
-  `ROADMAP.md` §5 (architecture.md wins).
+- `Documentation/ROADMAP.md` — release framing, decision log (§5), and the
+  milestone log (§6).
+- `Documentation/spec.md` — product scope + per-feature behavior; resolve
+  scope conflicts in `ROADMAP.md` §5 (architecture.md wins).
+- `Documentation/styleguide.md` — Swift style; SwiftFormat/SwiftLint own the
+  mechanical half (see §5 above).
 
 ---
 
