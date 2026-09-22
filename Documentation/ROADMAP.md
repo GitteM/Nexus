@@ -1,13 +1,13 @@
 # Nexus Roadmap
 
-> **Purpose.** Release framing and the scope-decision log — deliberately
-> small. The live day/milestone state lives in [tasks.md](tasks.md)
-> checkboxes and git history; the product scope catalog (including deferred
-> features) lives in [features.md](features.md); behavior detail lives in
-> [appspec.md](appspec.md). This file is not a second copy of any of them.
+> **Purpose.** Release framing, the scope-decision log, and the milestone
+> log — deliberately small. The product scope catalog (including deferred
+> features) and per-feature behavior live in [spec.md](spec.md); the
+> milestone history is §6 below; PR history and `git log` hold the detail.
+> This file is not a second copy of any of them.
 >
 > **Source of truth:** `architecture.md` wins on patterns and structure;
-> `appspec.md` wins on behavior detail; `features.md` wins on product scope.
+> `spec.md` wins on scope and behavior detail; `styleguide.md` wins on style.
 > Where they conflict, `architecture.md` wins (see
 > [Known tensions & decisions](#5-known-tensions--decisions)).
 
@@ -20,7 +20,7 @@ and plugs into a real backend later via the §11.4 adapter contract.
 
 ## 2. Releases
 
-- **v1.0 — Foundation & Core (M0–M9, Days 1–16 — see tasks.md).** Cards:
+- **v1.0 — Foundation & Core (M0–M9, Days 1–16 — see §6).** Cards:
   dashboard with carousel (art, status, offers → managed cards); card
   detail controls (freeze/unfreeze, report lost/stolen, replacement
   requests, spending limits); live balances; transaction history with
@@ -30,8 +30,8 @@ and plugs into a real backend later via the §11.4 adapter contract.
   *Exit: a shippable, demoable banking core with no backend.* — M0–M7 and
   M9 are merged to `main`; the M8 hardening close-out is PR #37
   (2026-09-05).
-- **Deferred indefinitely** (catalogued in `features.md`; `appspec.md`
-  §2.4–§2.7 mark the sections deferred): payments, security
+- **Deferred indefinitely** (catalogued in `spec.md` — `§Scope` and the
+  `§2.4`–`§2.7` placeholders): payments, security
   (biometrics/app lock/PIN), Apple Pay + Wallet extension, real-time
   alerts, virtual cards, insights, and locales beyond en/et/ru. Revisit
   after v1.0 ships.
@@ -54,10 +54,10 @@ and plugs into a real backend later via the §11.4 adapter contract.
 
 ## 3. Scope
 
-The scope catalog lives in `features.md`. The v1.0 in-scope list is part of
-§2 above; deferred features stay catalogued there and as placeholders in
-`appspec.md` §2.4–§2.7. Keep new scope entries in `features.md` first, then
-reflect them here only when they change a release.
+The scope catalog lives in `spec.md` (`§Scope`). The v1.0 in-scope list is
+part of §2 above; deferred features stay catalogued there and as
+placeholders in `spec.md` `§2.4`–`§2.7`. Keep new scope entries in `spec.md`
+first, then reflect them here only when they change a release.
 
 ## 4. Risks
 
@@ -74,21 +74,40 @@ reflect them here only when they change a release.
 
 ## 5. Known tensions & decisions
 
-- **Demo persistence (features.md vs architecture.md).** `features.md` once
-  said demo state persists via "UserDefaults/Keychain"; `architecture.md`
-  says demo mode is in-memory only and durable data lives in SwiftData,
+- **Demo persistence (spec.md vs architecture.md).** `spec.md` once said
+  demo state persists via "UserDefaults/Keychain"; `architecture.md` says
+  demo mode is in-memory only and durable data lives in SwiftData,
   credentials in Keychain. **Decision: architecture.md wins** — demo is
-  in-memory with reset; persistence is a live-mode concern. (`features.md`
-  now says the same.)
+  in-memory with reset; persistence is a live-mode concern. (`spec.md` now
+  says the same.)
 - **Features with no blueprint coverage.** Payments, security, Apple Pay,
   Wallet extension, alerts, insights, virtual cards appear only in
-  `features.md`; the architecture document is a pattern guide, not a scope
+  `spec.md`; the architecture document is a pattern guide, not a scope
   list. **Decision:** build them on the same MV patterns, adding domain
   protocols (e.g., `PaymentRepositoryProtocol`,
   `BiometricAuthServiceProtocol`) following §4.2/§4.3.
-- **`appspec.md` is the behavior spec.** `features.md` wins on scope;
-  `appspec.md` refines it with per-feature rules, flows, and acceptance
-  criteria — the v1.0 sections (§2.1–§2.3, §2.9) are settled in their
-  milestone PRs, deferred sections (§2.4–§2.7) stay as placeholders;
+- **`spec.md` is the scope + behavior spec.** It carries the product scope
+  catalog (`§Scope`) and refines each feature with rules, flows, and
+  acceptance criteria — the v1.0 sections (§2.1–§2.3, §2.9) are settled in
+  their milestone PRs, deferred sections (§2.4–§2.7) stay as placeholders;
   `architecture.md` wins on patterns. Shipped behavior is ruled by code +
-  tests — update `appspec.md` in the same PR that implements or changes it.
+  tests — update `spec.md` in the same PR that implements or changes it.
+
+## 6. Milestone log (v1.0)
+
+The day-by-day build log is collapsed here; per-milestone PRs and
+`git log` hold the detail.
+
+- **M0 (Day 1)** — workspace + three SPM package skeletons + thin app target; CI and TestPlan wired.
+- **M1 (Days 2–4)** — Domain: entities, `AppError`, repository/service protocols (no use cases).
+- **M2 (Days 5–8)** — Data: session manager, data sources + caches, repositories + SwiftData/Keychain, logging, `#if DEBUG` mocks.
+- **M3 (Day 9)** — SharedUI + Navigation: `Design` tokens, shared components, dependency-free `Router`/`Route`.
+- **M4 (Days 10–11)** — Dashboard: carousel, offers→card, per-card live status; `DashboardUITests`.
+- **M5 (Day 12)** — Card detail + controls: freeze/unfreeze, lost/stolen, replacement, spending limits; `CardDetailUITests`.
+- **M6 (Day 13)** — Balances + transactions: live balance header, search/filter, detail view; `TransactionsUITests`.
+- **M7 (Day 14)** — Composition root + demo mode (`AppContainer`, launch knobs, reset action).
+- **M8 (Day 15)** — v1.0 hardening: invariants + accessibility audits; root `README.md` + `CHANGELOG.md` written.
+- **M9 (Day 16)** — Localization (en/et/ru) via one String Catalog; canary UI tests.
+
+v1.0 covers M0–M9; the M8 hardening close-out is PR #37 (2026-09-05).
+Post-v1.0 work is tracked in `CHANGELOG.md` (`Unreleased`) and PR history.

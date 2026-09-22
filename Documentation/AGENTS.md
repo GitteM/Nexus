@@ -1,23 +1,23 @@
 # AGENTS.md — Nexus Agent Operating Guide
 
-> Who this is for: any AI coding agent working in this repo (Codewhale on
-> Claude or DeepSeek, and similar), plus humans who want the same rules.
+> Who this is for: any AI coding agent working in this repo (Codewhale and
+> similar), plus humans who want the same rules.
 > Codewhale agents get a condensed injection summary in
 > `.codewhale/instructions.md`; when the two differ, this file wins. The
-> full authority chain lives in `Documentation/README.md` (Conventions).
+> full authority chain lives in §8 (Conventions) below.
 >
 > Companion docs: [architecture.md](architecture.md) (patterns) ·
-> [features.md](features.md) (product) · [appspec.md](appspec.md) (feature
-> behavior/acceptance) · [CONTRIBUTING.md](CONTRIBUTING.md) (commits/PRs) ·
-> [README.md](README.md) (index for this folder & read-when map) ·
-> [tasks.md](tasks.md) (day state) / [ROADMAP.md](ROADMAP.md) (release
-> framing + decision log).
+> [spec.md](spec.md) (product scope + feature behavior/acceptance) ·
+> [styleguide.md](styleguide.md) (style; mechanically enforced) ·
+> [CONTRIBUTING.md](CONTRIBUTING.md) (commits/PRs) ·
+> [ROADMAP.md](ROADMAP.md) (release framing + decision log + milestone log) ·
+> [CHANGELOG.md](CHANGELOG.md) (release notes).
 
 ## 1. Repo at a glance
 
 - **Nexus**: SwiftUI iOS banking app focused on **cards and their features**
   (issuing, freeze/unfreeze, spending limits, balances, transactions,
-  payments, security, Apple Pay). See [features.md](features.md).
+  payments, security, Apple Pay). See [spec.md](spec.md).
 - **Remote**: `git@github.com:GitteM/Nexus.git`. Default branch `main` is
   the only permanent branch — no `develop`/`release`.
 - **Stack**: Swift 6 language mode (`swift-tools-version: 6.3`), iOS 17.0+
@@ -41,7 +41,7 @@
 
 ## 2. Read the right doc (do this before acting)
 
-`Documentation/architecture.md` is 1,300+ lines (a porting guide) — **do not
+`Documentation/architecture.md` is 1,400+ lines (a porting guide) — **do not
 read it whole for a routine change**. Read only the section for the layer you
 touch:
 
@@ -56,8 +56,9 @@ touch:
 | Need a mental reset | architecture.md §14 (one-paragraph summary) |
 | Verify you kept the rules | architecture.md §13 Step 8 (invariants checklist) |
 | Commit / PR rules | CONTRIBUTING.md |
-| Product scope vs. decisions | features.md (scope); the feature's appspec.md §2.x for rules/acceptance; conflicts resolved in ROADMAP.md §5 (architecture.md wins) |
-| Current day/milestone state | tasks.md (checkboxes); confirm with `git log` |
+| Swift style | styleguide.md (SwiftFormat/SwiftLint own the mechanical half) |
+| Product scope vs. decisions | spec.md (scope); its §2.x for rules/acceptance; decisions in ROADMAP.md §5 (architecture.md wins on patterns) |
+| Milestone / release state | ROADMAP.md §6 (milestone log) + CHANGELOG.md; confirm with `git log` |
 
 ## 3. Trunk-based workflow (critical)
 
@@ -177,6 +178,31 @@ Verify these when you touch architecture-sensitive code:
 
 State what changed, what you verified (and how), and what remains — never
 present an unverified result as done. If a gate blocks you, name it and ask.
+
+## 8. Documentation map & authority
+
+`Documentation/` is the project's source of truth, written for humans and AI
+agents. **This file is the entry point.**
+
+| File | Purpose |
+|---|---|
+| `AGENTS.md` | This guide: operating rules, workflow, gates, invariants, doc map |
+| `architecture.md` | Architecture blueprint / porting guide (read only the § for your layer) |
+| `styleguide.md` | Swift style & conventions (the mechanical half is enforced by SwiftFormat/SwiftLint) |
+| `spec.md` | Product scope + per-feature behavior, rules, and acceptance criteria |
+| `ROADMAP.md` | Release framing, decision log (§5), milestone log (§6) |
+| `CONTRIBUTING.md` | Conventional Commits, branches, PR process, setup, testing |
+| `CHANGELOG.md` | Release notes |
+
+**Authority.** On conflict: `architecture.md` wins for patterns, `spec.md`
+for scope and behavior detail, `styleguide.md` for style, and **code + tests
+for shipped behavior** — any remaining contradiction is a stale-doc bug: fix
+it in the same PR. `.codewhale/instructions.md` is a condensed mirror of this
+file (injected every session); this file wins when they differ.
+
+**Rules live once.** Link between docs; never copy a rule. One concern per
+file. Status claims rot — prefer `git log` and the `ROADMAP.md` §6 milestone
+log over "as of <date>" prose.
 
 ---
 

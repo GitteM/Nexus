@@ -1,9 +1,9 @@
-# Nexus App Specification (appspec.md)
+# Nexus Spec (spec.md)
 
-> **What this file is.** The **behavior contract** for the Nexus product: per
-> feature, the business rules, user flows, and acceptance criteria that the
-> code must satisfy. It refines the scope overview in
-> [features.md](features.md) — it does not restate it.
+> **What this file is.** The product's single spec: the **scope catalog**
+> (below — what ships in v1.0 vs. what is deferred) plus the **behavior
+> contract** — per feature, the business rules, flows, and acceptance
+> criteria the code must satisfy.
 >
 > **Status (2026-09-05):** the shipped v1.0 features are filled — §2.1
 > (M4), §2.2 (M5), §2.3 (M6), §2.9 (M7) settled, each recorded in its
@@ -12,19 +12,52 @@
 > PR that implements or changes the behavior; see the status tag at the top
 > of every section.
 >
-> **Precedence.** `features.md` wins on *scope*; this file wins on *behavior
-> detail*; `architecture.md` wins on *patterns* (how things are built);
-> `ROADMAP.md` §5 is the decision log. For shipped features, **code + tests
-> are the rule of record**: update this file in the same PR that implements
-> or changes the behavior, and treat any contradiction here vs. `features.md`
-> as a stale-doc bug to fix in that PR.
+> **Precedence.** `architecture.md` wins on *patterns* (how things are
+> built); this file wins on *scope* and *behavior detail*; `styleguide.md`
+> wins on style; `ROADMAP.md` §5 is the decision log. For shipped features,
+> **code + tests are the rule of record**: update this file in the same PR
+> that implements or changes the behavior.
+
+## Scope (product)
+
+**Shipped in v1.0** — behavior detail in §2, release framing in `ROADMAP.md`:
+
+- **Cards** — dashboard with a swipeable carousel (per-type art, last-four
+  digits, live status) and an offers row that turns an offer into a managed
+  card (§2.1).
+- **Card controls** — freeze/unfreeze, report lost/stolen, request
+  replacement (tracked as a dashboard offer), daily/weekly/monthly spending
+  limits (§2.2).
+- **Balances & transactions** — live per-card balance header, transaction
+  history with search/filter, and a transaction-detail view (§2.3).
+- **Demo mode** — an in-memory mock graph (no network/Keychain/disk) with a
+  reset action, so the whole v1.0 set runs with no backend (§2.9).
+- **UX** — dark/light appearance, haptics, Dynamic Type + VoiceOver (§2.8).
+- **Localization** — English, Estonian, Russian via one app String Catalog.
+
+**Deferred beyond v1.0** — catalogued here so scope stays single-sourced;
+kept as placeholders in `§2.4`–`§2.7`:
+
+- **Payments** — credit-card payments (minimum/full/custom), confirmation +
+  receipts (§2.4).
+- **Security** — biometrics (Face ID/Touch ID), app lock, session timeout,
+  secure PIN entry, PIN management (§2.5).
+- **iOS integrations** — Apple Pay provisioning + Wallet issuer extension
+  (§2.6).
+- **Alerts & insights** — real-time push alerts, virtual card numbers,
+  insights, card personalization (§2.7).
+
+**Out of scope** — a real backend (v1.0 is demo-first; the `architecture.md`
+§11.4 adapter contract is the later seam), real push infrastructure, a
+third-party banking SDK, App Store submission, macOS/multi-platform, and
+locales beyond en/et/ru. `ROADMAP.md` §2 owns this list.
 
 ## 1. How to use this document
 
 - **Agents (incl. DeepSeek in Codewhale):** read only the section for the
   feature you touch, plus this preamble. Do not read the whole file.
 - **Before a feature milestone:** the section marked `not yet specified`
-  must be drafted in the milestone PR (per `tasks.md` Definition of Done,
+  must be drafted in the milestone PR (per `AGENTS.md` §5,
   docs stay in sync).
 - **Tags:** `not yet specified` — fill at implementation ·
   `draft` — proposed defaults (provisional picks marked 🔶), confirm when the feature ships ·
@@ -39,8 +72,7 @@
 - **Status:** M4 (Days 10–11) settled — model contract and Day 11
   dashboard behaviors below are pinned by code + tests; card controls land
   at M5 (§2.2).
-- **Scope pointer:** features.md §Core Features (Card Dashboard, Card
-  Personalization); tasks.md Days 10–11; architecture.md §9 (Dashboard
+- **Scope pointer:** §Scope (Cards); `ROADMAP.md` §6 (M4); architecture.md §9 (Dashboard
   model/view), §11.4 (CardOffer → Card add path).
 
 **Model contract (Days 10–11, pinned by tests):**
@@ -93,7 +125,7 @@
 4. *Failure UX* — a failed add surfaces the `AppError` (headline +
    recovery guidance) in an alert; the loaded dashboard content stays on
    screen. Success/failure haptics ride the model's `lastAddedCardID` /
-   `addOfferError` signals (`.sensoryFeedback`, features.md §UX).
+   `addOfferError` signals (`.sensoryFeedback`, §Scope (UX)).
 5. *UI-test harness* — the dashboard UI suite launches with `-demoMode` and
    the `-demoState=ready|loading|error` knobs, which drive the shared mock
    repositories (architecture.md §10). **Interim app-target note:** Day 11
@@ -206,13 +238,13 @@ route→view mapping lives in Day 14's `AppContainer` + `MainNavigationView`
 (interim `DemoRootView`/`DemoGraph` deleted there).
 
 **Rule of record:** Domain vocabulary + `CardActionRepositoryProtocol`
-(code), Day 12 tests (tasks.md), and this section — keep the three in sync
+(code), Day 12 tests, and this section — keep the three in sync
 in the M5 PR.
 
 ### 2.3 Balances & Transactions
 - **Status:** M6 (Day 13) settled — behaviors below are pinned by code +
   tests; every open item resolved as marked.
-- **Scope pointer:** features.md §Balance & Transactions; tasks.md Day 13;
+- **Scope pointer:** §Scope (Balances & transactions); `ROADMAP.md` §6 (M6);
   architecture.md §9.1 (live subscription ownership), §4.2/§6.1
   (repository/source contract).
 
@@ -279,7 +311,7 @@ namespace, previews); Route cases + app-target AppContainer wiring; `Strings`
 ### 2.4 Payments
 - **Status:** deferred — not in the active plan; retained for reference
   (deferred indefinitely — see ROADMAP.md §2).
-- **Scope pointer:** features.md §Payments.
+- **Scope pointer:** §Scope (deferred).
 - **Open decisions to record here if reactivated:** minimum/full/custom
   validation rules, confirmation + receipt content, insufficient-funds
   handling.
@@ -287,9 +319,9 @@ namespace, previews); Route cases + app-target AppContainer wiring; `Strings`
 ### 2.5 Security — biometrics, app lock, timeout, PIN
 - **Status:** deferred — not in the active plan; retained for reference
   (deferred indefinitely — see ROADMAP.md §2).
-- **Scope pointer:** features.md §Security.
+- **Scope pointer:** §Scope (deferred).
 - **Open decisions to record here if reactivated:** PIN length/retry
-  policy, timeout duration (features.md says "e.g. 2 minutes"), which
+  policy, timeout duration (e.g. 2 minutes), which
   actions require biometric re-approval (see §2.2 🔶 above), lock behavior
   on backgrounding.
 - **Data-handling constraints** (do not duplicate here — architecture.md
@@ -299,27 +331,27 @@ namespace, previews); Route cases + app-target AppContainer wiring; `Strings`
 ### 2.6 iOS Integrations — Apple Pay, Wallet extension
 - **Status:** deferred — not in the active plan; retained for reference
   (deferred indefinitely — see ROADMAP.md §2).
-- **Scope pointer:** features.md §iOS-Specific Integrations. If reactivated,
+- **Scope pointer:** §Scope (deferred). If reactivated,
   this adds the `NexusWalletExtension` target — update architecture.md §3
   then.
 
 ### 2.7 Alerts & Insights
 - **Status:** deferred — not in the active plan; retained for reference
   (deferred indefinitely — see ROADMAP.md §2).
-- **Scope pointer:** features.md §Controls & Alerts, §Insights & Tools.
+- **Scope pointer:** §Scope (deferred).
 - **Open decisions to record here if reactivated:** alert thresholds ("large
   purchase" = what amount?), low-balance rule, alert center behavior.
 
 ### 2.8 UX/UI — appearance, haptics, accessibility
 - **Status:** not yet specified — cross-cutting; fill per feature, first
   pass at M4.
-- **Scope pointer:** features.md §UX/UI; tasks.md Days 11, 15.
+- **Scope pointer:** §Scope (UX); `ROADMAP.md` §6.
 - **Constraints owned elsewhere:** architecture.md §9.4 (design tokens,
   strings), §13 Step 8 (a11y invariants).
 
 ### 2.9 Demo mode & data
 - **Status:** M7 (Day 14) settled — the composition root owns demo mode
-  (architecture.md §11.2, tasks.md Day 14).
+  (architecture.md §11.2).
 - **Mechanism:** `AppContainer` selects live vs. demo once at init
   (`-demoMode` argument or `API_ENVIRONMENT = demo`, Debug builds only).
   Demo builds the same repositories/models the screens always use, backed

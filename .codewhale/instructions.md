@@ -3,13 +3,14 @@
 Entry point for Codewhale working in this repository. **This file is injected
 into every session, so it stays short.** The agent may run on a
 limited-context model (DeepSeek): read only what the table below says, never
-whole documents. One concern per file; `Documentation/README.md` is the index.
+whole documents. One concern per file; `Documentation/AGENTS.md` is the entry
+point and doc map.
 
 **Authority.** The rules below are a **condensed mirror** of
 `Documentation/AGENTS.md` §3–§6 so the highest-severity rules survive
 injection. `AGENTS.md` is the canonical operating guide and wins on
 conflict; if these two files disagree, this one is stale — fix it. The full
-authority chain lives in `Documentation/README.md` (Conventions).
+authority chain lives in `Documentation/AGENTS.md` §8 (Conventions).
 
 ## Non-negotiables (worst failures, in order)
 
@@ -36,13 +37,14 @@ authority chain lives in `Documentation/README.md` (Conventions).
    logs/caches/configs.
 5. **Docs stay in sync.** User-facing change → README/CHANGELOG; pattern or
    target change → `architecture.md`; workflow change → `AGENTS.md`;
-   milestone/day state → `tasks.md`; release/scope decisions → `ROADMAP.md`.
+   milestone/release state → `ROADMAP.md` §6; product scope/behavior →
+   `spec.md`; style → `styleguide.md`.
 
 ## Reality beats prose
 
 - Read `Documentation/AGENTS.md` at the start of any task — it is the
   operating guide (workflow, gates, conventions).
-- Current day state comes from `Documentation/tasks.md` checkboxes and
+- Milestone/release state comes from `Documentation/ROADMAP.md` §6 and
   `git log`, never from dated "as of" notes in docs.
 - Read files before describing them; verify results with tools; report what
   you could not verify.
@@ -54,16 +56,17 @@ authority chain lives in `Documentation/README.md` (Conventions).
 | Any new work | `Documentation/AGENTS.md` (workflow + gates) |
 | Architecture-sensitive code | `architecture.md`: §2 layering; the § for the layer you touch — §3 module map, §4 Domain, §5 `AppError`, §6 Data, §7 config/logging, §8 navigation, §9 presentation, §11 app target; §14 for one-paragraph recall; §13 Step 8 to verify invariants |
 | Commit / PR rules | `Documentation/CONTRIBUTING.md` |
-| Product scope + behavior | `Documentation/features.md` (scope overview) → `appspec.md` §2.x (rules/acceptance for the feature you touch); conflicts → `ROADMAP.md` §5 (architecture.md wins on patterns) |
-| Day / milestone status | `Documentation/tasks.md` (checkboxes) + `git log` |
-| Which doc does what | `Documentation/README.md` |
+| Swift style | `Documentation/styleguide.md` |
+| Product scope + behavior | `Documentation/spec.md` (`§Scope`, then `§2.x` rules/acceptance for the feature you touch); conflicts → `ROADMAP.md` §5 (architecture.md wins on patterns) |
+| Milestone / release status | `ROADMAP.md` §6 + `git log` |
+| Which doc does what | `Documentation/AGENTS.md` §8 |
 
 ## Repo at a glance
 
 - **Nexus**: SwiftUI iOS banking app — card issuing, freeze/unfreeze,
   spending limits, balances, transactions, payments, security, Apple Pay.
-- **Stack**: Swift 6.3 (Swift 6 mode), iOS 17.0+; CI pins Xcode 26.6 (local may
-  be newer); SPM packages
+- **Stack**: Swift 6 language mode (`swift-tools-version: 6.3`), iOS 17.0+;
+  CI pins Xcode 26.6 (local may be newer); SPM packages
   `NexusDomain` / `NexusData` / `NexusFeatures` + thin app target
   (composition root); workspace `Nexus.xcworkspace`.
 - **Architecture**: MV — `@MainActor @Observable` models drive SwiftUI
@@ -74,9 +77,9 @@ authority chain lives in `Documentation/README.md` (Conventions).
   `xcodebuild test -workspace Nexus.xcworkspace -scheme Nexus -destination
   'platform=iOS Simulator,name=iPhone 17'`
 
-## Know the intentional gaps
+## Intentional gaps
 
-`Documentation/CHANGELOG.md` and the root README.md are empty **on
-purpose** (populated at v1.0, Day 15 — see `tasks.md`). Do not treat them
-as broken or "fix" them. `appspec.md` holds a behavior-spec skeleton — fill
-feature sections at their milestone PRs, don't front-load them.
+`spec.md` carries the deferred feature sections as placeholders
+(`§2.4`–`§2.7`) — leave them until a feature is scheduled. `CHANGELOG.md`
+and the root `README.md` were intentionally empty before v1.0 and are
+written now (see `CHANGELOG.md` `Unreleased` + v1.0).

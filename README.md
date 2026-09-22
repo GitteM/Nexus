@@ -6,7 +6,7 @@ spending limits, live balances, and transaction history with search and
 filtering. Ships with a full **demo mode** so the whole v1.0 feature set
 runs with no backend.
 
-- **Stack**: Swift 6.3 (Swift 6 language mode), Xcode 26.6, iOS 17.0+.
+- **Stack**: Swift 6 language mode (`swift-tools-version: 6.3`), Xcode 26.6 (CI pin), iOS 17.0+.
 - **Architecture**: MV (Model-View) — `@MainActor @Observable` models drive
   SwiftUI views through explicit `viewState` enums. No ViewModels, no
   Combine, no completion handlers.
@@ -21,9 +21,13 @@ runs with no backend.
 
 ## Requirements
 
-- Xcode 26.6 with the iOS 26.5 SDK and an **iPhone 17** simulator
-  (tests target it by name).
-- `swiftformat` (0.63+) on `PATH` for the formatting gate.
+- **Xcode 26.6** with the iOS 26.5 SDK and an **iPhone 17** simulator (tests
+  target it by name). That's the **CI pin** — local development may use a
+  newer Xcode (e.g. 27), so a change must build on both.
+- **SwiftFormat + SwiftLint** on `PATH` for the formatting/lint gate, pinned
+  to `swiftformat 0.63.0` and `swiftlint 0.65.1` (see `Brewfile`).
+- Optional: activate the pre-commit hook with
+  `git config core.hooksPath .githooks`.
 
 ## Run
 
@@ -62,17 +66,22 @@ AppPackages/NexusDomain/   domain: entities, repository/service protocols
 AppPackages/NexusData/     data: session, sources, repositories, mocks
 AppPackages/NexusFeatures/ features: design tokens, shared UI, screens
 Nexus/                     thin app target (composition root, demo wiring)
+NexusTests/                app-target unit tests (AppContainer, smoke)
 NexusUITests/              UI suites (dashboard, card detail, transactions)
-Documentation/             operating guide, architecture, specs, roadmap
+Configs/                   Debug/Release xcconfigs + Info.plist
+scripts/                   format/lint wrappers (format.sh, lint.sh)
+TestPlan.xctestplan        workspace test plan (every suite)
+Brewfile                   Homebrew manifest: swiftformat + swiftlint
+Documentation/             operating guide, architecture, styleguide, spec, roadmap
 ```
 
 ## Documentation
 
-Start at `Documentation/README.md` — the index maps every file to the
-task that needs it. Highlights: `AGENTS.md` (operating guide, gates,
-invariants), `architecture.md` (blueprint; §14 is the one-paragraph
-summary), `features.md` / `appspec.md` (scope and behavior), `tasks.md`
-(day state), `ROADMAP.md` (release framing + decision log),
+Start at `Documentation/AGENTS.md` — the operating guide, whose doc map and
+authority chain (§8) route every task to the right file. Highlights:
+`architecture.md` (blueprint; §14 is the one-paragraph summary), `spec.md`
+(product scope + per-feature behavior), `styleguide.md` (Swift style),
+`ROADMAP.md` (release framing, decision log, milestone log),
 `CONTRIBUTING.md` (commits/PRs).
 
 ## Scope notes
