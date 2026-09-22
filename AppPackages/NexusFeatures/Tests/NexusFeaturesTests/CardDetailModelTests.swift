@@ -327,6 +327,30 @@ struct CardDetailModelTests {
         #expect(model.card?.status == .lost)
     }
 
+    // MARK: - Predicate projections
+
+    @Test func `every control is disabled before a card is loaded`() {
+        let (model, _, _, _) = makeModel()
+
+        #expect(model.card == nil)
+        #expect(!model.canFreeze)
+        #expect(!model.canUnfreeze)
+        #expect(!model.canReportIssue)
+        #expect(!model.canRequestReplacement)
+        #expect(!model.canChangeLimits)
+    }
+
+    @Test func `the replacement control closes once a request succeeds`() async {
+        let (model, _, _, _) = makeModel(cardID: Card.mockLostCard.id)
+        await model.load()
+        #expect(model.canRequestReplacement)
+
+        await model.requestReplacement()
+
+        #expect(model.replacementRequested)
+        #expect(!model.canRequestReplacement)
+    }
+
     // MARK: - Spending limits
 
     @Test func `setting a limit executes the command and records the ledger entry`() async {
