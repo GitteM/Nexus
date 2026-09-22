@@ -1,8 +1,8 @@
 # Nexus Swift Style Guide
 
-> **Scope.** Nexus's SwiftUI code on the **Swift 6 language mode**. The project has **no
-> UIKit** — every screen is SwiftUI. The architecture is **MV**: `@MainActor @Observable`
-> models publishing explicit `viewState` enums, driven by views, with **no ViewModel layer**.
+> **Scope.** Nexus's SwiftUI code on the **Swift 6 language mode**; every screen is
+> SwiftUI. The architecture is **MV**: `@MainActor @Observable` models publishing explicit
+> `viewState` enums, driven by views, with **no ViewModel layer**.
 > `architecture.md` owns that pattern; this guide styles the code *inside* it.
 >
 > **Precedence.** 1) the compiler · 2) **SwiftFormat** (mechanical shape) · 3) this guide
@@ -86,7 +86,7 @@ Write names that read as fluent English at the call site (Apple's API Design Gui
 - **Booleans assert:** `isBlocked`, `hasExpired`, `shouldRetry`.
 - Types `UpperCamelCase`, members `lowerCamelCase`; acronyms uniform (`URLSession`).
 - **Don't abbreviate** (`MaskedPAN`, not `MPAN`) and **don't repeat the type** in members that
-  return it (`UIColor.red`).
+  return it (`Color.red`, not `redColor`).
 - No Hungarian prefixes; **ASCII identifiers only** (no emoji).
 - Initializer parameters that map to stored properties share the property's name; write
   `self.x = x` on assignment.
